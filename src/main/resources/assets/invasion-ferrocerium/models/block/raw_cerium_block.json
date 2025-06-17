@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "invasion-ferrocerium:block/raw_cerium_block"
-  }
-}

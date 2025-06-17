@@ -3,11 +3,11 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "invasion-ferrocerium:ferrocerous_block"
+      "item": "invasion-ferrocerium:aluminum_block"
     }
   ],
   "result": {
     "count": 9,
-    "id": "invasion-ferrocerium:ferrocerous_ingot"
+    "id": "invasion-ferrocerium:aluminum_ingot"
   }
 }

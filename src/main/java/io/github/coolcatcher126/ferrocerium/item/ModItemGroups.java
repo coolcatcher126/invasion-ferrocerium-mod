@@ -13,23 +13,22 @@ import net.minecraft.util.Identifier;
 public class ModItemGroups {
     public static final ItemGroup FERROCERIUM_ITEMS_GROUP = Registry.register(Registries.ITEM_GROUP,
             Identifier.of(InvasionFerrocerium.MOD_ID, "ferrocerium_items"),
-            FabricItemGroup.builder().icon(() -> new ItemStack(ModItems.FERROCEROUS_INGOT))
+            FabricItemGroup.builder().icon(() -> new ItemStack(ModItems.THERMITE))
                     .displayName(Text.translatable("itemgroup.invasion-ferrocerium.invasion_ferrocerium_items"))
                     .entries((displayContext, entries) -> {
-                        entries.add(ModItems.FERROCEROUS_INGOT);
-                        entries.add(ModItems.CERIUM_INGOT);
-                        entries.add(ModItems.RAW_CERIUM);
+                        entries.add(ModItems.THERMITE);
+                        entries.add(ModItems.ALUMINUM_INGOT);
+                        entries.add(ModItems.RAW_ALUMINUM);
                         entries.add(ModItems.STRANGE_ALLOY_INGOT);
                     }).build());
 
     public static final ItemGroup FERROCERIUM_BLOCKS_GROUP = Registry.register(Registries.ITEM_GROUP,
             Identifier.of(InvasionFerrocerium.MOD_ID, "ferrocerium_blocks"),
-            FabricItemGroup.builder().icon(() -> new ItemStack(ModBlocks.FERROCEROUS_BLOCK))
+            FabricItemGroup.builder().icon(() -> new ItemStack(ModBlocks.STRANGE_ALLOY_BLOCK))
                     .displayName(Text.translatable("itemgroup.invasion-ferrocerium.invasion_ferrocerium_blocks"))
                     .entries((displayContext, entries) -> {
-                        entries.add(ModBlocks.FERROCEROUS_BLOCK);
-                        entries.add(ModBlocks.CERIUM_BLOCK);
-                        entries.add(ModBlocks.RAW_CERIUM_BLOCK);
+                        entries.add(ModBlocks.ALUMINUM_BLOCK);
+                        entries.add(ModBlocks.RAW_ALUMINUM_BLOCK);
                         entries.add(ModBlocks.STRANGE_ALLOY_BLOCK);
                     }).build());
 

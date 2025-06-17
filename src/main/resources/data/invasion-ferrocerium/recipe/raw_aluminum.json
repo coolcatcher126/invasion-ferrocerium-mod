@@ -3,11 +3,11 @@
   "category": "building",
   "ingredients": [
     {
-      "item": "invasion-ferrocerium:raw_cerium_block"
+      "item": "invasion-ferrocerium:raw_aluminum_block"
     }
   ],
   "result": {
     "count": 9,
-    "id": "invasion-ferrocerium:raw_cerium"
+    "id": "invasion-ferrocerium:raw_aluminum"
   }
 }

@@ -3,7 +3,7 @@
   "category": "misc",
   "key": {
     "#": {
-      "item": "invasion-ferrocerium:ferrocerous_ingot"
+      "item": "invasion-ferrocerium:aluminum_ingot"
     }
   },
   "pattern": [
@@ -13,6 +13,6 @@
   ],
   "result": {
     "count": 1,
-    "id": "invasion-ferrocerium:ferrocerous_block"
+    "id": "invasion-ferrocerium:aluminum_block"
   }
 }

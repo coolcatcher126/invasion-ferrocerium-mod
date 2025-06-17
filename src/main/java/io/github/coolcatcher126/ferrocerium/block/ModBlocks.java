@@ -13,17 +13,12 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
-    public static final Block FERROCEROUS_BLOCK = registerBlock("ferrocerous_block", new Block(AbstractBlock.Settings.create()
-            .strength(1f)
-            .requiresTool()
-            .sounds(BlockSoundGroup.METAL)
-            ));
-    public static final Block CERIUM_BLOCK = registerBlock("cerium_block", new Block(AbstractBlock.Settings.create()
+    public static final Block ALUMINUM_BLOCK = registerBlock("aluminum_block", new Block(AbstractBlock.Settings.create()
             .strength(1f)
             .requiresTool()
             .sounds(BlockSoundGroup.METAL)
     ));
-    public static final Block RAW_CERIUM_BLOCK = registerBlock("raw_cerium_block", new Block(AbstractBlock.Settings.create()
+    public static final Block RAW_ALUMINUM_BLOCK = registerBlock("raw_aluminum_block", new Block(AbstractBlock.Settings.create()
             .strength(1f)
             .requiresTool()
             .sounds(BlockSoundGroup.METAL)

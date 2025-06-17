@@ -1,12 +1,11 @@
 {
-  "item.invasion-ferrocerium.ferrocerous_ingot": "Ferrocerous Ingot",
-  "item.invasion-ferrocerium.cerium_ingot": "Cerium Ingot",
-  "item.invasion-ferrocerium.raw_cerium": "Raw Cerium",
+  "item.invasion-ferrocerium.thermite": "Thermite",
+  "item.invasion-ferrocerium.aluminum_ingot": "Aluminum Ingot",
+  "item.invasion-ferrocerium.raw_aluminum": "Raw Aluminum",
   "item.invasion-ferrocerium.strange_alloy_ingot": "Strange Alloy Ingot",
 
-  "block.invasion-ferrocerium.ferrocerous_block": "Block of Ferrocerium",
-  "block.invasion-ferrocerium.cerium_block": "Block of Cerium",
-  "block.invasion-ferrocerium.raw_cerium_block": "Block of Raw Cerium",
+  "block.invasion-ferrocerium.aluminum_block": "Block of Aluminum",
+  "block.invasion-ferrocerium.raw_aluminum_block": "Block of Raw Aluminum",
   "block.invasion-ferrocerium.strange_alloy_block": "Block of Strange Alloy",
 
   "itemgroup.invasion-ferrocerium.invasion_ferrocerium_items": "Invasion Ferrocerium Items",

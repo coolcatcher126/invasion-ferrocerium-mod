@@ -2,6 +2,6 @@
   "parent": "minecraft:item/generated",
   "textures":
   {
-    "layer0": "invasion-ferrocerium:item/raw_cerium"
+    "layer0": "invasion-ferrocerium:item/raw_aluminum"
   }
 }
