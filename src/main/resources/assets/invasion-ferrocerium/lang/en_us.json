@@ -7,5 +7,8 @@
   "block.invasion-ferrocerium.ferrocerous_block": "Block of Ferrocerium",
   "block.invasion-ferrocerium.cerium_block": "Block of Cerium",
   "block.invasion-ferrocerium.raw_cerium_block": "Block of Raw Cerium",
-  "block.invasion-ferrocerium.strange_alloy_block": "Block of Strange Alloy"
+  "block.invasion-ferrocerium.strange_alloy_block": "Block of Strange Alloy",
+
+  "itemgroup.invasion-ferrocerium.invasion_ferrocerium_items": "Invasion Ferrocerium Items",
+  "itemgroup.invasion-ferrocerium.invasion_ferrocerium_blocks": "Invasion Ferrocerium Blocks"
 }

@@ -20,12 +20,5 @@ public class ModItems {
 
     public static void registerModItems(){
         InvasionFerrocerium.LOGGER.info("Registering mod items for " + InvasionFerrocerium.MOD_ID);
-
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(fabricItemGroupEntries -> {
-            fabricItemGroupEntries.add(FERROCEROUS_INGOT);
-            fabricItemGroupEntries.add(CERIUM_INGOT);
-            fabricItemGroupEntries.add(RAW_CERIUM);
-            fabricItemGroupEntries.add(STRANGE_ALLOY_INGOT);
-        });
     }
 }

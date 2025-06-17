@@ -47,12 +47,5 @@ public class ModBlocks {
 
     public static void registerModBlocks(){
         InvasionFerrocerium.LOGGER.info("Registering mod blocks for " + InvasionFerrocerium.MOD_ID);
-
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register(fabricItemGroupEntries -> {
-            fabricItemGroupEntries.add(FERROCEROUS_BLOCK);
-            fabricItemGroupEntries.add(CERIUM_BLOCK);
-            fabricItemGroupEntries.add(RAW_CERIUM_BLOCK);
-            fabricItemGroupEntries.add(STRANGE_ALLOY_BLOCK);
-        });
     }
 }

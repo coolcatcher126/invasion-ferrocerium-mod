@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium;
 
 import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
+import io.github.coolcatcher126.ferrocerium.item.ModItemGroups;
 import io.github.coolcatcher126.ferrocerium.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 
@@ -17,6 +18,7 @@ public class InvasionFerrocerium implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+		ModItemGroups.registerItemGroups();
 		ModBlocks.registerModBlocks();
 		ModItems.registerModItems();
 	}
