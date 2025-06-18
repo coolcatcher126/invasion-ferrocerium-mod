@@ -1,0 +1,4 @@
+// 1.21	2025-06-19T16:08:21.1137149	Invasion: Ferrocerium/Tags for minecraft:block
+4d36d30974d25a4a35061762682681b58fb90f0e data\minecraft\tags\block\needs_diamond_tool.json
+29e42584218d67b84b1ec9d0c3e0fe317def0410 data\minecraft\tags\block\mineable\pickaxe.json
+7ae20bd9b695dc79ffb96cc83214664cbe184865 data\minecraft\tags\block\needs_stone_tool.json
