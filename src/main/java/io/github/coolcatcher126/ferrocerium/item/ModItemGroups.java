@@ -30,6 +30,8 @@ public class ModItemGroups {
                         entries.add(ModBlocks.ALUMINUM_BLOCK);
                         entries.add(ModBlocks.RAW_ALUMINUM_BLOCK);
                         entries.add(ModBlocks.STRANGE_ALLOY_BLOCK);
+                        entries.add(ModBlocks.ALUMINUM_ORE_BLOCK);
+                        entries.add(ModBlocks.DEEPSLATE_ALUMINUM_ORE_BLOCK);
                     }).build());
 
 

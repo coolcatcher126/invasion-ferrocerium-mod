@@ -1,0 +1,10 @@
+{
+  "replace" : false,
+  "values": [
+    "invasion-ferrocerium:aluminum_block",
+    "invasion-ferrocerium:aluminum_ore",
+    "invasion-ferrocerium:deepslate_aluminum_ore",
+    "invasion-ferrocerium:raw_aluminum_block",
+    "invasion-ferrocerium:strange_alloy_block"
+  ]
+}
