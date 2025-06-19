@@ -4,6 +4,12 @@
   "item.invasion-ferrocerium.raw_aluminum": "Raw Aluminum",
   "item.invasion-ferrocerium.strange_alloy_ingot": "Strange Alloy Ingot",
 
+  "item.invasion-ferrocerium.strange_alloy_sword": "Strange Alloy Sword",
+  "item.invasion-ferrocerium.strange_alloy_pickaxe": "Strange Alloy Pickaxe",
+  "item.invasion-ferrocerium.strange_alloy_axe": "Strange Alloy Axe",
+  "item.invasion-ferrocerium.strange_alloy_shovel": "Strange Alloy Shovel",
+  "item.invasion-ferrocerium.strange_alloy_hoe": "Strange Alloy Hoe",
+
   "block.invasion-ferrocerium.aluminum_block": "Block of Aluminum",
   "block.invasion-ferrocerium.aluminum_ore": "Aluminum Ore",
   "block.invasion-ferrocerium.deepslate_aluminum_ore": "Deepslate Aluminum Ore",

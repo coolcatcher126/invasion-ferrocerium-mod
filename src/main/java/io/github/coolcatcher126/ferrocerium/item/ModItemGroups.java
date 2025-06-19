@@ -20,6 +20,11 @@ public class ModItemGroups {
                         entries.add(ModItems.ALUMINUM_INGOT);
                         entries.add(ModItems.RAW_ALUMINUM);
                         entries.add(ModItems.STRANGE_ALLOY_INGOT);
+                        entries.add(ModItems.STRANGE_ALLOY_SWORD);
+                        entries.add(ModItems.STRANGE_ALLOY_PICKAXE);
+                        entries.add(ModItems.STRANGE_ALLOY_AXE);
+                        entries.add(ModItems.STRANGE_ALLOY_SHOVEL);
+                        entries.add(ModItems.STRANGE_ALLOY_HOE);
                     }).build());
 
     public static final ItemGroup FERROCERIUM_BLOCKS_GROUP = Registry.register(Registries.ITEM_GROUP,
