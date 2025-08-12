@@ -1,0 +1,39 @@
+{
+	"schemaVersion": 1,
+	"id": "invasion-ferrocerium",
+	"version": "${version}",
+	"name": "Invasion: Ferrocerium",
+	"description": "The machines are here, and they have flamethrowers!",
+	"authors": [
+		"Coolcatcher126"
+	],
+	"contact": {
+		"sources": "https://github.com/coolcatcher126/"
+	},
+	"license": "LGPL-3.0-only",
+	"icon": "assets/invasion-ferrocerium/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.coolcatcher126.ferrocerium.InvasionFerrocerium"
+		],
+		"fabric-datagen": [
+			"io.github.coolcatcher126.ferrocerium.InvasionFerroceriumDataGenerator"
+		],
+		"client": [
+			"io.github.coolcatcher126.ferrocerium.InvasionFerroceriumClient"
+		]
+	},
+	"mixins": [
+		"invasion-ferrocerium.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

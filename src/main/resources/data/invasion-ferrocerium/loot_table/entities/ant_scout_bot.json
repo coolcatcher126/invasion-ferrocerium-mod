@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "invasion-ferrocerium:strange_alloy_ingot"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "invasion-ferrocerium:alien_circuits"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "invasion-ferrocerium:alien_power_cell"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "invasion-ferrocerium:alien_transceiver"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:redstone"
+        }
+      ]
+    }
+  ]
+}

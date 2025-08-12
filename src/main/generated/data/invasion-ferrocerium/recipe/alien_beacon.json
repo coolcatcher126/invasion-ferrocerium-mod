@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "invasion-ferrocerium:alien_circuits"
+    },
+    "I": {
+      "item": "invasion-ferrocerium:strange_alloy_ingot"
+    },
+    "P": {
+      "item": "invasion-ferrocerium:alien_power_cell"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "T": {
+      "item": "invasion-ferrocerium:alien_transceiver"
+    }
+  },
+  "pattern": [
+    "RTR",
+    "ICI",
+    "IPI"
+  ],
+  "result": {
+    "count": 1,
+    "id": "invasion-ferrocerium:alien_beacon"
+  }
+}

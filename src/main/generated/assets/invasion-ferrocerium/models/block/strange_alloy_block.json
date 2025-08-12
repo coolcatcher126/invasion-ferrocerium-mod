@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "invasion-ferrocerium:block/strange_alloy_block"
+  }
+}

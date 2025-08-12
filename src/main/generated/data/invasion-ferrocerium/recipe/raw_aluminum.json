@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "invasion-ferrocerium:raw_aluminum_block"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "id": "invasion-ferrocerium:raw_aluminum"
+  }
+}

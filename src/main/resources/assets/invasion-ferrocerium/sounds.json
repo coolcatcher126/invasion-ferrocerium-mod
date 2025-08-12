@@ -1,0 +1,27 @@
+{
+  "ant_scout_bot_ambient": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_scout_bot_ambient",
+    "sounds": [
+      "invasion-ferrocerium:ant_scout_bot_ambient_1",
+      "invasion-ferrocerium:ant_scout_bot_ambient_2"
+    ]
+  },
+  "ant_scout_bot_hurt": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_scout_bot_hurt",
+    "sounds": [
+      "invasion-ferrocerium:ant_scout_bot_hurt"
+    ]
+  },
+  "ant_scout_bot_death": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_scout_bot_death",
+    "sounds": [
+      "invasion-ferrocerium:ant_scout_bot_death"
+    ]
+  },
+  "ant_scout_bot_step": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_scout_bot_step",
+    "sounds": [
+      "invasion-ferrocerium:ant_scout_bot_step"
+    ]
+  }
+}

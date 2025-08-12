@@ -1,0 +1,38 @@
+{
+  "item.invasion-ferrocerium.thermite": "Thermite",
+  "item.invasion-ferrocerium.aluminum_ingot": "Aluminum Ingot",
+  "item.invasion-ferrocerium.raw_aluminum": "Raw Aluminum",
+  "item.invasion-ferrocerium.strange_alloy_ingot": "Strange Alloy Ingot",
+
+  "item.invasion-ferrocerium.alien_circuits": "Alien Circuits",
+  "item.invasion-ferrocerium.alien_power_cell": "Alien Power Cell",
+  "item.invasion-ferrocerium.alien_transceiver": "Alien Transceiver",
+  "item.invasion-ferrocerium.alien_beacon": "Alien Beacon",
+
+  "item.invasion-ferrocerium.strange_alloy_sword": "Strange Alloy Sword",
+  "item.invasion-ferrocerium.strange_alloy_pickaxe": "Strange Alloy Pickaxe",
+  "item.invasion-ferrocerium.strange_alloy_axe": "Strange Alloy Axe",
+  "item.invasion-ferrocerium.strange_alloy_shovel": "Strange Alloy Shovel",
+  "item.invasion-ferrocerium.strange_alloy_hoe": "Strange Alloy Hoe",
+
+  "item.invasion-ferrocerium.ant_scout_bot_spawn_egg": "Ant Scout Bot Spawn Egg",
+  "item.invasion-ferrocerium.ant_soldier_bot_spawn_egg": "Ant Soldier Bot Spawn Egg",
+
+  "block.invasion-ferrocerium.aluminum_block": "Block of Aluminum",
+  "block.invasion-ferrocerium.aluminum_ore": "Aluminum Ore",
+  "block.invasion-ferrocerium.deepslate_aluminum_ore": "Deepslate Aluminum Ore",
+  "block.invasion-ferrocerium.raw_aluminum_block": "Block of Raw Aluminum",
+  "block.invasion-ferrocerium.strange_alloy_block": "Block of Strange Alloy",
+
+  "itemgroup.invasion-ferrocerium.invasion_ferrocerium_items": "Invasion Ferrocerium Items",
+  "itemgroup.invasion-ferrocerium.invasion_ferrocerium_blocks": "Invasion Ferrocerium Blocks",
+
+  "entity.invasion-ferrocerium.ant_scout_bot": "Ant Scout Bot",
+  "entity.invasion-ferrocerium.ant_soldier_bot": "Ant Soldier Bot",
+  "entity.invasion-ferrocerium.ant_bot_missile": "Ant Bot Missile",
+
+  "sounds.invasion-ferrocerium.ant_scout_bot_ambient": "Ant Scout Bot Ambient",
+  "sounds.invasion-ferrocerium.ant_scout_bot_hurt": "Ant Scout Bot is hurt",
+  "sounds.invasion-ferrocerium.ant_scout_bot_death": "Ant Scout Bot dies",
+  "sounds.invasion-ferrocerium.ant_scout_bot_step": "Ant Scout Bot steps"
+}
