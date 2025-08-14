@@ -33,7 +33,9 @@
 		"java": ">=21",
 		"fabric-api": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
+    "custom": {
+      "cardinal-components": [
+        "invasion-ferrocerium:invasion_state"
+      ]
+    }
 }
