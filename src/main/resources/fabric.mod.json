@@ -22,7 +22,10 @@
 		],
 		"client": [
 			"io.github.coolcatcher126.ferrocerium.InvasionFerroceriumClient"
-		]
+		],
+      "cardinal-components": [
+        "io.github.coolcatcher126.ferrocerium.InvasionFerroceriumComponents"
+      ]
 	},
 	"mixins": [
 		"invasion-ferrocerium.mixins.json"
