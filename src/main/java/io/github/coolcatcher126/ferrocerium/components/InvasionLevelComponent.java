@@ -7,7 +7,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
 public class InvasionLevelComponent implements Component {
-    /// There are 5 stages:
+    /// There are 6 stages:
+    /// Stage 0 - No invasion
     /// Stage 1 - Scouts land
     /// Stage 2 - Groups of a few soldiers also spawn in larger scouting parties
     /// Stage 3 - A few small bases are scattered around
