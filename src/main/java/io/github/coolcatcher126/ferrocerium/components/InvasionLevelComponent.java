@@ -5,8 +5,9 @@ import net.minecraft.util.math.MathHelper;
 import org.ladysnake.cca.api.v3.component.Component;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 
-public class InvasionLevelComponent implements Component {
+public class InvasionLevelComponent implements Component, AutoSyncedComponent {
     /// There are 6 stages:
     /// Stage 0 - No invasion
     /// Stage 1 - Scouts land
@@ -26,10 +27,17 @@ public class InvasionLevelComponent implements Component {
 
     public void fightBackInvasion(){
         this.invasionState = MathHelper.clamp(--this.invasionState, 0, MAX_INVASION);
+        InvasionFerroceriumComponents.INVASION_LEVEL.sync(this.invasionState);
     }
 
     public void progressInvasion(){
         this.invasionState = MathHelper.clamp(++this.invasionState, 0, MAX_INVASION);
+        InvasionFerroceriumComponents.INVASION_LEVEL.sync(this.invasionState);
+    }
+
+    public void setInvasion(int invasionState){
+        this.invasionState = MathHelper.clamp(invasionState, 0, MAX_INVASION);
+        InvasionFerroceriumComponents.INVASION_LEVEL.sync(this.invasionState);
     }
 
     @Override
