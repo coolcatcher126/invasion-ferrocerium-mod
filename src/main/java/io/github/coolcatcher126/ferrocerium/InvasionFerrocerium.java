@@ -102,14 +102,14 @@ public class InvasionFerrocerium implements ModInitializer {
     }
 
     private static int executeProgressInvasion(World world, CommandContext<ServerCommandSource> context){
-        InvasionFerroceriumComponents.progressInvasion(world);
         context.getSource().sendFeedback(() -> Text.literal("Invasion level has increased by 1"), false);
+        InvasionFerroceriumComponents.progressInvasion(world);
         return executeGetInvasion(world, context);
     }
 
     private static int executeFightInvasion(World world, CommandContext<ServerCommandSource> context){
-        InvasionFerroceriumComponents.fightBackInvasion(world);
         context.getSource().sendFeedback(() -> Text.literal("Invasion level has decreased by 1"), false);
+        InvasionFerroceriumComponents.fightBackInvasion(world);
         return executeGetInvasion(world, context);
     }
 
