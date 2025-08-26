@@ -1,10 +1,12 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
+import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -20,8 +22,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.*;
+import net.minecraft.world.dimension.DimensionType;
 
 public class AntSoldierBotEntity extends HostileEntity {
     private static final TrackedData<Boolean> FIRING_ROCKETS = DataTracker.registerData(AntSoldierBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -31,8 +34,33 @@ public class AntSoldierBotEntity extends HostileEntity {
     public final AnimationState rangedAttackAnimationState = new AnimationState();
     private int rangedAttackAnimationTimeout = 0;
 
+    private static int REQUIRED_INVASION_LEVEL = 2;
+
     public AntSoldierBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+    }
+
+    public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
+        if (REQUIRED_INVASION_LEVEL >= world.toServerWorld().getComponent(InvasionFerroceriumComponents.INVASION_LEVEL).getInvasionState() || world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+            return false;
+        } else {
+            DimensionType dimensionType = world.getDimension();
+            int i = dimensionType.monsterSpawnBlockLightLimit();
+            if (i < 15 && world.getLightLevel(LightType.BLOCK, pos) > i) {
+                return false;
+            } else {
+                int j = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
+                return j <= dimensionType.monsterSpawnLightTest().get(random);
+            }
+        }
+    }
+
+    public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && (SpawnReason.isTrialSpawner(spawnReason) || isSpawnDark(world, pos, random)) && canMobSpawn(type, world, spawnReason, pos, random);
+    }
+
+    public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+        return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
     }
 
     @Override
