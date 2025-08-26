@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
+import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
@@ -91,7 +92,7 @@ public class AntScoutBotEntity extends HostileEntity {
 
         @Override
         public boolean shouldContinue() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
+            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(this.mob.getEntityWorld()) > 1;
             if (invasionStart && this.mob.getRandom().nextInt(100) == 0) {
                 this.mob.setTarget(null);
                 return false;
@@ -108,7 +109,7 @@ public class AntScoutBotEntity extends HostileEntity {
 
         @Override
         public boolean canStart() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
+            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(this.mob.getEntityWorld()) > 1;
             return invasionStart && super.canStart();
         }
     }

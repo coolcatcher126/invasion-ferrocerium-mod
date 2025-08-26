@@ -22,7 +22,10 @@
 		],
 		"client": [
 			"io.github.coolcatcher126.ferrocerium.InvasionFerroceriumClient"
-		]
+		],
+      "cardinal-components": [
+        "io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents"
+      ]
 	},
 	"mixins": [
 		"invasion-ferrocerium.mixins.json"
@@ -31,9 +34,13 @@
 		"fabricloader": ">=0.16.14",
 		"minecraft": "~1.21",
 		"java": ">=21",
-		"fabric-api": "*"
+		"fabric-api": "*",
+        "cardinal-components-base": "*",
+        "cardinal-components-world": "*"
 	},
-	"suggests": {
-		"another-mod": "*"
-	}
+    "custom": {
+      "cardinal-components": [
+        "invasion-ferrocerium:invasion_state"
+      ]
+    }
 }

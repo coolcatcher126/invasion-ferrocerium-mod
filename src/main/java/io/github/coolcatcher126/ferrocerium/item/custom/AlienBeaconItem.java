@@ -1,10 +1,13 @@
 package io.github.coolcatcher126.ferrocerium.item.custom;
 
+import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -25,11 +28,14 @@ public class AlienBeaconItem extends Item {
         }
 
         //Activate an invasion nearby
-        // TODO: add the actual invasion.
+        InvasionFerroceriumComponents.progressInvasion(world);
+        int invLevel = InvasionFerroceriumComponents.getInvasionLevel(world);
+        user.sendMessage(Text.literal("Invasion level is: %s".formatted(invLevel)));
 
         //Use up the item
         ItemStack heldStack = user.getStackInHand(hand);
-        heldStack.decrement(1);
-        return TypedActionResult.success(heldStack);
+        user.incrementStat(Stats.USED.getOrCreateStat(this));
+        heldStack.decrementUnlessCreative(1, user);
+        return TypedActionResult.success(heldStack, world.isClient());
     }
 }
