@@ -32,7 +32,7 @@ public class AntScoutBotEntity extends HostileEntity {
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
-        if (REQUIRED_INVASION_LEVEL >= world.toServerWorld().getComponent(InvasionFerroceriumComponents.INVASION_LEVEL).getInvasionState() || world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+        if (REQUIRED_INVASION_LEVEL > world.toServerWorld().getComponent(InvasionFerroceriumComponents.INVASION_LEVEL).getInvasionState() || world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
             return false;
         } else {
             DimensionType dimensionType = world.getDimension();
