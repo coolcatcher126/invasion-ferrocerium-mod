@@ -38,6 +38,7 @@ public class ModModelProvider extends FabricModelProvider {
         itemModelGenerator.register(ModItems.ALIEN_POWER_CELL, Models.GENERATED);
         itemModelGenerator.register(ModItems.ALIEN_TRANSCEIVER, Models.GENERATED);
         itemModelGenerator.register(ModItems.ALIEN_BEACON, Models.GENERATED);
+        itemModelGenerator.register(ModItems.CRUDE_ALIEN_BEACON, Models.GENERATED);
 
         itemModelGenerator.register(ModItems.STRANGE_ALLOY_SWORD, Models.HANDHELD);
         itemModelGenerator.register(ModItems.STRANGE_ALLOY_PICKAXE, Models.HANDHELD);

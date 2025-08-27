@@ -1,7 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.item.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -12,8 +11,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class AlienBeaconItem extends Item {
-    public AlienBeaconItem(Settings settings) {
+public class CrudeAlienBeaconItem extends Item {
+    public CrudeAlienBeaconItem(Settings settings) {
         super(settings);
     }
 
@@ -28,7 +27,7 @@ public class AlienBeaconItem extends Item {
         }
 
         //Activate an invasion nearby
-        InvasionFerroceriumComponents.fightBackInvasion(world);
+        InvasionFerroceriumComponents.progressInvasion(world);
         int invLevel = InvasionFerroceriumComponents.getInvasionLevel(world);
         user.sendMessage(Text.literal("Invasion level is: %s".formatted(invLevel)));
 
