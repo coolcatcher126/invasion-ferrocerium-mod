@@ -32,6 +32,7 @@ public class ModItemGroups {
                         entries.add(ModItems.STRANGE_ALLOY_HOE);
                         entries.add(ModItems.ANT_SCOUT_BOT_SPAWN_EGG);
                         entries.add(ModItems.ANT_SOLDIER_BOT_SPAWN_EGG);
+                        entries.add(ModItems.ALIEN_HELICOPTER_BOT_SPAWN_EGG);
                     }).build());
 
     public static final ItemGroup FERROCERIUM_BLOCKS_GROUP = Registry.register(Registries.ITEM_GROUP,
