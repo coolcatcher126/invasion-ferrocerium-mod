@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.minecraft.data.server.recipe.RecipeExporter;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonBuilder;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
@@ -51,6 +52,19 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .input('C', ModItems.ALIEN_CIRCUITS)
                 .input('P', ModItems.ALIEN_POWER_CELL)
                 .criterion(hasItem(ModItems.STRANGE_ALLOY_INGOT), conditionsFromItem(ModItems.STRANGE_ALLOY_INGOT))
+                .offerTo(recipeExporter);
+
+        //Make crude alien beacon
+        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.CRUDE_ALIEN_BEACON)
+                .pattern("RTR")
+                .pattern("ICI")
+                .pattern("IPI")
+                .input('R', Items.REDSTONE_TORCH)
+                .input('T', Items.COMPARATOR)
+                .input('I', ModItems.ALUMINUM_INGOT)
+                .input('C', Items.END_CRYSTAL)
+                .input('P', Items.REDSTONE_BLOCK)
+                .criterion(hasItem(ModItems.ALUMINUM_INGOT), conditionsFromItem(ModItems.ALUMINUM_INGOT))
                 .offerTo(recipeExporter);
 
         //Make tools

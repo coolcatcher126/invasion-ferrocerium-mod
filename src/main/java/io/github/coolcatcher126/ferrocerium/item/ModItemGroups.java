@@ -24,6 +24,7 @@ public class ModItemGroups {
                         entries.add(ModItems.ALIEN_POWER_CELL);
                         entries.add(ModItems.ALIEN_TRANSCEIVER);
                         entries.add(ModItems.ALIEN_BEACON);
+                        entries.add(ModItems.CRUDE_ALIEN_BEACON);
                         entries.add(ModItems.STRANGE_ALLOY_SWORD);
                         entries.add(ModItems.STRANGE_ALLOY_PICKAXE);
                         entries.add(ModItems.STRANGE_ALLOY_AXE);

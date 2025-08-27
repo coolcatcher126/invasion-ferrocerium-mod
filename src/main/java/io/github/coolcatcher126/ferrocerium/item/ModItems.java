@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.item;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.item.custom.AlienBeaconItem;
+import io.github.coolcatcher126.ferrocerium.item.custom.CrudeAlienBeaconItem;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -20,6 +21,7 @@ public class ModItems {
     public static final Item ALIEN_POWER_CELL = registerItem("alien_power_cell", new Item(new Item.Settings()));;
     public static final Item ALIEN_TRANSCEIVER = registerItem("alien_transceiver", new Item(new Item.Settings()));;
     public static final Item ALIEN_BEACON = registerItem("alien_beacon", new AlienBeaconItem(new Item.Settings()));;
+    public static final Item CRUDE_ALIEN_BEACON = registerItem("crude_alien_beacon", new CrudeAlienBeaconItem(new Item.Settings()));;
 
     //Tools
     public static final Item STRANGE_ALLOY_SWORD = registerItem("strange_alloy_sword",
