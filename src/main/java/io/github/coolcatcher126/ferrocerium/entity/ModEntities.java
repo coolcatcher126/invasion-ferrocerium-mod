@@ -30,7 +30,7 @@ public class ModEntities {
     public static final EntityType<AlienHelicopterBotEntity> ALIEN_HELICOPTER_BOT = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(InvasionFerrocerium.MOD_ID, "alien_helicopter_bot"),
             EntityType.Builder.create(AlienHelicopterBotEntity::new, SpawnGroup.MONSTER)
-                    .dimensions(3.0F, 5.0F).build());
+                    .dimensions(3.0F, 2.5F).build());
 
     public static void registerModEntities(){
         InvasionFerrocerium.LOGGER.info("Registering Mod Entities for: " + InvasionFerrocerium.MOD_ID);

@@ -7,7 +7,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
@@ -80,18 +79,7 @@ public class AntScoutBotModel<T extends AntScoutBotEntity> extends SinglePartEnt
     @Override
     public void setAngles(AntScoutBotEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
-        this.setHeadAngles(netHeadYaw, headPitch);
-
-        this.animateMovement(AntScoutBotAnimations.WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
         this.updateAnimation(entity.idleAnimationState, AntScoutBotAnimations.IDLE, ageInTicks, 1f);
-    }
-
-    private void setHeadAngles(float headYaw, float headPitch) {
-        headYaw = MathHelper.clamp(headYaw, -30.0F, 30.0F);
-        headPitch = MathHelper.clamp(headPitch, -25.0F, 45.0F);
-
-        this.head.yaw = headYaw * 0.017453292F;
-        this.head.pitch = headPitch * 0.017453292F;
     }
 
     @Override

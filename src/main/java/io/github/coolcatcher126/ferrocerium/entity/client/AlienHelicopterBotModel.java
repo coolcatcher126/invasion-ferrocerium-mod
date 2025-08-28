@@ -2,6 +2,7 @@ package io.github.coolcatcher126.ferrocerium.entity.client;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;
@@ -26,7 +27,7 @@ public class AlienHelicopterBotModel<T extends AlienHelicopterBotEntity> extends
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData body = modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-24.0F, -32.0F, -8.0F, 48.0F, 32.0F, 48.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 24.0F, 0.0F));
+        ModelPartData body = modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 0).cuboid(-24.0F, -32.0F, -8.0F, 48.0F, 32.0F, 48.0F, new Dilation(0.0F)), ModelTransform.pivot(0.0F, 24.0F, -16.0F));
 
         ModelPartData cube_r1 = body.addChild("cube_r1", ModelPartBuilder.create().uv(124, 80).cuboid(-24.0F, -11.0F, 0.0F, 48.0F, 22.0F, 23.0F, new Dilation(-0.001F)), ModelTransform.of(0.0F, -8.0F, -16.0F, 0.7854F, 0.0F, 0.0F));
 
@@ -49,12 +50,9 @@ public class AlienHelicopterBotModel<T extends AlienHelicopterBotEntity> extends
     }
 
     @Override
-    public void setAngles(AlienHelicopterBotEntity entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+    public void setAngles(AlienHelicopterBotEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
-
-//        this.animateMovement(AntSoldierBotAnimations.WALK, limbSwing, limbSwingAmount, 2f, 2.5f);
-//        this.updateAnimation(entity.idleAnimationState, AntSoldierBotAnimations.IDLE, ageInTicks, 1f);
-//        this.updateAnimation(entity.rangedAttackAnimationState, AntSoldierBotAnimations.ATTACK, ageInTicks, 1f);//Do attack animation.
+        this.updateAnimation(entity.idleAnimationState, AlienHelicopterBotAnimations.IDLE, ageInTicks, 1f);
     }
 
     @Override
