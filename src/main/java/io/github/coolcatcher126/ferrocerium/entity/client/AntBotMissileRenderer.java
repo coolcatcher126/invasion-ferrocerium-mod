@@ -26,8 +26,11 @@ public class AntBotMissileRenderer extends EntityRenderer<AntBotMissileEntity>{
     public void render(AntBotMissileEntity entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         matrices.push();
         matrices.translate(0d, -1.25d, 0d);
-        //Rotate to face correct direction
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(yaw));
+        //Try to rotate to face correct direction
+        //TODO: Make the missile face in the correct direction
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) + 180.0F));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())));
+
         VertexConsumer vertexConsumer = ItemRenderer.getDirectItemGlintConsumer(vertexConsumers,
                 this.model.getLayer(Identifier.of(InvasionFerrocerium.MOD_ID, "textures/entity/ant_bot_missile/ant_bot_missile.png")), false, false);
         this.model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV);

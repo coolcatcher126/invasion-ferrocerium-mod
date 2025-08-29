@@ -235,7 +235,7 @@ public class AntSoldierBotEntity extends HostileEntity {
 
                             Vec3d vec3d = new Vec3d(this.entity.getRandom().nextTriangular(diffX, 2.297 * spread), diffY, this.entity.getRandom().nextTriangular(diffZ, 2.297 * spread));
 
-                            AntBotMissileEntity rocketEntity = new AntBotMissileEntity(this.entity.getWorld(), this.entity, target, Direction.getFacing(this.entity.getRotationVector()));
+                            AntBotMissileEntity rocketEntity = new AntBotMissileEntity(this.entity.getWorld(), this.entity, target, Direction.getFacing(this.entity.getRotationVector()), 1);
                             rocketEntity.setPosition(rocketEntity.getX(), this.entity.getBodyY(0.5) + 0.5, rocketEntity.getZ());
                             this.entity.getWorld().spawnEntity(rocketEntity);
                         }
