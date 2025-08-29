@@ -69,7 +69,8 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
         return MobEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1F)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0F);
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0F)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0D);
     }
 
     private void setupAnimationStates(){
@@ -109,7 +110,7 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
             super(helicopterBot);
             this.entity = helicopterBot;
         }
-        
+
         public void tick() {
             if (this.state == State.MOVE_TO) {
                 if (this.collisionCheckCooldown-- <= 0) {
@@ -161,6 +162,7 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
         @Override
         public void start() {
             this.rocketsFired = 0;
+            this.rocketCooldown = 0;
         }
 
         @Override
@@ -189,7 +191,7 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
                 double sqrDist = this.entity.squaredDistanceTo(target);
 
                 //If target is in range of ranged and in line of sight: Ranged Attack.
-                if (sqrDist > this.getFollowRange() * this.getFollowRange() && sqrDist < (this.getFollowRange() + 10) * (this.getFollowRange() + 10) && targetVisible) {
+                if (sqrDist < (this.getFollowRange() + 10) * (this.getFollowRange() + 10) && targetVisible) {
                     if (this.rocketCooldown <= 0) {
                         this.rocketsFired++;
 
@@ -222,8 +224,6 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
                     }
 
                     this.entity.getLookControl().lookAt(target, 10.0F, 10.0F);
-                } else if (this.targetNotVisibleTicks < 5) {
-                    this.entity.getMoveControl().moveTo(target.getX(), target.getY(), target.getZ(), 1.0);
                 }
 
                 super.tick();
@@ -248,11 +248,11 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
             if (!moveControl.isMoving()) {
                 return true;
             } else {
-                double d = moveControl.getTargetX() - this.entity.getX();
-                double e = moveControl.getTargetY() - this.entity.getY();
-                double f = moveControl.getTargetZ() - this.entity.getZ();
-                double g = d * d + e * e + f * f;
-                return g < (double)1.0F || g > (double)3600.0F;
+                double diffX = moveControl.getTargetX() - this.entity.getX();
+                double diffY = moveControl.getTargetY() - this.entity.getY();
+                double diffZ = moveControl.getTargetZ() - this.entity.getZ();
+                double sqrDist = diffX * diffX + diffY * diffY + diffZ * diffZ;
+                return sqrDist < (double)1.0F || sqrDist > (double)3600.0F;
             }
         }
 
@@ -262,10 +262,10 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
 
         public void start() {
             Random random = this.entity.getRandom();
-            double d = this.entity.getX() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double e = this.entity.getY() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            double f = this.entity.getZ() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
-            this.entity.getMoveControl().moveTo(d, e, f, (double)1.0F);
+            double targetX = this.entity.getX() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double targetY = this.entity.getY() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double targetZ = this.entity.getZ() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            this.entity.getMoveControl().moveTo(targetX, targetY, targetZ, (double)1.0F);
         }
     }
 
