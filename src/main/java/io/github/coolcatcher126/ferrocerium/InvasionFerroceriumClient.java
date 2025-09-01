@@ -21,6 +21,7 @@ public class InvasionFerroceriumClient implements ClientModInitializer {
         EntityModelLayerRegistry.registerModelLayer(AntSoldierBotModel.ANT_SOLDIER_BOT, AntSoldierBotModel::getTexturedModelData);
         EntityRendererRegistry.register(ModEntities.ANT_SOLDIER_BOT, AntSoldierBotRenderer::new);
 
-
+        EntityModelLayerRegistry.registerModelLayer(AlienHelicopterBotModel.ALIEN_HELICOPTER_BOT, AlienHelicopterBotModel::getTexturedModelData);
+        EntityRendererRegistry.register(ModEntities.ALIEN_HELICOPTER_BOT, AlienHelicopterBotRenderer::new);
     }
 }

@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntBotMissileEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntSoldierBotEntity;
@@ -25,6 +26,11 @@ public class ModEntities {
             Identifier.of(InvasionFerrocerium.MOD_ID, "ant_soldier_bot"),
             EntityType.Builder.create(AntSoldierBotEntity::new, SpawnGroup.MONSTER)
                     .dimensions(1.5F, 1.5F).build());
+
+    public static final EntityType<AlienHelicopterBotEntity> ALIEN_HELICOPTER_BOT = Registry.register(Registries.ENTITY_TYPE,
+            Identifier.of(InvasionFerrocerium.MOD_ID, "alien_helicopter_bot"),
+            EntityType.Builder.create(AlienHelicopterBotEntity::new, SpawnGroup.MONSTER)
+                    .dimensions(3.0F, 2.5F).build());
 
     public static void registerModEntities(){
         InvasionFerrocerium.LOGGER.info("Registering Mod Entities for: " + InvasionFerrocerium.MOD_ID);

@@ -2,42 +2,35 @@ package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 
-public class AntSoldierBotEntity extends HostileEntity {
-    private static final TrackedData<Boolean> FIRING_ROCKETS = DataTracker.registerData(AntSoldierBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+import java.util.EnumSet;
 
+public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
-    public final AnimationState rangedAttackAnimationState = new AnimationState();
-    private int rangedAttackAnimationTimeout = 0;
 
-    private static int REQUIRED_INVASION_LEVEL = 2;
+    private static int REQUIRED_INVASION_LEVEL = 3;
 
-    public AntSoldierBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
+    public AlienHelicopterBotEntity(EntityType<? extends AlienHelicopterBotEntity> entityType, World world) {
         super(entityType, world);
+        this.moveControl = new HelicopterMoveControl(this);
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
@@ -63,25 +56,21 @@ public class AntSoldierBotEntity extends HostileEntity {
         return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
     }
 
-    @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new AntSoldierBotEntity.RocketAttackGoal(this));
-        this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
-        this.goalSelector.add(4, new AntSoldierBotEntity.AntSoldierBotAttackGoal(this));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(6, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AntSoldierBotEntity.TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new AntSoldierBotEntity.TargetGoal<>(this, IronGolemEntity.class));
+        this.goalSelector.add(4, new RocketAttackGoal(this));
+        this.goalSelector.add(5, new FlyRandomlyGoal(this));
+        this.goalSelector.add(7, new LookAtTargetGoal(this));
+        this.goalSelector.add(8, new LookAroundGoal(this));
+        this.targetSelector.add(2, new TargetGoal<>(this, PlayerEntity.class));
+        this.targetSelector.add(3, new TargetGoal<>(this, IronGolemEntity.class));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 16.0)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3F)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0F);
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
+                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1F)
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0F)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 100.0D);
     }
 
     private void setupAnimationStates(){
@@ -91,17 +80,6 @@ public class AntSoldierBotEntity extends HostileEntity {
         }
         else{
             --this.idleAnimationTimeout;
-        }
-
-        if(this.isRangedAttacking() && rangedAttackAnimationTimeout <= 0) {
-            rangedAttackAnimationTimeout = 40;
-            rangedAttackAnimationState.start(this.age);
-        } else {
-            --this.rangedAttackAnimationTimeout;
-        }
-
-        if(!this.isRangedAttacking()) {
-            rangedAttackAnimationState.stop();
         }
     }
 
@@ -115,11 +93,6 @@ public class AntSoldierBotEntity extends HostileEntity {
     }
 
     @Override
-    protected SoundEvent getAmbientSound() {
-        return ModSounds.ANT_SCOUT_BOT_AMBIENT;
-    }
-
-    @Override
     protected SoundEvent getHurtSound(DamageSource source) {
         return ModSounds.ANT_SCOUT_BOT_HURT;
     }
@@ -129,36 +102,55 @@ public class AntSoldierBotEntity extends HostileEntity {
         return ModSounds.ANT_SCOUT_BOT_DEATH;
     }
 
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
-    }
+    static class HelicopterMoveControl extends MoveControl {
+        private final AlienHelicopterBotEntity entity;
+        private int collisionCheckCooldown;
 
-    public void setRangedAttacking(boolean attacking)
-    {
-        this.dataTracker.set(FIRING_ROCKETS, attacking);
-    }
+        public HelicopterMoveControl(AlienHelicopterBotEntity helicopterBot) {
+            super(helicopterBot);
+            this.entity = helicopterBot;
+        }
 
-    public boolean isRangedAttacking()
-    {
-        return this.dataTracker.get(FIRING_ROCKETS);
-    }
+        public void tick() {
+            if (this.state == State.MOVE_TO) {
+                if (this.collisionCheckCooldown-- <= 0) {
+                    this.collisionCheckCooldown += this.entity.getRandom().nextInt(5) + 2;
+                    Vec3d vec3d = new Vec3d(this.targetX - this.entity.getX(), this.targetY - this.entity.getY(), this.targetZ - this.entity.getZ());
+                    double d = vec3d.length();
+                    vec3d = vec3d.normalize();
+                    if (this.willCollide(vec3d, MathHelper.ceil(d))) {
+                        this.entity.setVelocity(this.entity.getVelocity().add(vec3d.multiply(0.1)));
+                    } else {
+                        this.state = State.WAIT;
+                    }
+                }
 
-    @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(FIRING_ROCKETS, false);
+            }
+        }
+
+        private boolean willCollide(Vec3d direction, int steps) {
+            Box box = this.entity.getBoundingBox();
+
+            for(int i = 1; i < steps; ++i) {
+                box = box.offset(direction);
+                if (!this.entity.getWorld().isSpaceEmpty(this.entity, box)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
     }
 
     //RocketAttackGoal: Fire a salvo of two rockets
     static class RocketAttackGoal extends Goal {
-        private final AntSoldierBotEntity entity;
+        private final AlienHelicopterBotEntity entity;
         private int rocketsFired;
         private int rocketCooldown;
         private int targetNotVisibleTicks;
 
-        public RocketAttackGoal(AntSoldierBotEntity soldierBot) {
-            this.entity = soldierBot;
+        public RocketAttackGoal(AlienHelicopterBotEntity helicopterBot) {
+            this.entity = helicopterBot;
         }
 
         @Override
@@ -170,13 +162,12 @@ public class AntSoldierBotEntity extends HostileEntity {
         @Override
         public void start() {
             this.rocketsFired = 0;
-            this.entity.setRangedAttacking(true);
+            this.rocketCooldown = 0;
         }
 
         @Override
         public void stop() {
             this.targetNotVisibleTicks = 0;
-            this.entity.setRangedAttacking(false);
         }
 
         @Override
@@ -198,18 +189,9 @@ public class AntSoldierBotEntity extends HostileEntity {
                 }
 
                 double sqrDist = this.entity.squaredDistanceTo(target);
-                //Meelee attack
-                if (sqrDist < 4.0) {
-                    if (!targetVisible) {
-                        return;
-                    }
-                    else if (this.rocketCooldown <= 0) {
-                        this.rocketCooldown = 20;
-                        this.entity.tryAttack(target);
-                    }
-                }
-                //If target is too far for meelee but in range of ranged and in line of sight: Ranged Attack.
-                else if (sqrDist > this.getFollowRange() * this.getFollowRange() && sqrDist < (this.getFollowRange() + 10) * (this.getFollowRange() + 10) && targetVisible) {
+
+                //If target is in range of ranged and in line of sight: Ranged Attack.
+                if (sqrDist < (this.getFollowRange() + 10) * (this.getFollowRange() + 10) && targetVisible) {
                     if (this.rocketCooldown <= 0) {
                         this.rocketsFired++;
 
@@ -242,8 +224,6 @@ public class AntSoldierBotEntity extends HostileEntity {
                     }
 
                     this.entity.getLookControl().lookAt(target, 10.0F, 10.0F);
-                } else if (this.targetNotVisibleTicks < 5) {
-                    this.entity.getMoveControl().moveTo(target.getX(), target.getY(), target.getZ(), 1.0);
                 }
 
                 super.tick();
@@ -255,26 +235,78 @@ public class AntSoldierBotEntity extends HostileEntity {
         }
     }
 
-    static class AntSoldierBotAttackGoal extends MeleeAttackGoal {
-        public AntSoldierBotAttackGoal(AntSoldierBotEntity antSoldierBot) {
-            super(antSoldierBot, 1.0, true);
+    static class FlyRandomlyGoal extends Goal {
+        private final AlienHelicopterBotEntity entity;
+
+        public FlyRandomlyGoal(AlienHelicopterBotEntity alienHelicopterBot) {
+            this.entity = alienHelicopterBot;
+            this.setControls(EnumSet.of(Control.MOVE));
         }
 
-        @Override
-        public boolean shouldContinue() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
-            if (invasionStart && this.mob.getRandom().nextInt(100) == 0) {
-                this.mob.setTarget(null);
-                return false;
+        public boolean canStart() {
+            MoveControl moveControl = this.entity.getMoveControl();
+            if (!moveControl.isMoving()) {
+                return true;
             } else {
-                return super.shouldContinue();
+                double diffX = moveControl.getTargetX() - this.entity.getX();
+                double diffY = moveControl.getTargetY() - this.entity.getY();
+                double diffZ = moveControl.getTargetZ() - this.entity.getZ();
+                double sqrDist = diffX * diffX + diffY * diffY + diffZ * diffZ;
+                return sqrDist < (double)1.0F || sqrDist > (double)3600.0F;
             }
+        }
+
+        public boolean shouldContinue() {
+            return false;
+        }
+
+        public void start() {
+            Random random = this.entity.getRandom();
+            double targetX = this.entity.getX() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double targetY = this.entity.getY() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            double targetZ = this.entity.getZ() + (double)((random.nextFloat() * 2.0F - 1.0F) * 16.0F);
+            this.entity.getMoveControl().moveTo(targetX, targetY, targetZ, (double)1.0F);
         }
     }
 
+    static class LookAtTargetGoal extends Goal {
+        private final AlienHelicopterBotEntity entity;
+
+        public LookAtTargetGoal(AlienHelicopterBotEntity alienHelicopterBot) {
+            this.entity = alienHelicopterBot;
+            this.setControls(EnumSet.of(Control.LOOK));
+        }
+
+        public boolean canStart() {
+            return true;
+        }
+
+        public boolean shouldRunEveryTick() {
+            return true;
+        }
+
+        public void tick() {
+            if (this.entity.getTarget() == null) {
+                Vec3d vec3d = this.entity.getVelocity();
+                this.entity.setYaw(-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180F / (float)Math.PI));
+                this.entity.bodyYaw = this.entity.getYaw();
+            } else {
+                LivingEntity livingEntity = this.entity.getTarget();
+                double d = (double)64.0F;
+                if (livingEntity.squaredDistanceTo(this.entity) < (double)4096.0F) {
+                    double e = livingEntity.getX() - this.entity.getX();
+                    double f = livingEntity.getZ() - this.entity.getZ();
+                    this.entity.setYaw(-((float)MathHelper.atan2(e, f)) * (180F / (float)Math.PI));
+                    this.entity.bodyYaw = this.entity.getYaw();
+                }
+            }
+
+        }
+    }
+    
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-        public TargetGoal(AntSoldierBotEntity antSoldierBot, Class<T> targetEntityClass) {
-            super(antSoldierBot, targetEntityClass, true);
+        public TargetGoal(AlienHelicopterBotEntity alienHelicopterBot, Class<T> targetEntityClass) {
+            super(alienHelicopterBot, targetEntityClass, true);
         }
 
         @Override
@@ -283,5 +315,4 @@ public class AntSoldierBotEntity extends HostileEntity {
             return invasionStart && super.canStart();
         }
     }
-
 }

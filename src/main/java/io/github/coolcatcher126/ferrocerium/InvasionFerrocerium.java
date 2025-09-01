@@ -6,6 +6,7 @@ import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.components.InvasionLevelComponent;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntSoldierBotEntity;
 import io.github.coolcatcher126.ferrocerium.item.ModItemGroups;
@@ -45,6 +46,7 @@ public class InvasionFerrocerium implements ModInitializer {
 		
 		FabricDefaultAttributeRegistry.register(ModEntities.ANT_SCOUT_BOT, AntScoutBotEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.ANT_SOLDIER_BOT, AntSoldierBotEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(ModEntities.ALIEN_HELICOPTER_BOT, AlienHelicopterBotEntity.createAttributes());
 
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->

@@ -22,6 +22,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -35,17 +36,19 @@ public class AntBotMissileEntity extends ProjectileEntity {
     @Nullable
     private UUID targetUuid;
     double sensitivity = 0.125;
+    private int explosionPower = 1;
 
     public AntBotMissileEntity(EntityType<? extends AntBotMissileEntity> entityType, World world) {
         super(entityType, world);
     }
 
-    public AntBotMissileEntity(World world, LivingEntity owner, @Nullable Entity target, Direction direction) {
+    public AntBotMissileEntity(World world, LivingEntity owner, @Nullable Entity target, Direction direction, int explosionPower) {
         this(ModEntities.ANT_BOT_MISSILE, world);
         this.setOwner(owner);
         Vec3d vec3d = owner.getBoundingBox().getCenter();
         this.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, this.getYaw(), this.getPitch());
         this.target = target;
+        this.explosionPower = explosionPower;
     }
 
     @Override
@@ -59,11 +62,15 @@ public class AntBotMissileEntity extends ProjectileEntity {
         if (this.target != null) {
             nbt.putUuid("Target", this.target.getUuid());
         }
+        nbt.putByte("ExplosionPower", (byte)this.explosionPower);
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("ExplosionPower", 99)) {
+            this.explosionPower = nbt.getByte("ExplosionPower");
+        }
         if (nbt.containsUuid("Target")) {
             this.targetUuid = nbt.getUuid("Target");
         }
@@ -129,8 +136,13 @@ public class AntBotMissileEntity extends ProjectileEntity {
     }
 
     @Override
-    protected void onBlockHit(BlockHitResult blockHitResult) {
-        super.onBlockHit(blockHitResult);
+    protected void onCollision(HitResult hitResult) {
+        super.onCollision(hitResult);
+        if (!this.getWorld().isClient) {
+            boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
+            this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionPower, bl, World.ExplosionSourceType.MOB);
+            this.discard();
+        }
     }
 
     @Override
