@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.world.gen;
 
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntSoldierBotEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -17,9 +18,13 @@ public class ModEntitySpawn {
                 SpawnGroup.MONSTER, ModEntities.ANT_SCOUT_BOT, 10, 1, 1);
 
         BiomeModifications.addSpawn(BiomeSelectors.all(),
-                SpawnGroup.MONSTER, ModEntities.ANT_SOLDIER_BOT, 10, 1, 1);
+                SpawnGroup.MONSTER, ModEntities.ANT_SOLDIER_BOT, 10, 3, 5);
+
+        BiomeModifications.addSpawn(BiomeSelectors.all(),
+                SpawnGroup.MONSTER, ModEntities.ALIEN_HELICOPTER_BOT, 5, 1, 3);
 
         SpawnRestriction.register(ModEntities.ANT_SCOUT_BOT, SpawnLocationTypes.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AntScoutBotEntity::canSpawnInDark);
         SpawnRestriction.register(ModEntities.ANT_SOLDIER_BOT, SpawnLocationTypes.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AntSoldierBotEntity::canSpawnInDark);
+        SpawnRestriction.register(ModEntities.ALIEN_HELICOPTER_BOT, SpawnLocationTypes.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AlienHelicopterBotEntity::canSpawnInDark);
     }
 }
