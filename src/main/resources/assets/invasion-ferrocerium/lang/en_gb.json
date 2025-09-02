@@ -1,7 +1,7 @@
 {
   "item.invasion-ferrocerium.thermite": "Thermite",
-  "item.invasion-ferrocerium.Aluminium_ingot": "Aluminium Ingot",
-  "item.invasion-ferrocerium.raw_Aluminium": "Raw Aluminium",
+  "item.invasion-ferrocerium.aluminum_ingot": "Aluminium Ingot",
+  "item.invasion-ferrocerium.raw_aluminium": "Raw Aluminium",
   "item.invasion-ferrocerium.strange_alloy_ingot": "Strange Alloy Ingot",
 
   "item.invasion-ferrocerium.alien_circuits": "Alien Circuits",
@@ -17,11 +17,13 @@
   "item.invasion-ferrocerium.strange_alloy_hoe": "Strange Alloy Hoe",
 
   "item.invasion-ferrocerium.ant_scout_bot_spawn_egg": "Ant Scout Bot Spawn Egg",
+  "item.invasion-ferrocerium.ant_soldier_bot_spawn_egg": "Ant Soldier Bot Spawn Egg",
+  "item.invasion-ferrocerium.alien_helicopter_bot_spawn_egg": "Alien Helicopter Bot Spawn Egg",
 
-  "block.invasion-ferrocerium.Aluminium_block": "Block of Aluminium",
-  "block.invasion-ferrocerium.Aluminium_ore": "Aluminium Ore",
-  "block.invasion-ferrocerium.deepslate_Aluminium_ore": "Deepslate Aluminium Ore",
-  "block.invasion-ferrocerium.raw_Aluminium_block": "Block of Raw Aluminium",
+  "block.invasion-ferrocerium.aluminum_block": "Block of Aluminium",
+  "block.invasion-ferrocerium.aluminum_ore": "Aluminium Ore",
+  "block.invasion-ferrocerium.deepslate_aluminum_ore": "Deepslate Aluminium Ore",
+  "block.invasion-ferrocerium.raw_aluminum_block": "Block of Raw Aluminium",
   "block.invasion-ferrocerium.strange_alloy_block": "Block of Strange Alloy",
 
   "itemgroup.invasion-ferrocerium.invasion_ferrocerium_items": "Invasion Ferrocerium Items",
