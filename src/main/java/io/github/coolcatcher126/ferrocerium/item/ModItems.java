@@ -42,6 +42,8 @@ public class ModItems {
             new SpawnEggItem(ModEntities.ANT_SOLDIER_BOT, 0x0000ff, 0xff0000, new Item.Settings()));
     public static final Item ALIEN_HELICOPTER_BOT_SPAWN_EGG = registerItem("alien_helicopter_bot_spawn_egg",
             new SpawnEggItem(ModEntities.ALIEN_HELICOPTER_BOT, 0x0000ff, 0x000000, new Item.Settings()));
+    public static final Item ALIEN_BUILDER_BOT_SPAWN_EGG = registerItem("alien_builder_bot_spawn_egg",
+            new SpawnEggItem(ModEntities.ALIEN_BUILDER_BOT, 0x000000, 0x0000ff, new Item.Settings()));
 
     private static Item registerItem(String name, Item item){
         return Registry.register(Registries.ITEM, Identifier.of(InvasionFerrocerium.MOD_ID, name), item);

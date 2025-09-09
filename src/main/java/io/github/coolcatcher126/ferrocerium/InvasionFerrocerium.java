@@ -2,6 +2,9 @@ package io.github.coolcatcher126.ferrocerium;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
 import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.components.InvasionLevelComponent;
@@ -36,6 +39,8 @@ public class InvasionFerrocerium implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
+        InvasionFerroceriumRegistries.buildRegistries();
+
 		ModItemGroups.registerItemGroups();
 		ModBlocks.registerModBlocks();
 		ModItems.registerModItems();
@@ -47,7 +52,9 @@ public class InvasionFerrocerium implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.ANT_SCOUT_BOT, AntScoutBotEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.ANT_SOLDIER_BOT, AntSoldierBotEntity.createAttributes());
 		FabricDefaultAttributeRegistry.register(ModEntities.ALIEN_HELICOPTER_BOT, AlienHelicopterBotEntity.createAttributes());
+		FabricDefaultAttributeRegistry.register(ModEntities.ALIEN_BUILDER_BOT, AlienBuilderBotEntity.createAttributes());
 
+        BaseSectionTemplates.registerBaseSections();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(literal("invasion")

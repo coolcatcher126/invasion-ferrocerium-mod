@@ -1,4 +1,4 @@
-// 1.21	2025-08-27T18:40:35.3816545	Invasion: Ferrocerium/Model Definitions
+// 1.21	2025-09-24T18:18:24.041903	Invasion: Ferrocerium/Model Definitions
 b99d3e4e82ebd1e6345da81cb99b5637ffa16f55 assets\invasion-ferrocerium\models\item\strange_alloy_ingot.json
 63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\invasion-ferrocerium\models\item\ant_soldier_bot_spawn_egg.json
 026795f0512f022ec771f11dad422fc5eeae0b4d assets\invasion-ferrocerium\models\block\strange_alloy_block.json
@@ -13,6 +13,7 @@ f617636c6cf14d8f3ca013469a229512aa60d9cb assets\invasion-ferrocerium\blockstates
 600a53ac0564c3feb57465ccb275cded1414df96 assets\invasion-ferrocerium\models\item\aluminum_ingot.json
 4ec3079a67e193293e3f39510b2a9f5669825bc9 assets\invasion-ferrocerium\models\item\alien_transceiver.json
 ef3dda688544184969c2d1067ce10c412ddded84 assets\invasion-ferrocerium\models\item\deepslate_aluminum_ore.json
+63ec6c618a3a23eab4cab9c52d7d3250de9b516e assets\invasion-ferrocerium\models\item\alien_builder_bot_spawn_egg.json
 4f21b4dfbd27f4d54cf14899ee1a5f96a8aee752 assets\invasion-ferrocerium\models\block\aluminum_block.json
 e68a536ee87e21721c3bd6dcd15a9772de2b5024 assets\invasion-ferrocerium\models\item\aluminum_ore.json
 f1fc21f9190f999efff83f898516e85999655367 assets\invasion-ferrocerium\models\item\strange_alloy_hoe.json
