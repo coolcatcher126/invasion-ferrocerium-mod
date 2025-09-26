@@ -1,9 +1,11 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
@@ -23,7 +25,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 public class AlienBuilderBotEntity extends HostileEntity {
 
@@ -145,9 +150,23 @@ public class AlienBuilderBotEntity extends HostileEntity {
             boolean shouldBuild = sectionToBuild != null;
             if (shouldBuild)
             {
-                shouldBuild &= sectionToBuild.isBuilt();
+                shouldBuild = sectionToBuild.isBuilt();
             }
             return shouldBuild;
+        }
+
+        public void tick(){
+            World world = this.alienBuilderBot.getWorld();
+            assert this.sectionToBuild != null;
+            ArrayList<BaseBlock> blocks = this.sectionToBuild.getBaseBlockData();
+            for (BaseBlock block : blocks) {
+                if (!block.isPlaced(world)){
+                    BlockPos blockPos = block.getBlockPos();
+                    BlockState blockState = block.getBlockState();
+                    world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
+                    world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
+                }
+            }
         }
     }
 

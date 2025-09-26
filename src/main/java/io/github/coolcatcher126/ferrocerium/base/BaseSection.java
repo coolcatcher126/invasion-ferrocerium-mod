@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
 import net.minecraft.data.client.VariantSettings;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -10,14 +11,14 @@ public class BaseSection {
     private BaseSectionTemplate section;
     private  World world;
     private  BlockPos origin;
-    private VariantSettings.Rotation rotation;
+    private BlockRotation rotation;
     boolean isCapitol;
 
     public BaseSection(
             BaseSectionTemplate sectionTemplate,
             World world,
             BlockPos originPos,
-            VariantSettings.Rotation rotation,
+            BlockRotation rotation,
             boolean isCapitol
     ) {
         this.section = sectionTemplate;
@@ -31,5 +32,16 @@ public class BaseSection {
     public boolean isBuilt(){
         //TODO: add functionality
         return  false;
+    }
+
+    public ArrayList<BaseBlock> getBaseBlockData(){
+        ArrayList<BaseBlock> blocks = section.getRelativeBlockData(world);
+        for (BaseBlock block : blocks) {
+            BlockPos pos = block.getBlockPos();
+            pos.rotate(rotation);
+            pos.add(origin);
+            block.setBlockPos(pos);
+        }
+        return blocks;
     }
 }
