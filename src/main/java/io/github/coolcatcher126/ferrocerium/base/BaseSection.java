@@ -1,9 +1,12 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.data.client.VariantSettings;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 import java.util.ArrayList;
 
@@ -30,8 +33,13 @@ public class BaseSection {
 
     /// Returns true when the blocks in the location of the base section matches the base section's template
     public boolean isBuilt(){
-        //TODO: add functionality
-        return  false;
+        ArrayList<BaseBlock> blocks = this.getBaseBlockData();
+        for (BaseBlock block : blocks) {
+            if (!block.isPlaced(world)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public ArrayList<BaseBlock> getBaseBlockData(){

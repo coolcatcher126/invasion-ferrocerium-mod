@@ -15,6 +15,9 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
@@ -31,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 public class AlienBuilderBotEntity extends HostileEntity {
+    private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -123,6 +127,22 @@ public class AlienBuilderBotEntity extends HostileEntity {
         this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
     }
 
+    private void setBuilding(boolean attacking)
+    {
+        this.dataTracker.set(BUILDING, attacking);
+    }
+
+    public boolean isBuilding()
+    {
+        return this.dataTracker.get(BUILDING);
+    }
+
+    @Override
+    protected void initDataTracker(DataTracker.Builder builder) {
+        super.initDataTracker(builder);
+        builder.add(BUILDING, false);
+    }
+
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
         public TargetGoal(AlienBuilderBotEntity antSoldierBot, Class<T> targetEntityClass) {
             super(antSoldierBot, targetEntityClass, true);
@@ -143,6 +163,10 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
         AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
             this.alienBuilderBot = alienBuilderBot;
+        }
+
+        public void setSection(BaseSection sectionToBuild){
+            this.sectionToBuild = sectionToBuild;
         }
 
         @Override
@@ -167,6 +191,16 @@ public class AlienBuilderBotEntity extends HostileEntity {
                     world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
                 }
             }
+        }
+
+        @Override
+        public void start() {
+            this.alienBuilderBot.setBuilding(true);
+        }
+
+        @Override
+        public void stop() {
+            this.alienBuilderBot.setBuilding(false);
         }
     }
 

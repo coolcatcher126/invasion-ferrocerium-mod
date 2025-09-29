@@ -29,12 +29,12 @@ public class BaseBlock {
 
         boolean isMatchingWallBlock = this.blockState.getBlock() instanceof WallBlock && bs.getBlock() == this.blockState.getBlock();
 
-        Block block1 = this.blockState.getBlock();
-        Block block2 = bs.getBlock();
-        if ((block1 instanceof StairsBlock && block2 instanceof StairsBlock) ||
-                (block1 instanceof FenceBlock && block2 instanceof FenceBlock) ||
-                (block1 instanceof WallBlock && block2 instanceof WallBlock) ||
-                (block1 instanceof PaneBlock && block2 instanceof PaneBlock))
+        Block desiredBlock = this.blockState.getBlock();
+        Block worldBlock = bs.getBlock();
+        if ((desiredBlock instanceof StairsBlock && worldBlock instanceof StairsBlock) ||
+                (desiredBlock instanceof FenceBlock && worldBlock instanceof FenceBlock) ||
+                (desiredBlock instanceof WallBlock && worldBlock instanceof WallBlock) ||
+                (desiredBlock instanceof PaneBlock && worldBlock instanceof PaneBlock))
             return true;
 
         return !this.blockState.isAir() && (bs == this.blockState || isMatchingWallBlock);

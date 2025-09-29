@@ -1,11 +1,14 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.Random;
-import java.util.random.RandomGenerator;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
@@ -14,12 +17,14 @@ public class AlienBase {
     ArrayList<BaseSection> sections;
     ArrayList<AlienBuilderBotEntity> builders;
 
+    ArrayList<BaseSectionTemplate> sectionTemplateList;
+    World world;
+
     Random random;
 
-    public AlienBase(BlockPos origin, BaseSection core, AlienBuilderBotEntity initialBuilder)
+    public AlienBase(World world, BlockPos origin, BaseSection core, AlienBuilderBotEntity initialBuilder)
     {
-        this.random = new Random();
-
+        this.world = world;
         this.origin = origin;
 
         this.sections = new ArrayList<>();
@@ -27,12 +32,34 @@ public class AlienBase {
 
         this.sections.add(core);
         this.builders.add(initialBuilder);
+
+
+        sectionTemplateList = new ArrayList<>();
+        InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
+        this.random = new Random();
     }
 
     /// Grows the base at random by adding an extra base section to the base
     public void GrowBase(){
-        int baseSectionType = random.nextInt();
-        //TODO: Randomly generate a random base section to build and assign an unemployed builder bot to build it.
+        //TODO: Randomly generate a position and rotation to attach the new section.
+        int randomInt = random.nextInt(sectionTemplateList.size());
+        BlockPos offset = new BlockPos(0, 0, 0);
+        BlockRotation rot = BlockRotation.NONE;
+        BaseSection newSection = new BaseSection(sectionTemplateList.get(randomInt), world, origin.add(offset), rot, false);
+        sections.add(newSection);
+
+
+        getFirstAvailableAlienBuilderBotEntity();
+    }
+
+    //Returns the first alien builder bot to not be building.
+    private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
+        for (AlienBuilderBotEntity builder : builders) {
+            if (!builder.isBuilding()){
+                return Optional.of(builder);
+            }
+        }
+        return Optional.empty();
     }
 
     /// Adds a builder to the builders
