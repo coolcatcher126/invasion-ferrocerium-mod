@@ -36,6 +36,9 @@ import java.util.ArrayList;
 public class AlienBuilderBotEntity extends HostileEntity {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    @Nullable
+    private BaseSection sectionToBuild;
+
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
@@ -137,6 +140,10 @@ public class AlienBuilderBotEntity extends HostileEntity {
         return this.dataTracker.get(BUILDING);
     }
 
+    public void setSection(BaseSection sectionToBuild){
+        this.sectionToBuild = sectionToBuild;
+    }
+
     @Override
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
@@ -158,15 +165,9 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Check if the base section to build exists. If it does, check to see if it is complete. If not, build the section.
     public class AlienBuilderBuildGoal extends Goal {
         private final AlienBuilderBotEntity alienBuilderBot;
-        @Nullable
-        private BaseSection sectionToBuild;
 
         AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
             this.alienBuilderBot = alienBuilderBot;
-        }
-
-        public void setSection(BaseSection sectionToBuild){
-            this.sectionToBuild = sectionToBuild;
         }
 
         @Override
@@ -181,8 +182,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
         public void tick(){
             World world = this.alienBuilderBot.getWorld();
-            assert this.sectionToBuild != null;
-            ArrayList<BaseBlock> blocks = this.sectionToBuild.getBaseBlockData();
+            assert this.alienBuilderBot.sectionToBuild != null;
+            ArrayList<BaseBlock> blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData();
             for (BaseBlock block : blocks) {
                 if (!block.isPlaced(world)){
                     BlockPos blockPos = block.getBlockPos();

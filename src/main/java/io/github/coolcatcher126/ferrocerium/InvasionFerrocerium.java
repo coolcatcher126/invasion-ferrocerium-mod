@@ -2,6 +2,7 @@ package io.github.coolcatcher126.ferrocerium;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.coolcatcher126.ferrocerium.base.BaseList;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
@@ -55,6 +56,7 @@ public class InvasionFerrocerium implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.ALIEN_BUILDER_BOT, AlienBuilderBotEntity.createAttributes());
 
         BaseSectionTemplates.registerBaseSections();
+        BaseList.registerAlienBaseList();
 
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(literal("invasion")
