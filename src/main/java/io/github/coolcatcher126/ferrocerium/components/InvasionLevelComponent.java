@@ -1,13 +1,16 @@
 package io.github.coolcatcher126.ferrocerium.components;
 
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
-import net.minecraft.nbt.NbtList;
+import io.github.coolcatcher126.ferrocerium.base.AlienBaseSave;
+import io.github.coolcatcher126.ferrocerium.base.BaseDataHelper;
+import io.github.coolcatcher126.ferrocerium.base.BaseSectionSave;
+import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.util.BlockRotation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.NotImplementedException;
 import org.ladysnake.cca.api.v3.component.Component;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 
 import java.util.ArrayList;
 
@@ -21,12 +24,10 @@ public class InvasionLevelComponent implements Component {
     /// Stage 5 - Full on occupation with all enemies spawning. Large bases everywhere.
     public static final int MAX_INVASION = 5;
 
-    private static final String INVASION_KEY = "invasion_state";
-
     //The current invasion state
     private int invasionState = 0;
     // bases that currently exist
-    private static final ArrayList<AlienBase> bases = new ArrayList<>();
+    private ArrayList<AlienBase> bases = new ArrayList<>();
 
     public int getInvasionState(){
         return this.invasionState;
@@ -44,46 +45,112 @@ public class InvasionLevelComponent implements Component {
         this.invasionState = MathHelper.clamp(invasionState, 0, MAX_INVASION);
     }
 
-    @Override
-    public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
-        if (nbtCompound.contains(INVASION_KEY, NbtElement.INT_TYPE)) {
-            this.invasionState = nbtCompound.getInt(INVASION_KEY);
-        }
-        bases = loadBaseListData(nbtCompound);
-    }
+    //The following are for saving data upon level save.
 
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
         if (this.invasionState > 0) {
-            nbtCompound.putInt(INVASION_KEY, this.invasionState);
+            nbtCompound.putInt("invasion_state", this.invasionState);
         }
-        saveBaseListData(nbtCompound, bases);
+        ArrayList<AlienBaseSave> baseSaves = new ArrayList<>();
+        for (AlienBase base : bases) {
+            baseSaves.add(BaseDataHelper.alienBaseSaveFromAlienBase(base));
+        }
+        saveBaseListData(nbtCompound, baseSaves);
+
     }
 
-    private static NbtCompound saveBaseListData(NbtCompound nbtCompound, ArrayList<AlienBase> basesToSave){
-        nbtCompound.putInt(INVASION_KEY, basesToSave.size());
-        for (AlienBase alienBase : basesToSave) {
-            saveBaseData(alienBase);
+    private static void saveBaseListData(NbtCompound nbtCompound, ArrayList<AlienBaseSave> basesToSave){
+        NbtList nbtList = new NbtList();
+        for (AlienBaseSave alienBase : basesToSave) {
+            nbtList.add(saveAlienBaseSave(alienBase));
         }
+        nbtCompound.put("alien_bases", nbtList);
+    }
+
+    /// Serialises data stored in the class AlienBaseSave to NBT data.
+    private static NbtCompound saveAlienBaseSave(AlienBaseSave alienBase) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putInt("alien_base_z",alienBase.origin.getZ());
+        nbtCompound.putInt("alien_base_y",alienBase.origin.getY());
+        nbtCompound.putInt("alien_base_x",alienBase.origin.getX());
+        NbtList nbtList = new NbtList();
+        for (BaseSectionSave section : alienBase.sections) {
+            nbtList.add(saveBaseSectionSave(section));
+        }
+        nbtCompound.put("alien_base_sections", nbtList);
         return nbtCompound;
     }
 
+    /// Serialises data stored in the class BaseSectionSave to NBT data.
+    private static NbtCompound saveBaseSectionSave(BaseSectionSave baseSection){
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putBoolean("base_section_is_core", baseSection.isCore);
+        nbtCompound.putString("base_section_rotation", baseSection.rotation.name());
+        nbtCompound.putInt("base_section_z",baseSection.origin.getZ());
+        nbtCompound.putInt("base_section_y",baseSection.origin.getY());
+        nbtCompound.putInt("base_section_x",baseSection.origin.getX());
+        nbtCompound.putString("base_section_name", baseSection.name);
+        return nbtCompound;
+    }
 
+    //The following are for loading data upon level load.
 
-    private static ArrayList<AlienBase> loadBaseListData(NbtCompound nbtCompound){
-        NbtList nbtList = nbtCompound.getList(INVASION_KEY, NbtElement.COMPOUND_TYPE);
-        ArrayList<AlienBase> savedBases = new ArrayList<>();
+    @Override
+    public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        ArrayList<AlienBaseSave> baseSaves = loadBaseListData(nbtCompound);
+        bases = new ArrayList<>();
+        for (AlienBaseSave baseSave : baseSaves) {
+            bases.add(BaseDataHelper.alienBaseFromAlienBaseSave(baseSave));
+        }
+
+        if (nbtCompound.contains("invasion_state", NbtElement.INT_TYPE)) {
+            this.invasionState = nbtCompound.getInt("invasion_state");
+        }
+    }
+
+    private static ArrayList<AlienBaseSave> loadBaseListData(NbtCompound nbtCompound){
+        NbtList nbtList = nbtCompound.getList("alien_bases", NbtElement.COMPOUND_TYPE);
+        ArrayList<AlienBaseSave> savedBases = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
-            savedBases.add(loadBaseData(nbtElement));
+            if (nbtElement instanceof NbtCompound) {
+                savedBases.add(loadAlienBaseSave((NbtCompound) nbtElement));
+            }
+            else{
+                throw new InvalidNbtException("Base data does not exist");
+            }
         }
         return savedBases;
     }
 
-    private static AlienBase loadBaseData(NbtElement nbtElement) {
-        nbtElement.
+    /// Loads data from NBT into the class AlienBaseSave.
+    private static AlienBaseSave loadAlienBaseSave(NbtCompound nbtCompound) {
+        NbtList nbtList = nbtCompound.getList("alien_base_sections", NbtElement.COMPOUND_TYPE);
+        ArrayList<BaseSectionSave> savedSections = new ArrayList<>();
+        for (NbtElement nbtElement : nbtList) {
+            if (nbtElement instanceof  NbtCompound){
+                savedSections.add(loadBaseSectionSave((NbtCompound) nbtElement));
+            }
+            else{
+                throw new InvalidNbtException("Base data does not exist");
+            }
+        }
+        BlockPos origin = new BlockPos(
+                nbtCompound.getInt("alien_base_x"),
+                nbtCompound.getInt("alien_base_y"),
+                nbtCompound.getInt("alien_base_z"));
+        return new AlienBaseSave(origin, savedSections);
     }
 
-    private static void saveBaseData(AlienBase alienBase) {
-        throw new NotImplementedException();
+    /// Loads data from NBT into the class BaseSectionSave.
+    private static BaseSectionSave loadBaseSectionSave(NbtCompound nbtCompound){
+        return new BaseSectionSave(
+                nbtCompound.getString("base_section_name"),
+                new BlockPos(
+                        nbtCompound.getInt("base_section_x"),
+                        nbtCompound.getInt("base_section_y"),
+                        nbtCompound.getInt("base_section_z")),
+                BlockRotation.valueOf(nbtCompound.getString("base_section_rotation")),
+                nbtCompound.getBoolean("base_section_is_core"));
     }
 }

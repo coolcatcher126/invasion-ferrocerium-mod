@@ -23,6 +23,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -38,6 +39,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
     @Nullable
     private BaseSection sectionToBuild;
+    @Nullable
+    private AlienBase alienBase;
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -69,6 +72,23 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
     public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (alienBase != null){
+            nbt.putInt("ALIEN_BASE", alienBase.hashCode());
+        }
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if(nbt.contains("ALIEN_BASE")){
+            int alienBaseHash = nbt.getInt("ALIEN_BASE");
+            
+        }
     }
 
     @Override

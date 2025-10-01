@@ -14,6 +14,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -21,6 +22,31 @@ import java.util.Optional;
 
 //A class that holds static helper functions relating to robot base building
 public class BaseDataHelper {
+
+    public static AlienBaseSave alienBaseSaveFromAlienBase(AlienBase alienBase){
+        //TODO: Get the AlienBaseSave from the AlienBase data.
+        throw new NotImplementedException();
+
+    }
+
+    public static AlienBase alienBaseFromAlienBaseSave(AlienBaseSave alienBaseSave){
+        //TODO: Get the AlienBase from the AlienBaseSave
+        throw new NotImplementedException();
+    }
+
+    public static BaseSectionSave baseSectionSaveFromBaseSection(BaseSection baseSection){
+        //TODO: Get the BaseSectionSave from the BaseSection data.
+        throw new NotImplementedException();
+        BaseSectionSave baseSectionSave = new BaseSectionSave();
+        return baseSectionSave;
+    }
+
+    public static BaseSection baseSectionFromBaseSectionSave(BaseSectionSave baseSectionSave){
+        //TODO: Get the template and world from the BaseSectionSave
+        throw new NotImplementedException();
+        BaseSection baseSection = new BaseSection(template, world, baseSectionSave.origin, baseSectionSave.rotation, baseSectionSave.isCore);
+        return baseSection;
+    }
 
     public static ArrayList<BaseBlock> getBaseBlocksFromNbt(String structureName, World world) {
         ResourceManager resourceManager;
