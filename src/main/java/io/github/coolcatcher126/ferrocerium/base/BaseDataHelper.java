@@ -83,5 +83,4 @@ public class BaseDataHelper {
             palette.add(NbtHelper.toBlockState(BuiltinRegistries.createWrapperLookup().getWrapperOrThrow(RegistryKeys.BLOCK), paletteNbt.getCompound(i)));
         return palette;
     }
-
 }
