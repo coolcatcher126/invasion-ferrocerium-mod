@@ -1,14 +1,16 @@
 package io.github.coolcatcher126.ferrocerium.components;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
-import net.minecraft.server.world.ServerWorld;
+import io.github.coolcatcher126.ferrocerium.base.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.NotImplementedException;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentInitializer;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class InvasionFerroceriumComponents implements WorldComponentInitializer {
@@ -19,7 +21,7 @@ public class InvasionFerroceriumComponents implements WorldComponentInitializer 
 
     @Override
     public void registerWorldComponentFactories(WorldComponentFactoryRegistry registry) {
-        registry.register(INVASION_LEVEL, it -> new InvasionLevelComponent());
+        registry.register(INVASION_LEVEL, InvasionLevelComponent::new);
     }
 
     public static Optional<InvasionLevelComponent> getInvasionLevelComponent(World world){
@@ -43,5 +45,21 @@ public class InvasionFerroceriumComponents implements WorldComponentInitializer 
 
     public static void setInvasion(World world, int invasionState){
         world.getComponent(INVASION_LEVEL).setInvasion(invasionState);
+    }
+
+    public static ArrayList<AlienBase> getAlienBases(World world) {
+        return  world.getComponent(INVASION_LEVEL).getBases();
+    }
+
+    public static void setAlienBases(World world, ArrayList<AlienBase> bases){
+        world.getComponent(INVASION_LEVEL).setBases(bases);
+    }
+
+    public static void addAlienBase(World world, AlienBase base){
+        world.getComponent(INVASION_LEVEL).addBase(base);
+    }
+
+    public static void removeAlienBase(World world, AlienBase base){
+        world.getComponent(INVASION_LEVEL).removeBase(base);
     }
 }

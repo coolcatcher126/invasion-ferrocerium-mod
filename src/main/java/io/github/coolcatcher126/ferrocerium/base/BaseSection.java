@@ -48,4 +48,20 @@ public class BaseSection {
         }
         return blocks;
     }
+
+    public String getTemplateName(){
+        return section.name;
+    }
+
+    public BlockPos getOrigin(){
+        return this.origin;
+    }
+
+    public BlockRotation getRotation(){
+        return this.rotation;
+    }
+
+    public boolean getIsCore(){
+        return this.isCore;
+    }
 }

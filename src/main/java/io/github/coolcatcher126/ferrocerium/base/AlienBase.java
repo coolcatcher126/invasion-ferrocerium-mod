@@ -23,6 +23,19 @@ public class AlienBase {
 
     Random random;
 
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<AlienBuilderBotEntity> builders){
+        this.world = world;
+        this.origin = origin;
+
+        this.sections = sections;
+        this.builders = builders;
+
+
+        sectionTemplateList = new ArrayList<>();
+        InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
+        this.random = this.world.getRandom();
+    }
+
     public AlienBase(World world, BlockPos origin, BaseSection core, AlienBuilderBotEntity initialBuilder)
     {
         this.world = world;
@@ -81,5 +94,17 @@ public class AlienBase {
         if (random.nextInt(2) == 0) {
             //TODO: Make the base grow, spawning builders as needed.
         }
+    }
+
+    public BlockPos getOrigin(){
+        return this.origin;
+    }
+
+    public ArrayList<BaseSection> getSections(){
+        return this.sections;
+    }
+
+    public ArrayList<AlienBuilderBotEntity> getBuilders(){
+        return this.builders;
     }
 }

@@ -1,13 +1,11 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
-import net.minecraft.block.Block;
+import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.BuiltinRegistries;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -22,31 +20,6 @@ import java.util.Optional;
 
 //A class that holds static helper functions relating to robot base building
 public class BaseDataHelper {
-
-    public static AlienBaseSave alienBaseSaveFromAlienBase(AlienBase alienBase){
-        //TODO: Get the AlienBaseSave from the AlienBase data.
-        throw new NotImplementedException();
-
-    }
-
-    public static AlienBase alienBaseFromAlienBaseSave(AlienBaseSave alienBaseSave){
-        //TODO: Get the AlienBase from the AlienBaseSave
-        throw new NotImplementedException();
-    }
-
-    public static BaseSectionSave baseSectionSaveFromBaseSection(BaseSection baseSection){
-        //TODO: Get the BaseSectionSave from the BaseSection data.
-        throw new NotImplementedException();
-        BaseSectionSave baseSectionSave = new BaseSectionSave();
-        return baseSectionSave;
-    }
-
-    public static BaseSection baseSectionFromBaseSectionSave(BaseSectionSave baseSectionSave){
-        //TODO: Get the template and world from the BaseSectionSave
-        throw new NotImplementedException();
-        BaseSection baseSection = new BaseSection(template, world, baseSectionSave.origin, baseSectionSave.rotation, baseSectionSave.isCore);
-        return baseSection;
-    }
 
     public static ArrayList<BaseBlock> getBaseBlocksFromNbt(String structureName, World world) {
         ResourceManager resourceManager;

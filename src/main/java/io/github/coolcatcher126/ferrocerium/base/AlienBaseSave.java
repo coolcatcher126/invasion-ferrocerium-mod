@@ -12,9 +12,11 @@ public class AlienBaseSave {
 
     public BlockPos origin;
     public ArrayList<BaseSectionSave> sections;
+    public int world;
 
     public AlienBaseSave(BlockPos origin, ArrayList<BaseSectionSave> sections){
         this.origin = origin;
         this.sections = sections;
+        this.world = world;
     }
 }
