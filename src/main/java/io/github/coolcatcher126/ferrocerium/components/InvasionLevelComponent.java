@@ -179,13 +179,11 @@ public class InvasionLevelComponent implements Component {
 
     /// Gets the AlienBaseSave from the Alien Base
     public AlienBaseSave alienBaseSaveFromAlienBase(AlienBase alienBase){
-        //TODO: Get the AlienBaseSave from the AlienBase data.
         ArrayList<BaseSectionSave> sections = new ArrayList<>();
         for (BaseSection section : alienBase.getSections()) {
             sections.add(baseSectionSaveFromBaseSection(section));
         }
         return new AlienBaseSave(alienBase.getOrigin(), sections);
-
     }
 
     /// Gets the BaseSectionSave from the BaseSection data.

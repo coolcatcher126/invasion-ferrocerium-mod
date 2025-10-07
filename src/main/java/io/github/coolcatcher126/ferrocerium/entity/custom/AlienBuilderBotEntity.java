@@ -4,13 +4,11 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
+import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -47,8 +45,18 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
     private static int REQUIRED_INVASION_LEVEL = 3;
 
+    /// Natural spawn constructor.
+    /// Creates a base.
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+        this.alienBase = new AlienBase(world, this.getPositionTarget(), this);
+    }
+
+    /// Base helper spawn.
+    /// Add to a preexisting base.
+    public AlienBuilderBotEntity(World world, AlienBase base){
+        super(ModEntities.ALIEN_BUILDER_BOT, world);
+        this.alienBase = base;
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {

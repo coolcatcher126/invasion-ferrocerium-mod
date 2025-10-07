@@ -31,7 +31,7 @@ public class ModEntities {
 
     public static final EntityType<AlienBuilderBotEntity> ALIEN_BUILDER_BOT = Registry.register(Registries.ENTITY_TYPE,
             Identifier.of(InvasionFerrocerium.MOD_ID, "alien_builder_bot"),
-            EntityType.Builder.create(AlienBuilderBotEntity::new, SpawnGroup.MONSTER)
+            EntityType.Builder.<AlienBuilderBotEntity>create(AlienBuilderBotEntity::new, SpawnGroup.MONSTER)
                     .dimensions(0.6F, 1.95F).build());
 
     public static void registerModEntities(){

@@ -36,7 +36,7 @@ public class AlienBase {
         this.random = this.world.getRandom();
     }
 
-    public AlienBase(World world, BlockPos origin, BaseSection core, AlienBuilderBotEntity initialBuilder)
+    public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder)
     {
         this.world = world;
         this.origin = origin;
@@ -44,7 +44,6 @@ public class AlienBase {
         this.sections = new ArrayList<>();
         this.builders = new ArrayList<>();
 
-        this.sections.add(core);
         this.builders.add(initialBuilder);
 
 
@@ -84,9 +83,14 @@ public class AlienBase {
         return Optional.empty();
     }
 
-    /// Adds a builder to the builders
+    /// Adds a preexisting builder to the builders
     public void HireBuilder(AlienBuilderBotEntity builder){
         builders.add(builder);
+    }
+
+    /// Adds a newly spawned builder to the builders
+    public void SpawnBuilder(){
+        HireBuilder(new AlienBuilderBotEntity(world, this));
     }
 
     /// Ticks this alien base.
