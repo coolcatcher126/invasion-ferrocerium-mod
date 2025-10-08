@@ -49,7 +49,7 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Creates a base.
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.alienBase = new AlienBase(world, this.getPositionTarget(), this);
+        this.alienBase = new AlienBase(world, this.getBlockPos(), this);
     }
 
     /// Base helper spawn.
@@ -95,7 +95,13 @@ public class AlienBuilderBotEntity extends HostileEntity {
         super.readCustomDataFromNbt(nbt);
         if(nbt.contains("ALIEN_BASE")){
             int alienBaseHash = nbt.getInt("ALIEN_BASE");
-            
+            for (AlienBase base : InvasionFerroceriumComponents.getAlienBases(getEntityWorld())) {
+                if (base.hashCode() == alienBaseHash){
+                    alienBase = base;
+                    alienBase.hireBuilder(this);
+                }
+                //If the alien base cannot be found nothing happens.
+            }
         }
     }
 
@@ -200,10 +206,10 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
         @Override
         public boolean canStart() {
-            boolean shouldBuild = sectionToBuild != null;
+            boolean shouldBuild = alienBase != null && sectionToBuild != null;
             if (shouldBuild)
             {
-                shouldBuild = sectionToBuild.isBuilt();
+                shouldBuild = !sectionToBuild.isBuilt();
             }
             return shouldBuild;
         }
@@ -230,6 +236,11 @@ public class AlienBuilderBotEntity extends HostileEntity {
         @Override
         public void stop() {
             this.alienBuilderBot.setBuilding(false);
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
         }
     }
 

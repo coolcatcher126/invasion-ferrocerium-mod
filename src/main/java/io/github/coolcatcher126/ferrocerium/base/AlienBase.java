@@ -2,7 +2,6 @@ package io.github.coolcatcher126.ferrocerium.base;
 
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -84,13 +83,13 @@ public class AlienBase {
     }
 
     /// Adds a preexisting builder to the builders
-    public void HireBuilder(AlienBuilderBotEntity builder){
+    public void hireBuilder(AlienBuilderBotEntity builder){
         builders.add(builder);
     }
 
     /// Adds a newly spawned builder to the builders
-    public void SpawnBuilder(){
-        HireBuilder(new AlienBuilderBotEntity(world, this));
+    public void spawnBuilder(){
+        hireBuilder(new AlienBuilderBotEntity(world, this));
     }
 
     /// Ticks this alien base.
