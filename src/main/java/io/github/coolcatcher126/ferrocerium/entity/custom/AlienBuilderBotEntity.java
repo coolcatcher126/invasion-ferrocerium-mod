@@ -31,6 +31,7 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 public class AlienBuilderBotEntity extends HostileEntity {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -49,7 +50,7 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Creates a base.
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.alienBase = new AlienBase(world, this.getBlockPos(), this);
+        this.alienBase = new AlienBase(world, this.getBlockPos(), this);//TODO: Move the creation of the alien base into a "found base" goal or equivalent.
     }
 
     /// Base helper spawn.
@@ -199,6 +200,7 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Check if the base section to build exists. If it does, check to see if it is complete. If not, build the section.
     public class AlienBuilderBuildGoal extends Goal {
         private final AlienBuilderBotEntity alienBuilderBot;
+        ListIterator<BaseBlock> blocks;
 
         AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
             this.alienBuilderBot = alienBuilderBot;
@@ -216,9 +218,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
         public void tick(){
             World world = this.alienBuilderBot.getWorld();
-            assert this.alienBuilderBot.sectionToBuild != null;
-            ArrayList<BaseBlock> blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData();
-            for (BaseBlock block : blocks) {
+            if (blocks.hasNext() ) {
+                BaseBlock block = blocks.next();
                 if (!block.isPlaced(world)){
                     BlockPos blockPos = block.getBlockPos();
                     BlockState blockState = block.getBlockState();
@@ -231,6 +232,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
         @Override
         public void start() {
             this.alienBuilderBot.setBuilding(true);
+            assert this.alienBuilderBot.sectionToBuild != null;
+            blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData().listIterator();
         }
 
         @Override
