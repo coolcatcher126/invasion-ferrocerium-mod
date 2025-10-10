@@ -50,7 +50,6 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Creates a base.
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.alienBase = new AlienBase(world, this.getBlockPos(), this);//TODO: Move the creation of the alien base into a "found base" goal or equivalent.
     }
 
     /// Base helper spawn.
@@ -143,6 +142,9 @@ public class AlienBuilderBotEntity extends HostileEntity {
         if (this.getEntityWorld().isClient()){
             this.setupAnimationStates();
         }
+        else if (this.alienBase == null && this.age >= 1){
+            this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
+        }
     }
 
     @Override
@@ -221,7 +223,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
             if (blocks.hasNext() ) {
                 BaseBlock block = blocks.next();
                 if (!block.isPlaced(world)){
-                    BlockPos blockPos = block.getBlockPos();
+                    assert alienBase != null;
+                    BlockPos blockPos = alienBase.getOrigin().add(block.getBlockPos());
                     BlockState blockState = block.getBlockState();
                     world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
                     world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
