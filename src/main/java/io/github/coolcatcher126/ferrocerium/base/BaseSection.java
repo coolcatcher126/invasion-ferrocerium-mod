@@ -42,8 +42,8 @@ public class BaseSection {
         ArrayList<BaseBlock> blocks = section.getRelativeBlockData(world);
         for (BaseBlock block : blocks) {
             BlockPos pos = block.getBlockPos();
-            pos.rotate(rotation);
-            pos.add(origin);
+            pos = pos.rotate(rotation);
+            pos = pos.add(origin);
             block.setBlockPos(pos);
         }
         return blocks;

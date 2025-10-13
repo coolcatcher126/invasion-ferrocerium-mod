@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
@@ -96,12 +97,15 @@ public class AlienBuilderBotEntity extends HostileEntity {
         if(nbt.contains("ALIEN_BASE")){
             int alienBaseHash = nbt.getInt("ALIEN_BASE");
             for (AlienBase base : InvasionFerroceriumComponents.getAlienBases(getEntityWorld())) {
-                if (base.hashCode() == alienBaseHash){
+                int baseHashed = base.hashCode();
+                InvasionFerrocerium.LOGGER.info("Checking base hash %s against stored hash %s".formatted(base.hashCode(), alienBaseHash));
+                if (baseHashed == alienBaseHash){
                     alienBase = base;
                     alienBase.hireBuilder(this);
+                    return;
                 }
-                //If the alien base cannot be found nothing happens.
             }
+            InvasionFerrocerium.LOGGER.info("No base is associated with the hash %s".formatted(alienBaseHash));
         }
     }
 
@@ -142,8 +146,9 @@ public class AlienBuilderBotEntity extends HostileEntity {
         if (this.getEntityWorld().isClient()){
             this.setupAnimationStates();
         }
-        else if (this.alienBase == null && this.age >= 1){
+        else if (this.alienBase == null && this.age >= 20){
             this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
+            InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
         }
     }
 
@@ -187,6 +192,12 @@ public class AlienBuilderBotEntity extends HostileEntity {
         builder.add(BUILDING, false);
     }
 
+    @Override
+    public boolean cannotDespawn() {
+        //Disallow despawning when assigned to a base.
+        return super.cannotDespawn() || alienBase != null;
+    }
+
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
         public TargetGoal(AlienBuilderBotEntity antSoldierBot, Class<T> targetEntityClass) {
             super(antSoldierBot, targetEntityClass, true);
@@ -202,7 +213,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
     /// Check if the base section to build exists. If it does, check to see if it is complete. If not, build the section.
     public class AlienBuilderBuildGoal extends Goal {
         private final AlienBuilderBotEntity alienBuilderBot;
-        ListIterator<BaseBlock> blocks;
+        private ListIterator<BaseBlock> blocks;
+        private int delay;
 
         AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
             this.alienBuilderBot = alienBuilderBot;
@@ -210,25 +222,36 @@ public class AlienBuilderBotEntity extends HostileEntity {
 
         @Override
         public boolean canStart() {
-            boolean shouldBuild = alienBase != null && sectionToBuild != null;
-            if (shouldBuild)
-            {
-                shouldBuild = !sectionToBuild.isBuilt();
+            if (alienBase == null || sectionToBuild == null){
+                return false;
             }
-            return shouldBuild;
+            else{
+                return !sectionToBuild.isBuilt();
+            }
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return (alienBase != null && sectionToBuild != null && blocks.hasNext());
         }
 
         public void tick(){
-            World world = this.alienBuilderBot.getWorld();
-            if (blocks.hasNext() ) {
-                BaseBlock block = blocks.next();
-                if (!block.isPlaced(world)){
-                    assert alienBase != null;
-                    BlockPos blockPos = alienBase.getOrigin().add(block.getBlockPos());
-                    BlockState blockState = block.getBlockState();
-                    world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL);
-                    world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
+            if (delay == 0){
+                World world = getEntityWorld();
+                if (blocks.hasNext() ) {
+                    BaseBlock block = blocks.next();
+                    if (!block.isPlaced(world)){
+                        assert alienBase != null;
+                        BlockPos blockPos = block.getBlockPos();
+                        BlockState blockState = block.getBlockState();
+                        world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
+                        world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
+                    }
                 }
+                delay = 5;
+            }
+            else {
+                delay--;
             }
         }
 
@@ -237,16 +260,12 @@ public class AlienBuilderBotEntity extends HostileEntity {
             this.alienBuilderBot.setBuilding(true);
             assert this.alienBuilderBot.sectionToBuild != null;
             blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData().listIterator();
+            delay = 0;
         }
 
         @Override
         public void stop() {
             this.alienBuilderBot.setBuilding(false);
-        }
-
-        @Override
-        public boolean shouldRunEveryTick() {
-            return true;
         }
     }
 
