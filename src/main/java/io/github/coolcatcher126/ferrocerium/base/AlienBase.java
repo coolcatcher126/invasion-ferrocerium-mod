@@ -4,11 +4,13 @@ import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.UUID;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
@@ -19,20 +21,20 @@ public class AlienBase {
 
     ArrayList<BaseSectionTemplate> sectionTemplateList;
     World world;
+    protected final Random random = Random.create();
+    UUID uuid = MathHelper.randomUuid(this.random);
 
-    Random random;
-
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<AlienBuilderBotEntity> builders){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
         this.world = world;
         this.origin = origin;
 
         this.sections = sections;
         this.builders = builders;
+        this.uuid = uuid;
 
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
-        this.random = this.world.getRandom();
     }
 
     public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder)
@@ -48,7 +50,6 @@ public class AlienBase {
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
-        this.random = this.world.getRandom();
 
         //Create the core of the base
         addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BlockPos(0, 0, 0), BlockRotation.NONE);
@@ -109,5 +110,9 @@ public class AlienBase {
 
     public ArrayList<AlienBuilderBotEntity> getBuilders(){
         return this.builders;
+    }
+
+    public UUID getUuid(){
+        return this.uuid;
     }
 }

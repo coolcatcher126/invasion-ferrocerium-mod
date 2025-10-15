@@ -14,6 +14,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class InvasionLevelComponent implements Component {
     /// There are 6 stages:
@@ -102,6 +103,7 @@ public class InvasionLevelComponent implements Component {
             nbtList.add(saveBaseSectionSave(section));
         }
         nbtCompound.put("alien_base_sections", nbtList);
+        nbtCompound.putUuid("alien_base_uuid", alienBase.uuid);
         return nbtCompound;
     }
 
@@ -148,6 +150,7 @@ public class InvasionLevelComponent implements Component {
 
     /// Loads data from NBT into the class AlienBaseSave.
     private AlienBaseSave loadAlienBaseSave(NbtCompound nbtCompound) {
+        UUID uuid = nbtCompound.getUuid("alien_base_uuid");
         NbtList nbtList = nbtCompound.getList("alien_base_sections", NbtElement.COMPOUND_TYPE);
         ArrayList<BaseSectionSave> savedSections = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
@@ -162,7 +165,7 @@ public class InvasionLevelComponent implements Component {
                 nbtCompound.getInt("alien_base_x"),
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
-        return new AlienBaseSave(origin, savedSections);
+        return new AlienBaseSave(origin, savedSections, uuid);
     }
 
     /// Loads data from NBT into the class BaseSectionSave.
@@ -183,7 +186,7 @@ public class InvasionLevelComponent implements Component {
         for (BaseSection section : alienBase.getSections()) {
             sections.add(baseSectionSaveFromBaseSection(section));
         }
-        return new AlienBaseSave(alienBase.getOrigin(), sections);
+        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getUuid());
     }
 
     /// Gets the BaseSectionSave from the BaseSection data.
@@ -197,7 +200,7 @@ public class InvasionLevelComponent implements Component {
         for (BaseSectionSave section : alienBaseSave.sections) {
             sections.add(baseSectionFromBaseSectionSave(section));
         }
-        return  new AlienBase(world, alienBaseSave.origin, sections, new ArrayList<AlienBuilderBotEntity>());//alienBaseSave.);
+        return  new AlienBase(world, alienBaseSave.origin, sections, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid);
     }
 
     /// Gets the BaseSection from the BaseSectionSave

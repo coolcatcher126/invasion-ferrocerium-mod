@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -87,25 +88,25 @@ public class AlienBuilderBotEntity extends HostileEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         if (alienBase != null){
-            nbt.putInt("ALIEN_BASE", alienBase.hashCode());
+            nbt.putUuid("alien_base", alienBase.getUuid());
         }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        if(nbt.contains("ALIEN_BASE")){
-            int alienBaseHash = nbt.getInt("ALIEN_BASE");
-            for (AlienBase base : InvasionFerroceriumComponents.getAlienBases(getEntityWorld())) {
-                int baseHashed = base.hashCode();
-                InvasionFerrocerium.LOGGER.info("Checking base hash %s against stored hash %s".formatted(base.hashCode(), alienBaseHash));
-                if (baseHashed == alienBaseHash){
-                    alienBase = base;
-                    alienBase.hireBuilder(this);
-                    return;
-                }
+        if(nbt.contains("alien_base")){
+            UUID alienBaseUuid = nbt.getUuid("alien_base");
+            alienBase = (InvasionFerroceriumComponents.getAlienBases(getEntityWorld())).stream()
+                .filter(base -> alienBaseUuid.equals(base.getUuid()))
+                .findAny()
+                .orElse(null);
+            if (alienBase == null){
+                InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
             }
-            InvasionFerrocerium.LOGGER.info("No base is associated with the hash %s".formatted(alienBaseHash));
+            else{
+                InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
+            }
         }
     }
 
@@ -266,6 +267,7 @@ public class AlienBuilderBotEntity extends HostileEntity {
         @Override
         public void stop() {
             this.alienBuilderBot.setBuilding(false);
+            this.alienBuilderBot.sectionToBuild = null;
         }
     }
 
