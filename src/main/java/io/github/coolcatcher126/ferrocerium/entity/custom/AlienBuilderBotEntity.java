@@ -89,6 +89,9 @@ public class AlienBuilderBotEntity extends HostileEntity {
         super.writeCustomDataToNbt(nbt);
         if (alienBase != null){
             nbt.putUuid("alien_base", alienBase.getUuid());
+            if (sectionToBuild != null){
+                nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
+            }
         }
     }
 
@@ -106,6 +109,9 @@ public class AlienBuilderBotEntity extends HostileEntity {
             }
             else{
                 InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
+                if (nbt.contains("section_to_build")){
+                    sectionToBuild = alienBase.getSections().get(nbt.getInt("section_to_build"));
+                }
             }
         }
     }
