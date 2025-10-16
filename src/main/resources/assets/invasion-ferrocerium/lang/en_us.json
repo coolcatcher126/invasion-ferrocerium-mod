@@ -19,6 +19,7 @@
   "item.invasion-ferrocerium.ant_scout_bot_spawn_egg": "Ant Scout Bot Spawn Egg",
   "item.invasion-ferrocerium.ant_soldier_bot_spawn_egg": "Ant Soldier Bot Spawn Egg",
   "item.invasion-ferrocerium.alien_helicopter_bot_spawn_egg": "Alien Helicopter Bot Spawn Egg",
+  "item.invasion-ferrocerium.alien_builder_bot_spawn_egg": "Alien Builder Bot Spawn Egg",
 
   "block.invasion-ferrocerium.aluminum_block": "Block of Aluminum",
   "block.invasion-ferrocerium.aluminum_ore": "Aluminum Ore",
@@ -33,6 +34,7 @@
   "entity.invasion-ferrocerium.ant_soldier_bot": "Ant Soldier Bot",
   "entity.invasion-ferrocerium.alien_helicopter_bot": "Alien Helicopter Bot",
   "entity.invasion-ferrocerium.ant_bot_missile": "Ant Bot Missile",
+  "entity.invasion-ferrocerium.alien_builder_bot": "Alien Builder Bot",
 
   "sounds.invasion-ferrocerium.ant_scout_bot_ambient": "Ant Scout Bot Ambient",
   "sounds.invasion-ferrocerium.ant_scout_bot_hurt": "Ant Scout Bot is hurt",

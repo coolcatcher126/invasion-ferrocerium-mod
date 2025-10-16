@@ -134,7 +134,7 @@ public class AntSoldierBotEntity extends HostileEntity {
         this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
     }
 
-    public void setRangedAttacking(boolean attacking)
+    private void setRangedAttacking(boolean attacking)
     {
         this.dataTracker.set(FIRING_ROCKETS, attacking);
     }
