@@ -32,7 +32,7 @@ public class BaseSection {
     public boolean isBuilt(){
         ArrayList<BaseBlock> blocks = this.getBaseBlockData();
         for (BaseBlock block : blocks) {
-            if (!block.isPlaced(world)){
+            if (!block.isWantedBlock(world)){
                 return false;
             }
         }
