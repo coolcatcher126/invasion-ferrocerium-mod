@@ -172,7 +172,7 @@ public class InvasionLevelComponent implements Component {
     private BaseSectionSave loadBaseSectionSave(NbtCompound nbtCompound){
         return new BaseSectionSave(
                 nbtCompound.getString("base_section_name"),
-                new BlockPos(
+                new BaseSectPos(
                         nbtCompound.getInt("base_section_x"),
                         nbtCompound.getInt("base_section_y"),
                         nbtCompound.getInt("base_section_z")),

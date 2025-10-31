@@ -52,21 +52,30 @@ public class AlienBase {
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
 
         //Create the core of the base
-        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BlockPos(0, 0, 0), BlockRotation.NONE);
+        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
     }
 
     /// Grows the base at random by adding an extra base section to the base
     public void growBase(){
         //TODO: Randomly generate a position and rotation to attach the new section.
         int randomInt = random.nextInt(sectionTemplateList.size());
-        BlockPos offset = new BlockPos(0, 0, 0);
+        BaseSectPos offset = new BaseSectPos(0, 0, 0);
         BlockRotation rot = BlockRotation.NONE;
 
         addBaseSection(sectionTemplateList.get(randomInt), false, offset, rot);
     }
 
-    private void addBaseSection(BaseSectionTemplate sectionTemplate, boolean isCore, BlockPos offset, BlockRotation rot){
-        BaseSection newSection = new BaseSection(sectionTemplate, world, origin.add(offset), rot, false);
+    private boolean checkSectionLocationClear(BaseSectPos pos){
+        for (BaseSection section : sections) {
+            if (section.getOrigin().equals(pos)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void addBaseSection(BaseSectionTemplate sectionTemplate, boolean isCore, BaseSectPos offset, BlockRotation rot){
+        BaseSection newSection = new BaseSection(sectionTemplate, world, offset, rot, false);
         sections.add(newSection);
 
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();

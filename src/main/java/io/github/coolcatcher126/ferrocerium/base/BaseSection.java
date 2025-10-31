@@ -2,6 +2,7 @@ package io.github.coolcatcher126.ferrocerium.base;
 
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.ArrayList;
 public class BaseSection {
     private BaseSectionTemplate section;
     private  World world;
-    private  BlockPos origin;
+    private  BaseSectPos origin;
     private BlockRotation rotation;
     boolean isCore;
 
     public BaseSection(
             BaseSectionTemplate sectionTemplate,
             World world,
-            BlockPos originPos,
+            BaseSectPos originPos,
             BlockRotation rotation,
             boolean isCore
     ) {
@@ -42,8 +43,9 @@ public class BaseSection {
         ArrayList<BaseBlock> blocks = section.getRelativeBlockData(world);
         for (BaseBlock block : blocks) {
             BlockPos pos = block.getBlockPos();
+            pos = pos.subtract(new Vec3i(5,1,5));//Center the section to the middle
             pos = pos.rotate(rotation);
-            pos = pos.add(origin);
+            pos = pos.add(origin.toBlockPos());
             block.setBlockPos(pos);
         }
         return blocks;
@@ -53,7 +55,7 @@ public class BaseSection {
         return section.name;
     }
 
-    public BlockPos getOrigin(){
+    public BaseSectPos getOrigin(){
         return this.origin;
     }
 
