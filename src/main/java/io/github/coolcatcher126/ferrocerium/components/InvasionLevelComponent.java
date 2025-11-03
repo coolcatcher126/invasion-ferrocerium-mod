@@ -11,12 +11,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.ladysnake.cca.api.v3.component.Component;
 import org.apache.commons.lang3.NotImplementedException;
+import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class InvasionLevelComponent implements Component {
+public class InvasionLevelComponent implements Component, ServerTickingComponent {
     /// There are 6 stages:
     /// Stage 0 - No invasion
     /// Stage 1 - Scouts land
@@ -213,5 +214,12 @@ public class InvasionLevelComponent implements Component {
             }
         }
         return null;
+    }
+
+    @Override
+    public void serverTick() {
+        for (AlienBase base : bases) {
+            base.tick();
+        }
     }
 }
