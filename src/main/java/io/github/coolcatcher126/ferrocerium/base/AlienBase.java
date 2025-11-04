@@ -53,8 +53,8 @@ public class AlienBase {
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
 
         //Create the core of the base
-        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
         this.availablePos = new ArrayList<>();
+        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
         baseSectGetAvailablePos();
     }
 
@@ -69,22 +69,22 @@ public class AlienBase {
         BaseSectPos pos = section.getOrigin();
         BaseSectPos newPos;
 
-        newPos = (BaseSectPos) pos.add(1, 0, 0);
+        newPos = pos.add(1, 0, 0);
         if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
             availablePos.add(newPos);
         }
 
-        newPos = (BaseSectPos) pos.add(-1, 0, 0);
+        newPos = pos.add(-1, 0, 0);
         if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
             availablePos.add(newPos);
         }
 
-        newPos = (BaseSectPos) pos.add(0, 0, 1);
+        newPos = pos.add(0, 0, 1);
         if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
             availablePos.add(newPos);
         }
 
-        newPos = (BaseSectPos) pos.add(0, 0, -1);
+        newPos = pos.add(0, 0, -1);
         if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
             availablePos.add(newPos);
         }

@@ -11,4 +11,8 @@ public class BaseSectPos extends Vec3i {
     public BlockPos toBlockPos(){
         return new BlockPos(getX() * SECTION_SIZE, getY() * SECTION_SIZE, getZ() * SECTION_SIZE);
     }
+
+    public BaseSectPos add(int i, int j, int k) {
+        return i == 0 && j == 0 && k == 0 ? this : new BaseSectPos(this.getX() + i, this.getY() + j, this.getZ() + k);
+    }
 }
