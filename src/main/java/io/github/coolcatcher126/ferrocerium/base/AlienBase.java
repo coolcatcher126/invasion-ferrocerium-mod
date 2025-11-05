@@ -21,6 +21,9 @@ public class AlienBase {
 
     ArrayList<BaseSectionTemplate> sectionTemplateList;
     World world;
+
+    int baseGrowTime;
+
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
@@ -146,8 +149,10 @@ public class AlienBase {
 
     /// Ticks this alien base.
     public void tick(){
-        //TODO: Make the base grow slower
-        if (random.nextInt(200) == 0) {
+        if (baseGrowTime > 0) {
+            baseGrowTime--;
+        }
+        else {
             Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
             if (bot.isEmpty()) {
                 spawnBuilder();
@@ -155,6 +160,7 @@ public class AlienBase {
             else {
                 growBase();
             }
+            baseGrowTime = random.nextBetween(3000, 12000);
         }
     }
 
