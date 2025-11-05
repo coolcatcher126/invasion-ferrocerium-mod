@@ -5,6 +5,7 @@ import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegist
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
@@ -137,13 +138,16 @@ public class AlienBase {
 
     /// Adds a newly spawned builder to the builders
     public void spawnBuilder(){
-        hireBuilder(new AlienBuilderBotEntity(world, this));
+        AlienBuilderBotEntity builder = new AlienBuilderBotEntity(world, this);
+        builder.refreshPositionAndAngles(Vec3d.of(this.origin), 0, 0);
+        hireBuilder(builder);
+        this.world.spawnEntity(builder);
     }
 
     /// Ticks this alien base.
     public void tick(){
+        //TODO: Make the base grow slower
         if (random.nextInt(200) == 0) {
-            //TODO: Make the base grow, spawning builders as needed.
             Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
             if (bot.isEmpty()) {
                 spawnBuilder();
