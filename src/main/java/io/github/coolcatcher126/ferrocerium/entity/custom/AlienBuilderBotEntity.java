@@ -19,7 +19,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -31,7 +30,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.UUID;
 
@@ -243,14 +241,16 @@ public class AlienBuilderBotEntity extends HostileEntity {
         }
 
         public void tick(){
+            assert alienBase != null;
             if (delay == 0){
+                
                 World world = getEntityWorld();
                 if (blocks.hasNext() ) {
                     BaseBlock block = blocks.next();
-                    if (!block.isPlaced(world)){
-                        assert alienBase != null;
-                        BlockPos blockPos = block.getBlockPos();
+                    if (!block.isWantedBlock(world)){
+                        BlockPos blockPos = block.getBlockPos().add(alienBase.getOrigin());
                         BlockState blockState = block.getBlockState();
+
                         world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
                         world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
                     }

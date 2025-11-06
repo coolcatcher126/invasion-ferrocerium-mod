@@ -20,7 +20,7 @@ public class BaseBlock {
     public void setBlockPos(BlockPos bp) { this.blockPos = bp; }
     public void setBlockState(BlockState bs) { this.blockState = bs; }
 
-    public boolean isPlaced(World world) {
+    public boolean isWantedBlock(World world) {
         BlockState bs;
         if (world.isClient())
             bs = MinecraftClient.getInstance().world.getBlockState(this.blockPos);

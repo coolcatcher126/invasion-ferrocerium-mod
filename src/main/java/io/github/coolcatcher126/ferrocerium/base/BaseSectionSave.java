@@ -5,11 +5,11 @@ import net.minecraft.util.math.BlockPos;
 
 public class BaseSectionSave{
     public String name;
-    public BlockPos origin;
+    public BaseSectPos origin;
     public BlockRotation rotation;
     public boolean isCore;
 
-    public BaseSectionSave(String name, BlockPos origin, BlockRotation rotation, boolean isCore){
+    public BaseSectionSave(String name, BaseSectPos origin, BlockRotation rotation, boolean isCore){
         this.name = name;
         this.origin = origin;
         this.rotation = rotation;

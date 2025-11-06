@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,6 +30,7 @@ public class BaseDataHelper {
             resourceManager = world.getServer().getResourceManager();
 
         NbtCompound nbt = getBuildingNbt(structureName, resourceManager);
+        InvasionFerrocerium.LOGGER.info(nbt.asString());
         ArrayList<BaseBlock> blocks = new ArrayList<>();
 
         // load in blocks (list of blockPos and their palette index)
