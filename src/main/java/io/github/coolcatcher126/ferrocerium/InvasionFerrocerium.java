@@ -21,6 +21,7 @@ import net.fabricmc.api.ModInitializer;
 import static net.minecraft.server.command.CommandManager.*;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
@@ -56,6 +57,17 @@ public class InvasionFerrocerium implements ModInitializer {
 
         BaseSectionTemplates.registerBaseSections();
 
+        //Make invasion automatically start after x amount of time.
+        ServerTickEvents.END_WORLD_TICK.register((world) ->
+        {
+            //TODO: Make the number of days configurable
+            int days = 5;
+            if (InvasionFerroceriumComponents.getInvasionLevel(world) == 0 && world.getTime() == 24000 * days) {
+                InvasionFerroceriumComponents.setInvasion(world, 1);
+            }
+        });
+
+        //Register commands
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
                 dispatcher.register(literal("invasion")
                         .then(literal("get")
