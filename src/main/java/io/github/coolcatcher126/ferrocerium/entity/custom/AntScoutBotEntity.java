@@ -21,7 +21,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 
-public class AntScoutBotEntity extends HostileEntity {
+public class AntScoutBotEntity extends HostileEntity implements InvasionBotEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
     

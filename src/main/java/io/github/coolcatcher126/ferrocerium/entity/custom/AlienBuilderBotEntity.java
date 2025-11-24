@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ListIterator;
 import java.util.UUID;
 
-public class AlienBuilderBotEntity extends HostileEntity {
+public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable

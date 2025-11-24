@@ -26,8 +26,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 
-public class AntSoldierBotEntity extends HostileEntity {
+import java.util.function.Predicate;
+
+public class AntSoldierBotEntity extends HostileEntity implements InvasionBotEntity {
     private static final TrackedData<Boolean> FIRING_ROCKETS = DataTracker.registerData(AntSoldierBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public final AnimationState idleAnimationState = new AnimationState();
@@ -74,8 +77,8 @@ public class AntSoldierBotEntity extends HostileEntity {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AntSoldierBotEntity.TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new AntSoldierBotEntity.TargetGoal<>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new AntSoldierBotEntity.TargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AntSoldierBotEntity.TargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
@@ -274,8 +277,20 @@ public class AntSoldierBotEntity extends HostileEntity {
     }
 
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-        public TargetGoal(AntSoldierBotEntity antSoldierBot, Class<T> targetEntityClass) {
-            super(antSoldierBot, targetEntityClass, true);
+        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility) {
+            super(mob, targetClass, checkVisibility);
+        }
+
+        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, Predicate<LivingEntity> targetPredicate) {
+            super(mob, targetClass, checkVisibility, targetPredicate);
+        }
+
+        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
+            super(mob, targetClass, checkVisibility, checkCanNavigate);
+        }
+
+        public TargetGoal(MobEntity mob, Class<T> targetClass, int reciprocalChance, boolean checkVisibility, boolean checkCanNavigate, @Nullable Predicate<LivingEntity> targetPredicate) {
+            super(mob, targetClass, reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate);
         }
 
         @Override

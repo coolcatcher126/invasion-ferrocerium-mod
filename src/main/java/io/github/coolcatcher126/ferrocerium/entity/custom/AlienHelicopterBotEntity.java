@@ -22,7 +22,7 @@ import net.minecraft.world.dimension.DimensionType;
 
 import java.util.EnumSet;
 
-public class AlienHelicopterBotEntity extends FlyingEntity implements Monster {
+public class AlienHelicopterBotEntity extends FlyingEntity implements Monster, InvasionBotEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
 
