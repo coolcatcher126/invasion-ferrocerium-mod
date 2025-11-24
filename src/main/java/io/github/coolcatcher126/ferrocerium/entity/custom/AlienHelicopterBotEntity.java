@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
@@ -61,8 +62,8 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster, I
         this.goalSelector.add(5, new FlyRandomlyGoal(this));
         this.goalSelector.add(7, new LookAtTargetGoal(this));
         this.goalSelector.add(8, new LookAroundGoal(this));
-        this.targetSelector.add(2, new TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new TargetGoal<>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){

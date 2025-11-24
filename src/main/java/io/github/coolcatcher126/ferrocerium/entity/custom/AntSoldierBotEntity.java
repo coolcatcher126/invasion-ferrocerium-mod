@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
@@ -77,8 +78,8 @@ public class AntSoldierBotEntity extends HostileEntity implements InvasionBotEnt
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AntSoldierBotEntity.TargetGoal<>(this, PlayerEntity.class, true));
-        this.targetSelector.add(3, new AntSoldierBotEntity.TargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
+        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
@@ -273,30 +274,6 @@ public class AntSoldierBotEntity extends HostileEntity implements InvasionBotEnt
             } else {
                 return super.shouldContinue();
             }
-        }
-    }
-
-    static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility) {
-            super(mob, targetClass, checkVisibility);
-        }
-
-        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, Predicate<LivingEntity> targetPredicate) {
-            super(mob, targetClass, checkVisibility, targetPredicate);
-        }
-
-        public TargetGoal(MobEntity mob, Class<T> targetClass, boolean checkVisibility, boolean checkCanNavigate) {
-            super(mob, targetClass, checkVisibility, checkCanNavigate);
-        }
-
-        public TargetGoal(MobEntity mob, Class<T> targetClass, int reciprocalChance, boolean checkVisibility, boolean checkCanNavigate, @Nullable Predicate<LivingEntity> targetPredicate) {
-            super(mob, targetClass, reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate);
-        }
-
-        @Override
-        public boolean canStart() {
-            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(super.mob.getEntityWorld()) > 0;
-            return invasionStart && super.canStart();
         }
     }
 
