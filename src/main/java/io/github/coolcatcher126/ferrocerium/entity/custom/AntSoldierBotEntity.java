@@ -7,6 +7,7 @@ import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -262,7 +263,7 @@ public class AntSoldierBotEntity extends HostileEntity {
 
         @Override
         public boolean shouldContinue() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
+            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(super.mob.getEntityWorld()) > 0;
             if (invasionStart && this.mob.getRandom().nextInt(100) == 0) {
                 this.mob.setTarget(null);
                 return false;
@@ -279,7 +280,7 @@ public class AntSoldierBotEntity extends HostileEntity {
 
         @Override
         public boolean canStart() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
+            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(super.mob.getEntityWorld()) > 0;
             return invasionStart && super.canStart();
         }
     }
