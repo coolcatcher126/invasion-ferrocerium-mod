@@ -2,16 +2,13 @@ package io.github.coolcatcher126.ferrocerium;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.entity.custom.*;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
 import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.components.InvasionLevelComponent;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
-import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
-import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
-import io.github.coolcatcher126.ferrocerium.entity.custom.AntSoldierBotEntity;
 import io.github.coolcatcher126.ferrocerium.item.ModItemGroups;
 import io.github.coolcatcher126.ferrocerium.item.ModItems;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
@@ -21,6 +18,7 @@ import net.fabricmc.api.ModInitializer;
 import static net.minecraft.server.command.CommandManager.*;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.command.argument.DimensionArgumentType;
@@ -64,6 +62,12 @@ public class InvasionFerrocerium implements ModInitializer {
             int days = 5;
             if (InvasionFerroceriumComponents.getInvasionLevel(world) == 0 && world.getTime() == 24000 * days) {
                 InvasionFerroceriumComponents.setInvasion(world, 1);
+            }
+        });
+
+        ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((serverWorld, entity, livingEntity) -> {
+            if (entity instanceof InvasionBotEntity){
+                InvasionFerroceriumComponents.progressInvasion(serverWorld);
             }
         });
 
