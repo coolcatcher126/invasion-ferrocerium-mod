@@ -26,9 +26,13 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
     /// Stage 4 - One base is made into the main base, a few small bases
     /// Stage 5 - Full on occupation with all enemies spawning. Large bases everywhere.
     public static final int MAX_INVASION = 5;
+    //The number of points needed to progress to the next stage
+    public static final int INVASION_POINTS_THRESHOLD = 1000;
 
     //The current invasion state
     private int invasionState = 0;
+    //A points system to measure progress until the next stage
+    private int invasionPoints = 0;
     // bases that currently exist
     private ArrayList<AlienBase> bases = new ArrayList<>();
 
@@ -42,16 +46,30 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         return this.invasionState;
     }
 
+    public int getInvasionPoints(){
+        return this.invasionPoints;
+    }
+
     public void fightBackInvasion(){
         this.invasionState = MathHelper.clamp(--this.invasionState, 0, MAX_INVASION);
+        this.invasionPoints = 0;
     }
 
     public void progressInvasion(){
         this.invasionState = MathHelper.clamp(++this.invasionState, 0, MAX_INVASION);
+        this.invasionPoints = 0;
     }
 
     public void setInvasion(int invasionState){
         this.invasionState = MathHelper.clamp(invasionState, 0, MAX_INVASION);
+        this.invasionPoints = 0;
+    }
+
+    public void addPoints(int invasionPoints){
+        this.invasionPoints += invasionPoints;
+        if (this.invasionPoints > INVASION_POINTS_THRESHOLD){
+            progressInvasion();
+        }
     }
 
     public ArrayList<AlienBase> getBases(){

@@ -31,8 +31,13 @@ public class InvasionFerroceriumComponents implements WorldComponentInitializer 
         return Optional.of(world.getComponent(INVASION_LEVEL));
     }
 
+
     public static int getInvasionLevel(World world){
         return world.getComponent(INVASION_LEVEL).getInvasionState();
+    }
+
+    public static int getInvasionPoints(World world){
+        return world.getComponent(INVASION_LEVEL).getInvasionPoints();
     }
 
     public static void fightBackInvasion(World world){
@@ -45,6 +50,10 @@ public class InvasionFerroceriumComponents implements WorldComponentInitializer 
 
     public static void setInvasion(World world, int invasionState){
         world.getComponent(INVASION_LEVEL).setInvasion(invasionState);
+    }
+
+    public static void addInvasionPoints(World world, int invasionPoints){
+        world.getComponent(INVASION_LEVEL).addPoints(invasionPoints);
     }
 
     public static ArrayList<AlienBase> getAlienBases(World world) {

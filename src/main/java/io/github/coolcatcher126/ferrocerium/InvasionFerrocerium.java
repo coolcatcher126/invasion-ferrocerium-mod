@@ -67,7 +67,7 @@ public class InvasionFerrocerium implements ModInitializer {
 
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((serverWorld, entity, livingEntity) -> {
             if (entity instanceof InvasionBotEntity){
-                InvasionFerroceriumComponents.progressInvasion(serverWorld);
+                InvasionFerroceriumComponents.addInvasionPoints(serverWorld, 1);
             }
         });
 
@@ -122,7 +122,8 @@ public class InvasionFerrocerium implements ModInitializer {
 
     private static int executeGetInvasion(World world, CommandContext<ServerCommandSource> context){
         int invLevel = InvasionFerroceriumComponents.getInvasionLevel(world);
-        context.getSource().sendFeedback(() -> Text.literal("Invasion level is: %s".formatted(invLevel)), false);
+        int invPts = InvasionFerroceriumComponents.getInvasionPoints(world);
+        context.getSource().sendFeedback(() -> Text.literal("Invasion level: %s. Invasion points: %s".formatted(invLevel, invPts)), false);
         return 1;
     }
 
