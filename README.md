@@ -27,4 +27,5 @@ The mod is expected to grow in content over the course of many updates increasin
 ### Other Versions/Mod Loaders
 There are no current plans to port this mod to other versions or mod loaders, however, this may change in the future.
 ## Download
-You can download the mod
+You can download the mod from here:
+https://modrinth.com/mod/invasion-ferrocerium
