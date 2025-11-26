@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
@@ -21,7 +22,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 
-public class AntScoutBotEntity extends HostileEntity {
+public class AntScoutBotEntity extends HostileEntity implements InvasionBotEntity {
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
     
@@ -63,8 +64,8 @@ public class AntScoutBotEntity extends HostileEntity {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AntScoutBotEntity.TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new AntScoutBotEntity.TargetGoal<>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){

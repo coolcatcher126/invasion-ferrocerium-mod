@@ -6,6 +6,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -33,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ListIterator;
 import java.util.UUID;
 
-public class AlienBuilderBotEntity extends HostileEntity {
+public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable
@@ -123,8 +124,8 @@ public class AlienBuilderBotEntity extends HostileEntity {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AlienBuilderBotEntity.TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new AlienBuilderBotEntity.TargetGoal<>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){

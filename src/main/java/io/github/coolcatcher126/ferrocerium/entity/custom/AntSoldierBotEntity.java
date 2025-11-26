@@ -1,12 +1,14 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -25,8 +27,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 
-public class AntSoldierBotEntity extends HostileEntity {
+import java.util.function.Predicate;
+
+public class AntSoldierBotEntity extends HostileEntity implements InvasionBotEntity {
     private static final TrackedData<Boolean> FIRING_ROCKETS = DataTracker.registerData(AntSoldierBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public final AnimationState idleAnimationState = new AnimationState();
@@ -73,8 +78,8 @@ public class AntSoldierBotEntity extends HostileEntity {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AntSoldierBotEntity.TargetGoal<>(this, PlayerEntity.class));
-        this.targetSelector.add(3, new AntSoldierBotEntity.TargetGoal<>(this, IronGolemEntity.class));
+        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
@@ -262,25 +267,13 @@ public class AntSoldierBotEntity extends HostileEntity {
 
         @Override
         public boolean shouldContinue() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
+            boolean invasionStart = InvasionFerroceriumComponents.getInvasionLevel(super.mob.getEntityWorld()) > 0;
             if (invasionStart && this.mob.getRandom().nextInt(100) == 0) {
                 this.mob.setTarget(null);
                 return false;
             } else {
                 return super.shouldContinue();
             }
-        }
-    }
-
-    static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
-        public TargetGoal(AntSoldierBotEntity antSoldierBot, Class<T> targetEntityClass) {
-            super(antSoldierBot, targetEntityClass, true);
-        }
-
-        @Override
-        public boolean canStart() {
-            boolean invasionStart = true;//TODO: change invasionStart to check if invasion has started
-            return invasionStart && super.canStart();
         }
     }
 
