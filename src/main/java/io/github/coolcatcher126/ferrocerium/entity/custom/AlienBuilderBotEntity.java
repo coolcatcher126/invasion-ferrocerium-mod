@@ -12,6 +12,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -31,6 +32,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.EnumSet;
 import java.util.ListIterator;
 import java.util.UUID;
 
@@ -221,9 +223,12 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         private final AlienBuilderBotEntity alienBuilderBot;
         private ListIterator<BaseBlock> blocks;
         private int delay;
+        private Path path;
+        BlockPos sectToBuildPos;
 
         AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
             this.alienBuilderBot = alienBuilderBot;
+            this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
         }
 
         @Override
@@ -232,13 +237,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 return false;
             }
             else{
-                return !sectionToBuild.isBuilt();
+                this.sectToBuildPos = alienBase.getOrigin().add(sectionToBuild.getOrigin().toBlockPos());
+                this.path = this.alienBuilderBot.getNavigation().findPathTo(this.sectToBuildPos, 0);
+                return !sectionToBuild.isBuilt() && (this.path != null || this.alienBuilderBot.getAttackBox().contains(sectToBuildPos.toCenterPos()));
             }
         }
 
         @Override
         public boolean shouldContinue() {
-            return (alienBase != null && sectionToBuild != null && blocks.hasNext());
+            return (alienBase != null && sectionToBuild != null && blocks.hasNext() && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
         }
 
         public void tick(){
@@ -265,6 +272,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         @Override
         public void start() {
+            this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.speed);
             this.alienBuilderBot.setBuilding(true);
             assert this.alienBuilderBot.sectionToBuild != null;
             blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData().listIterator();
@@ -275,6 +283,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         public void stop() {
             this.alienBuilderBot.setBuilding(false);
             this.alienBuilderBot.sectionToBuild = null;
+            this.alienBuilderBot.getNavigation().stop();
         }
     }
 
