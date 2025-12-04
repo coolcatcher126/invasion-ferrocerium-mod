@@ -8,6 +8,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
 
@@ -178,5 +179,11 @@ public class AlienBase {
 
     public UUID getUuid(){
         return this.uuid;
+    }
+
+    /// Returns a list of all the chests held within the alien base.
+    /// Used to allow alien builder bots to deposit and/or pick up collected items.
+    public ArrayList<BlockPos> getChestLocations(){
+        throw new NotImplementedException();
     }
 }
