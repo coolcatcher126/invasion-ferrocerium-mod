@@ -250,8 +250,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         public void tick(){
             assert alienBase != null;
+
+            this.alienBuilderBot.getLookControl().lookAt(sectToBuildPos.toCenterPos());
             if (delay == 0){
-                
+                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
                 World world = getEntityWorld();
                 if (blocks.hasNext() ) {
                     BaseBlock block = blocks.next();
@@ -272,7 +274,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         @Override
         public void start() {
-            this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.speed);
+            this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.alienBuilderBot.setBuilding(true);
             assert this.alienBuilderBot.sectionToBuild != null;
             blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData().listIterator();
