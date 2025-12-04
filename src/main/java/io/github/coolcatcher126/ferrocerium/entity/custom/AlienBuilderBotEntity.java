@@ -23,7 +23,9 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -36,13 +38,14 @@ import java.util.EnumSet;
 import java.util.ListIterator;
 import java.util.UUID;
 
-public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity {
+public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable
     private BaseSection sectionToBuild;
     @Nullable
     private AlienBase alienBase;
+    private final SimpleInventory inventory = new SimpleInventory(9);
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -94,6 +97,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
         }
+        this.writeInventory(nbt, this.getRegistryManager());
     }
 
     @Override
@@ -115,6 +119,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 }
             }
         }
+        this.readInventory(nbt, this.getRegistryManager());
     }
 
     @Override
@@ -204,6 +209,21 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public boolean cannotDespawn() {
         //Disallow despawning when assigned to a base.
         return super.cannotDespawn() || alienBase != null;
+    }
+
+    @Override
+    public SimpleInventory getInventory() {
+        return this.inventory;
+    }
+
+    @Override
+    public void readInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+        InventoryOwner.super.readInventory(nbt, wrapperLookup);
+    }
+
+    @Override
+    public void writeInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
+        InventoryOwner.super.writeInventory(nbt, wrapperLookup);
     }
 
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
