@@ -7,6 +7,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
+import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBuilderGatherResourcesGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,13 +20,17 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -40,6 +45,7 @@ import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable
     private BaseSection sectionToBuild;
@@ -56,12 +62,14 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     /// Creates a base.
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
+        this.setCanPickUpLoot(true);
     }
 
     /// Base helper spawn.
     /// Add to a preexisting base.
     public AlienBuilderBotEntity(World world, AlienBase base){
         super(ModEntities.ALIEN_BUILDER_BOT, world);
+        this.setCanPickUpLoot(true);
         this.alienBase = base;
     }
 
@@ -126,7 +134,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(4, new AlienBuilderAttackGoal(this, (double)1.0F, false));
-        this.goalSelector.add(5, new AlienBuilderBuildGoal(this));
+        this.goalSelector.add(4, new AlienBuilderBuildGoal(this));
+        this.goalSelector.add(5, new AlienBuilderGatherResourcesGoal(this));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
@@ -185,7 +194,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
     }
 
-    private void setBuilding(boolean building)
+    public double getBlockInteractionRange() {
+        return this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
+    }
+
+    public void setBuilding(boolean building)
     {
         this.dataTracker.set(BUILDING, building);
     }
@@ -193,6 +206,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public boolean isBuilding()
     {
         return this.dataTracker.get(BUILDING);
+    }
+
+    public void setGathering(boolean gathering)
+    {
+        this.dataTracker.set(GATHERING, gathering);
+    }
+
+    public boolean isGathering()
+    {
+        return this.dataTracker.get(GATHERING);
     }
 
     public void setSection(BaseSection sectionToBuild){
@@ -203,6 +226,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     protected void initDataTracker(DataTracker.Builder builder) {
         super.initDataTracker(builder);
         builder.add(BUILDING, false);
+        builder.add(GATHERING, false);
     }
 
     @Override
@@ -225,6 +249,21 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public void writeInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         InventoryOwner.super.writeInventory(nbt, wrapperLookup);
     }
+
+    @Override
+    protected void dropEquipment(ServerWorld world, DamageSource source, boolean causedByPlayer) {
+        super.dropEquipment(world, source, causedByPlayer);
+        this.inventory.clearToList().forEach(this::dropStack);
+    }
+
+    protected ItemStack addItem(ItemStack stack) {
+        return this.inventory.addStack(stack);
+    }
+
+    protected boolean canInsertIntoInventory(ItemStack stack) {
+        return this.inventory.canInsert(stack);
+    }
+
 
     static class TargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
         public TargetGoal(AlienBuilderBotEntity antSoldierBot, Class<T> targetEntityClass) {
