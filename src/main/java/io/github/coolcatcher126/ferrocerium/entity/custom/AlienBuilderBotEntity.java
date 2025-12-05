@@ -185,9 +185,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
     }
 
-    private void setBuilding(boolean attacking)
+    private void setBuilding(boolean building)
     {
-        this.dataTracker.set(BUILDING, attacking);
+        this.dataTracker.set(BUILDING, building);
     }
 
     public boolean isBuilding()
