@@ -1,7 +1,10 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -11,19 +14,35 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
 public class AlienBase {
+    private int minBlockSearchRadius = 10;//The minimum distance to search for blocks to collect (centered on the base)
+    private int maxBlockSearchRadius = 20;//The maximum distance to search for blocks to collect (centered on the base)
+
     BlockPos origin;
     ArrayList<BaseSection> sections;
     ArrayList<AlienBuilderBotEntity> builders;
     ArrayList<BaseSectPos> availablePos;
 
     ArrayList<BaseSectionTemplate> sectionTemplateList;
+
+    List<Block> COLLECTIBLE_BLOCKS = List.of(
+            Blocks.ACACIA_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.OAK_LOG, Blocks.OAK_LOG, Blocks.DARK_OAK_LOG, Blocks.JUNGLE_LOG,
+            Blocks.ACACIA_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.OAK_PLANKS, Blocks.OAK_PLANKS, Blocks.DARK_OAK_PLANKS, Blocks.JUNGLE_PLANKS,
+            /*Blocks.STONE,*/ Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, ModBlocks.ALUMINUM_ORE_BLOCK, ModBlocks.DEEPSLATE_ALUMINUM_ORE_BLOCK
+            );
+
     World world;
 
-    int baseGrowTime;
+    private int baseGrowTime;
+
+    private final int SEARCH_TIME = 20;
+    private int search_time_count = SEARCH_TIME;
+
+    ArrayList<ArrayList<BlockPos>> resources = new ArrayList<>();
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
@@ -120,9 +139,7 @@ public class AlienBase {
         baseSectCheckAdjPos(newSection);
 
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> {
-            x.setSection(newSection);
-        });
+        bot.ifPresent(x -> x.setSection(newSection));
     }
 
     /// Returns the first alien builder bot to not be building.
@@ -150,6 +167,7 @@ public class AlienBase {
 
     /// Ticks this alien base.
     public void tick(){
+        //Grow the base after the timer finishes
         if (baseGrowTime > 0) {
             baseGrowTime--;
         }
@@ -162,6 +180,14 @@ public class AlienBase {
                 growBase();
             }
             baseGrowTime = random.nextBetween(3000, 12000);
+        }
+        //Don't look for things to mine all the time
+        if (search_time_count > 0){
+            search_time_count--;
+        }
+        else{
+            findResourcesToCollect();
+            search_time_count = SEARCH_TIME;
         }
     }
 
@@ -182,8 +208,94 @@ public class AlienBase {
     }
 
     /// Returns a list of all the chests held within the alien base.
-    /// Used to allow alien builder bots to deposit and/or pick up collected items.
+    /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
     public ArrayList<BlockPos> getChestLocations(){
         throw new NotImplementedException();
     }
+
+    public void setBlockSearchRadius(int minBlockSearchRadius, int maxBlockSearchRadius) {
+        this.minBlockSearchRadius = minBlockSearchRadius;
+        this.maxBlockSearchRadius = maxBlockSearchRadius;
+    }
+
+    ///Searches in the area between the min and max search radii to find resources to collect.
+    /// <p>The base uses the resources found to send builder bots to investigate and mine</p>
+    /// <p>Resources being: Wood, ores, stone</p>
+    public void findResourcesToCollect(){
+        final AtomicReference<BlockPos> searchedBlock = new AtomicReference<>();
+        for (int x = this.minBlockSearchRadius; x <= this.maxBlockSearchRadius; x++) {
+            for (int z = this.minBlockSearchRadius; z <= this.maxBlockSearchRadius; z++) {
+                //+x+z
+                searchedBlock.set(getOrigin().add(x, 0, z));
+                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                    resources.add(vein);
+                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                }
+                //-x+z
+                searchedBlock.set(getOrigin().add(-x, 0, z));
+                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                    resources.add(vein);
+                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                }
+                //+x-z
+                searchedBlock.set(getOrigin().add(x, 0, -z));
+                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                    resources.add(vein);
+                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                }
+                //-x-z
+                searchedBlock.set(getOrigin().add(-x, 0, -z));
+                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                    resources.add(vein);
+                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                }
+            }
+        }
+    }
+
+    /// Searches in the area around the given block pos recursively to find resources to collect.
+    void findAdjacentResourcesToCollect(BlockPos blockPos, List<BlockPos> resources){
+        BlockPos searchedBlock;
+        //Check +x
+        searchedBlock = blockPos.add(1, 0, 0);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+        //Check -x
+        searchedBlock = blockPos.add(-1, 0, 0);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+        //Check +y
+        searchedBlock = blockPos.add(0, 1, 0);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+        //Check -y
+        searchedBlock = blockPos.add(0, -1, 0);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+        //Check +z
+        searchedBlock = blockPos.add(0, 0, 1);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+        //Check -z
+        searchedBlock = blockPos.add(0, 0, -1);
+        if (!resources.contains(searchedBlock) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock).getBlock())){
+            resources.add(searchedBlock);
+            findAdjacentResourcesToCollect(searchedBlock, resources);
+        }
+    }
+
 }

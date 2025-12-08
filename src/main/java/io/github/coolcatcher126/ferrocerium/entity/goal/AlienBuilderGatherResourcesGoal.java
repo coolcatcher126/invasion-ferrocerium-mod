@@ -22,8 +22,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
     private final int REACH_RANGE = 5;//The furthest from the AlienBuilderBotEntity a block can be broken from
     private final int MAX_BREAK_TICKS = 200;//The maximum time in ticks it takes to break a block
 
-    private int minBlockSearchRadius = 10;//The minimum distance to search for blocks to collect (centered on the base)
-    private int maxBlockSearchRadius = 20;//The maximum distance to search for blocks to collect (centered on the base)
+    private int count_ticks = 0;
 
     private int delay;
     private Path path;
@@ -77,8 +76,4 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         return true;
     }
 
-    public void setBlockSearchRadius(int minBlockSearchRadius, int maxBlockSearchRadius) {
-        this.minBlockSearchRadius = minBlockSearchRadius;
-        this.maxBlockSearchRadius = maxBlockSearchRadius;
-    }
 }
