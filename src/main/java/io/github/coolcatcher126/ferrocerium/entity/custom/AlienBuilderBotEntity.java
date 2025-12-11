@@ -20,15 +20,15 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.nbt.InvalidNbtException;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -39,6 +39,7 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.ListIterator;
 import java.util.UUID;
@@ -49,6 +50,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     @Nullable
     private BaseSection sectionToBuild;
+    @Nullable
+    private ArrayList<BlockPos> vein;
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
@@ -104,6 +107,17 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             if (sectionToBuild != null){
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
+            if (vein != null){
+                NbtList veinNbt = new NbtList();
+                for (BlockPos blockPos : vein) {
+                    NbtCompound blockPosNbt = new NbtCompound();
+                    blockPosNbt.putInt("block_z",blockPos.getZ());
+                    blockPosNbt.putInt("block_y",blockPos.getY());
+                    blockPosNbt.putInt("block_x",blockPos.getX());
+                    veinNbt.add(blockPosNbt);
+                }
+                nbt.put("vein", veinNbt);
+            }
         }
         this.writeInventory(nbt, this.getRegistryManager());
     }
@@ -117,15 +131,33 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 .filter(base -> alienBaseUuid.equals(base.getUuid()))
                 .findAny()
                 .orElse(null);
-            if (alienBase == null){
-                InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
-            }
-            else{
-                InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
+            if (alienBase != null) {
+                //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
                 if (nbt.contains("section_to_build")){
                     sectionToBuild = alienBase.getSections().get(nbt.getInt("section_to_build"));
                 }
+            } /*else {
+                InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
+            }*/
+        }
+        if (nbt.contains("vein")) {
+            NbtList nbtList = nbt.getList("vein", NbtElement.COMPOUND_TYPE);
+            BlockPos blockPos;
+            vein = new ArrayList<>();
+            for (NbtElement nbtElement : nbtList) {
+                if (nbtElement instanceof NbtCompound) {
+                    blockPos = new BlockPos(
+                            ((NbtCompound) nbtElement).getInt("block_x"),
+                            ((NbtCompound) nbtElement).getInt("block_y"),
+                            ((NbtCompound) nbtElement).getInt("block_z")
+                    );
+                    vein.add(blockPos);
+                }
+                else{
+                    throw new InvalidNbtException("Vein data does not exist");
+                }
             }
+
         }
         this.readInventory(nbt, this.getRegistryManager());
     }
@@ -133,9 +165,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(4, new AlienBuilderAttackGoal(this, (double)1.0F, false));
+        this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
         this.goalSelector.add(4, new AlienBuilderBuildGoal(this));
-        this.goalSelector.add(5, new AlienBuilderGatherResourcesGoal(this));
+        this.goalSelector.add(5, new AlienBuilderGatherResourcesGoal(this, 1.0F));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
@@ -198,6 +230,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.getAttributeValue(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE);
     }
 
+    public AlienBase getBase(){
+        return this.alienBase;
+    }
+
     public void setBuilding(boolean building)
     {
         this.dataTracker.set(BUILDING, building);
@@ -220,6 +256,18 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setSection(BaseSection sectionToBuild){
         this.sectionToBuild = sectionToBuild;
+    }
+
+    public BaseSection getSection(){
+        return this.sectionToBuild;
+    }
+
+    public void setVein(@Nullable ArrayList<BlockPos> vein){
+        this.vein = vein;
+    }
+
+    public @Nullable ArrayList<BlockPos> getVein(){
+        return this.vein;
     }
 
     @Override
@@ -292,19 +340,20 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         @Override
         public boolean canStart() {
-            if (alienBase == null || sectionToBuild == null){
-                return false;
-            }
-            else{
-                this.sectToBuildPos = alienBase.getOrigin().add(sectionToBuild.getOrigin().toBlockPos());
-                this.path = this.alienBuilderBot.getNavigation().findPathTo(this.sectToBuildPos, 0);
-                return !sectionToBuild.isBuilt() && (this.path != null || this.alienBuilderBot.getAttackBox().contains(sectToBuildPos.toCenterPos()));
-            }
+            return false;//DEBUG - TEST GATHER RESOURCES
+//            if (alienBase == null || getSection() == null){
+//                return false;
+//            }
+//            else{
+//                this.sectToBuildPos = alienBase.getOrigin().add(getSection().getOrigin().toBlockPos());
+//                this.path = this.alienBuilderBot.getNavigation().findPathTo(this.sectToBuildPos, 0);
+//                return !getSection().isBuilt() && (this.path != null || this.alienBuilderBot.getAttackBox().contains(sectToBuildPos.toCenterPos()));
+//            }
         }
 
         @Override
         public boolean shouldContinue() {
-            return (alienBase != null && sectionToBuild != null && blocks.hasNext() && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
+            return (alienBase != null && getSection() != null && blocks.hasNext() && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
         }
 
         public void tick(){
@@ -335,15 +384,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         public void start() {
             this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
             this.alienBuilderBot.setBuilding(true);
-            assert this.alienBuilderBot.sectionToBuild != null;
-            blocks = this.alienBuilderBot.sectionToBuild.getBaseBlockData().listIterator();
+            assert this.alienBuilderBot.getSection() != null;
+            blocks = this.alienBuilderBot.getSection().getBaseBlockData().listIterator();
             delay = 0;
         }
 
         @Override
         public void stop() {
             this.alienBuilderBot.setBuilding(false);
-            this.alienBuilderBot.sectionToBuild = null;
+            this.alienBuilderBot.setSection(null);
             this.alienBuilderBot.getNavigation().stop();
         }
     }

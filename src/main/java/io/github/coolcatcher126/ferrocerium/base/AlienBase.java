@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
 public class AlienBase {
-    private int minBlockSearchRadius = 10;//The minimum distance to search for blocks to collect (centered on the base)
-    private int maxBlockSearchRadius = 20;//The maximum distance to search for blocks to collect (centered on the base)
+    private int minBlockSearchRadius = 0;//The minimum distance to search for blocks to collect (centered on the base)
+    private int maxBlockSearchRadius = 30;//The maximum distance to search for blocks to collect (centered on the base)
 
     BlockPos origin;
     ArrayList<BaseSection> sections;
@@ -187,6 +187,7 @@ public class AlienBase {
         }
         else{
             findResourcesToCollect();
+            mineResourceVeins();
             search_time_count = SEARCH_TIME;
         }
     }
@@ -296,6 +297,17 @@ public class AlienBase {
             resources.add(searchedBlock);
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
+    }
+
+    private void mineResourceVeins(){
+        if (resources.isEmpty()) return;
+        int randomInt = random.nextInt(resources.size());
+        mineResourceVein(resources.remove(randomInt));
+    }
+
+    private void mineResourceVein(ArrayList<BlockPos> resourceArray){
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+        bot.ifPresent(x -> x.setVein(resourceArray));
     }
 
 }
