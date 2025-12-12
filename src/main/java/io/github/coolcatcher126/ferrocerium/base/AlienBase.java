@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.base;
 import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.BlockRotation;
@@ -42,7 +43,7 @@ public class AlienBase {
     private final int SEARCH_TIME = 20;
     private int search_time_count = SEARCH_TIME;
 
-    ArrayList<ArrayList<BlockPos>> resources = new ArrayList<>();
+    ArrayList<Vein> resources = new ArrayList<>();
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
@@ -145,7 +146,7 @@ public class AlienBase {
     /// Returns the first alien builder bot to not be building.
     private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!builder.isBuilding()){
+            if (!(builder.isBuilding() || builder.isGathering())){
                 return Optional.of(builder);
             }
         }
@@ -225,34 +226,37 @@ public class AlienBase {
     public void findResourcesToCollect(){
         final AtomicReference<BlockPos> searchedBlock = new AtomicReference<>();
         for (int x = this.minBlockSearchRadius; x <= this.maxBlockSearchRadius; x++) {
-            for (int z = this.minBlockSearchRadius; z <= this.maxBlockSearchRadius; z++) {
-                //+x+z
-                searchedBlock.set(getOrigin().add(x, 0, z));
-                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
-                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                    resources.add(vein);
-                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                }
-                //-x+z
-                searchedBlock.set(getOrigin().add(-x, 0, z));
-                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
-                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                    resources.add(vein);
-                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                }
-                //+x-z
-                searchedBlock.set(getOrigin().add(x, 0, -z));
-                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
-                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                    resources.add(vein);
-                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                }
-                //-x-z
-                searchedBlock.set(getOrigin().add(-x, 0, -z));
-                if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
-                    ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                    resources.add(vein);
-                    findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+            for (int y = -5; y <= 5; y++){
+                for (int z = this.minBlockSearchRadius; z <= this.maxBlockSearchRadius; z++) {
+                    //+x+z
+                    searchedBlock.set(getOrigin().add(x, y, z));
+                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                        resources.add(new Vein(vein));
+                    }
+                    //-x+z
+                    searchedBlock.set(getOrigin().add(-x, y, z));
+                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                        resources.add(new Vein(vein));
+                        resources.add(new Vein(vein));
+                    }
+                    //+x-z
+                    searchedBlock.set(getOrigin().add(x, y, -z));
+                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                        resources.add(new Vein(vein));
+                    }
+                    //-x-z
+                    searchedBlock.set(getOrigin().add(-x, y, -z));
+                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && COLLECTIBLE_BLOCKS.contains(world.getBlockState(searchedBlock.get()).getBlock())){
+                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
+                        resources.add(new Vein(vein));
+                    }
                 }
             }
         }
@@ -305,9 +309,9 @@ public class AlienBase {
         mineResourceVein(resources.remove(randomInt));
     }
 
-    private void mineResourceVein(ArrayList<BlockPos> resourceArray){
+    private void mineResourceVein(Vein vein){
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> x.setVein(resourceArray));
+        bot.ifPresent(x -> x.setVein(vein));
     }
 
 }

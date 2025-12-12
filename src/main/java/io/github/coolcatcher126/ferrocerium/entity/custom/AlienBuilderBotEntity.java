@@ -1,6 +1,5 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
-import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
@@ -8,6 +7,7 @@ import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumCompon
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBuilderGatherResourcesGoal;
+import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,7 +39,6 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.ListIterator;
 import java.util.UUID;
@@ -51,7 +50,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Nullable
     private BaseSection sectionToBuild;
     @Nullable
-    private ArrayList<BlockPos> vein;
+    private Vein vein;
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
@@ -109,8 +108,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             }
             if (vein != null){
                 NbtList veinNbt = new NbtList();
-                for (BlockPos blockPos : vein) {
+                for (int i = 0; i < vein.size(); i++) {
                     NbtCompound blockPosNbt = new NbtCompound();
+                    BlockPos blockPos = vein.get(i);
                     blockPosNbt.putInt("block_z",blockPos.getZ());
                     blockPosNbt.putInt("block_y",blockPos.getY());
                     blockPosNbt.putInt("block_x",blockPos.getX());
@@ -143,7 +143,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         if (nbt.contains("vein")) {
             NbtList nbtList = nbt.getList("vein", NbtElement.COMPOUND_TYPE);
             BlockPos blockPos;
-            vein = new ArrayList<>();
+            vein = new Vein();
             for (NbtElement nbtElement : nbtList) {
                 if (nbtElement instanceof NbtCompound) {
                     blockPos = new BlockPos(
@@ -166,7 +166,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
-        this.goalSelector.add(4, new AlienBuilderBuildGoal(this));
+        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, 1.0));
         this.goalSelector.add(5, new AlienBuilderGatherResourcesGoal(this, 1.0F));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
@@ -262,11 +262,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.sectionToBuild;
     }
 
-    public void setVein(@Nullable ArrayList<BlockPos> vein){
+    public void setVein(@Nullable Vein vein){
         this.vein = vein;
     }
 
-    public @Nullable ArrayList<BlockPos> getVein(){
+    public @Nullable Vein getVein(){
         return this.vein;
     }
 
@@ -328,13 +328,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     /// Check if the base section to build exists. If it does, check to see if it is complete. If not, build the section.
     public class AlienBuilderBuildGoal extends Goal {
         private final AlienBuilderBotEntity alienBuilderBot;
+        private final double speed;
         private ListIterator<BaseBlock> blocks;
         private int delay;
         private Path path;
         BlockPos sectToBuildPos;
 
-        AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot){
+        AlienBuilderBuildGoal(AlienBuilderBotEntity alienBuilderBot, double speed){
             this.alienBuilderBot = alienBuilderBot;
+            this.speed = speed;
             this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
         }
 
@@ -361,7 +363,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
             this.alienBuilderBot.getLookControl().lookAt(sectToBuildPos.toCenterPos());
             if (delay == 0){
-                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, speed);
                 World world = getEntityWorld();
                 if (blocks.hasNext() ) {
                     BaseBlock block = blocks.next();
@@ -382,7 +384,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         @Override
         public void start() {
-            this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.alienBuilderBot.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
+            this.alienBuilderBot.getNavigation().startMovingAlong(this.path, speed);
             this.alienBuilderBot.setBuilding(true);
             assert this.alienBuilderBot.getSection() != null;
             blocks = this.alienBuilderBot.getSection().getBaseBlockData().listIterator();

@@ -2,25 +2,21 @@ package io.github.coolcatcher126.ferrocerium.resources;
 
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class Vein {
     ArrayList<BlockPos> points;
-    BlockPos top;
-    BlockPos bottom;
 
     public Vein(ArrayList<BlockPos> points){
         this.points = points;
-        top = this.points.getFirst();
-        bottom = this.points.getFirst();
-        calculateBounds();
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
     }
 
     public Vein(){
         this.points = new ArrayList<>();
-        top = null;
-        bottom = null;
     }
 
     public BlockPos get(int index){
@@ -29,18 +25,18 @@ public class Vein {
 
     public void add(BlockPos e){
         this.points.add(e);
-        calculateBounds();
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
     }
 
     public BlockPos remove(int index){
         BlockPos removed = this.points.remove(index);
-        calculateBounds();
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
         return removed;
     }
 
     public boolean remove(BlockPos blockPos){
         boolean removed = this.points.remove(blockPos);
-        calculateBounds();
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
         return removed;
     }
 
@@ -50,18 +46,17 @@ public class Vein {
 
     public int size(){ return this.points.size();}
 
-    private void calculateBounds(){
-        for (BlockPos point : this.points) {
-            if (point.getY() > top.getY()){
-                top = point;
-            }
-            if (point.getY() < bottom.getY()){
-                bottom = point;
-            }
-        }
-    }
 
     public BlockPos getFirst() {
         return this.points.getFirst();
+    }
+    public BlockPos getBottom() {
+        return this.getFirst();
+    }
+    public BlockPos getLast(){
+        return this.points.getLast();
+    }
+    public BlockPos getTop(){
+        return this.getLast();
     }
 }
