@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.entity.goal;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.ai.goal.Goal;
@@ -37,7 +38,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        if (alienBuilderBot.getBase() == null || alienBuilderBot.getVein() == null){
+        if (alienBuilderBot.getBase() == null || alienBuilderBot.getVein() == null || alienBuilderBot.getVein().size() == 0) {
             return false;
         }
         else{
@@ -49,6 +50,9 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
+        if (alienBuilderBot.getVein().size() == 0) {
+            return false;
+        }
         blockToCollect = alienBuilderBot.getVein().getBottom();
         this.path = this.alienBuilderBot.getNavigation().findPathTo(blockToCollect, 0);
         return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(blockToCollect) < SQR_REACH_RANGE;
@@ -68,6 +72,9 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
     }
 
     public void tick(){
+        if (alienBuilderBot.getVein().size() == 0) {
+            return;
+        }
         blockToCollect = alienBuilderBot.getVein().getBottom();
         if (blockToCollect != null){
              if (this.alienBuilderBot.getBlockPos().getSquaredDistance(blockToCollect) < SQR_REACH_RANGE) {
@@ -100,11 +107,13 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
                      BlockPos botPos = this.alienBuilderBot.getBlockPos();
                      if (blockToCollect.getY() - botPos.getY() > 3) {
                          //If the block is too high: pillar up.
-                         this.alienBuilderBot.setJumping(true);
                          ItemStack stack = this.alienBuilderBot.getMainHandStack();
-                         if (stack.canPlaceOn(new CachedBlockPosition(this.alienBuilderBot.getWorld(), botPos, false))) {
-                             BlockState stateFromComponent = Block.getBlockFromItem(stack.getItem()).getDefaultState();
-                             this.alienBuilderBot.getWorld().setBlockState(botPos, stateFromComponent);
+                         Block block = Block.getBlockFromItem(stack.getItem());
+                         if (block != Blocks.AIR) {
+                             this.alienBuilderBot.setJumping(true);
+                             this.alienBuilderBot.jump();
+                             BlockState stateFromComponent = block.getDefaultState();
+                             this.alienBuilderBot.getWorld().setBlockState(botPos/*.add(0,1,0)*/, stateFromComponent);
                              stack.decrement(1);
                          }
                      }
