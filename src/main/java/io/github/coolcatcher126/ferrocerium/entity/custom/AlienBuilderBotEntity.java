@@ -289,6 +289,23 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     }
 
     @Override
+    protected void loot(ItemEntity item) {
+        ItemStack itemStack = item.getStack();
+        if (this.inventory.canInsert(itemStack)){
+            this.triggerItemPickedUpByEntityCriteria(item);
+            ItemStack itemStack2 = this.inventory.addStack(itemStack);
+            if (itemStack2.isEmpty()){
+                item.discard();
+            } else {
+                itemStack.setCount(itemStack2.getCount());
+            }
+        }
+        else {
+            super.loot(item);
+        }
+    }
+
+    @Override
     public void readInventory(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
         InventoryOwner.super.readInventory(nbt, wrapperLookup);
     }

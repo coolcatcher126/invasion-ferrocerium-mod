@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.GameEvent;
 
@@ -32,6 +33,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
     private Vein pillar;
     private Vein vein;
     private int blockToCollect;
+    private boolean removePillar = false;
 
     public AlienBuilderGatherResourcesGoal(AlienBuilderBotEntity alienBuilderBot, double speed){
         this.alienBuilderBot = alienBuilderBot;
@@ -48,6 +50,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
             if (pillar != null) {
                 vein = pillar;
                 pillar = null;
+                removePillar = true;
             }
             vein = alienBuilderBot.getVein();
             blockToCollect = 0;
@@ -76,6 +79,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
     public void stop() {
         alienBuilderBot.setGathering(false);
         vein = null;
+        removePillar = false;
         this.alienBuilderBot.getNavigation().stop();
     }
 
@@ -83,7 +87,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         if (vein.size() == 0) {
             return;
         }
-        blockToCollect = 0;
+        blockToCollect = removePillar ? vein.size() -1 : 0;
         if (vein.get(blockToCollect) != null){
              if (this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE) {
                 this.alienBuilderBot.getLookControl().lookAt(vein.get(blockToCollect).toCenterPos());
@@ -114,21 +118,32 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
                  if (!canMove) {
                      BlockPos botPos = this.alienBuilderBot.getBlockPos();
                      if (vein.get(blockToCollect).getY() - botPos.getY() > 3) {
-                         //If the block is too high: pillar up.
-                         ItemStack stack = this.alienBuilderBot.getMainHandStack();
-                         Block block = Block.getBlockFromItem(stack.getItem());
-                         if (block != Blocks.AIR) {
-                             if (pillar == null){
-                                 pillar = new Vein();
+                         if (countTicksToBreak >= 0) {
+                             countTicksToBreak--;
+                         } else {
+                             countTicksToBreak = MAX_BREAK_TICKS;
+                             //If the block is too high: pillar up.
+                             ItemStack stack;
+                             Block block;
+                             for (int i = 0; i < this.alienBuilderBot.getInventory().size(); i++) {
+                                 stack = this.alienBuilderBot.getInventory().getStack(i);
+                                 block = Block.getBlockFromItem(stack.getItem());
+                                 if (block != Blocks.AIR) {
+                                    this.alienBuilderBot.setStackInHand(Hand.MAIN_HAND, stack);
+                                     if (pillar == null){
+                                         pillar = new Vein();
+                                     }
+                                     this.alienBuilderBot.setJumping(true);
+                                     this.alienBuilderBot.jump();
+                                     BlockState stateFromComponent = block.getDefaultState();
+                                     this.alienBuilderBot.getWorld().setBlockState(botPos, stateFromComponent);
+                                     stack.decrement(1);
+                                     pillar.add(botPos);
+                                     vein.remove(botPos);
+                                     this.alienBuilderBot.setVein(vein);
+                                     break;
+                                 }
                              }
-                             this.alienBuilderBot.setJumping(true);
-                             this.alienBuilderBot.jump();
-                             BlockState stateFromComponent = block.getDefaultState();
-                             this.alienBuilderBot.getWorld().setBlockState(botPos, stateFromComponent);
-                             stack.decrement(1);
-                             pillar.add(botPos);
-                             vein.remove(botPos);
-                             this.alienBuilderBot.setVein(vein);
                          }
                      }
                  }
