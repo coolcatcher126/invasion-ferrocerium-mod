@@ -59,4 +59,9 @@ public class Vein {
     public BlockPos getTop(){
         return this.getLast();
     }
+
+    public void append(Vein other){
+        this.points.addAll(other.points);
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
+    }
 }

@@ -31,9 +31,10 @@ public class AlienBase {
     ArrayList<BaseSectionTemplate> sectionTemplateList;
 
     List<Block> COLLECTIBLE_BLOCKS = List.of(
-            Blocks.ACACIA_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.OAK_LOG, Blocks.OAK_LOG, Blocks.DARK_OAK_LOG, Blocks.JUNGLE_LOG,
-            Blocks.ACACIA_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.OAK_PLANKS, Blocks.OAK_PLANKS, Blocks.DARK_OAK_PLANKS, Blocks.JUNGLE_PLANKS,
-            /*Blocks.STONE,*/ Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, ModBlocks.ALUMINUM_ORE_BLOCK, ModBlocks.DEEPSLATE_ALUMINUM_ORE_BLOCK
+            Blocks.ACACIA_LOG, Blocks.SPRUCE_LOG, Blocks.BIRCH_LOG, Blocks.CHERRY_LOG, Blocks.OAK_LOG, Blocks.DARK_OAK_LOG, Blocks.JUNGLE_LOG,
+            Blocks.ACACIA_PLANKS, Blocks.SPRUCE_PLANKS, Blocks.BIRCH_PLANKS, Blocks.CHERRY_PLANKS, Blocks.OAK_PLANKS, Blocks.DARK_OAK_PLANKS, Blocks.JUNGLE_PLANKS,
+            Blocks.ACACIA_LEAVES, Blocks.SPRUCE_LEAVES, Blocks.BIRCH_LEAVES, Blocks.CHERRY_LEAVES, Blocks.OAK_LEAVES, Blocks.DARK_OAK_LEAVES, Blocks.JUNGLE_LEAVES
+            /*Blocks.STONE, Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE, ModBlocks.ALUMINUM_ORE_BLOCK, ModBlocks.DEEPSLATE_ALUMINUM_ORE_BLOCK*/
             );
 
     World world;
@@ -312,6 +313,10 @@ public class AlienBase {
     private void mineResourceVein(Vein vein){
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
         bot.ifPresent(x -> x.setVein(vein));
+    }
+
+    public boolean blockIsCollectible(BlockPos blockPos){
+        return COLLECTIBLE_BLOCKS.contains(world.getBlockState(blockPos).getBlock());
     }
 
 }
