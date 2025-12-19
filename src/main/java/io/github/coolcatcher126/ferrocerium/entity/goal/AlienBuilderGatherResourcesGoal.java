@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.goal;
 
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,6 +11,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.EnumSet;
@@ -119,8 +121,11 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
                 return;
             }
             //Make the bot  mine it as well as all/many other adjacent blocks of the same type.
-            if (this.alienBuilderBot.getWorld().breakBlock(vein.get(blockToCollect), true)){
+            Block blockMined = this.alienBuilderBot.getWorld().getBlockState(vein.get(blockToCollect)).getBlock();
+            ItemStack blockMinedAsItem = new ItemStack(blockMined.asItem(), 1);
+            if (this.alienBuilderBot.getWorld().breakBlock(vein.get(blockToCollect), false) && this.alienBuilderBot.getInventory().canInsert(blockMinedAsItem)){
                 this.alienBuilderBot.getWorld().emitGameEvent(GameEvent.BLOCK_DESTROY, vein.get(blockToCollect), GameEvent.Emitter.of(this.alienBuilderBot));
+                this.alienBuilderBot.getInventory().addStack(blockMinedAsItem);
                 alienBuilderBot.getVein().remove(blockToCollect);
             }
         }
