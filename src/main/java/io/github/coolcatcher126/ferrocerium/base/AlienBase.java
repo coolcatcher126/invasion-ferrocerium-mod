@@ -71,6 +71,9 @@ public class AlienBase {
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
         this.availablePos = new ArrayList<>();
         baseSectGetAvailablePos();
+
+        createMineshaft();
+        mineResourceVein(resources.get(0));
     }
 
     public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder)
@@ -91,6 +94,9 @@ public class AlienBase {
         this.availablePos = new ArrayList<>();
         addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
         baseSectGetAvailablePos();
+
+        createMineshaft();
+        mineResourceVein(resources.get(0));
     }
 
     /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
@@ -234,47 +240,44 @@ public class AlienBase {
     /// <p>Uses a strip mining from y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
     private void createMineshaft(){
         ArrayList<BlockPos> mineshaft = new ArrayList<>();
-        BlockPos stairwell = origin;
         for (int y = origin.getY(), i = 0; y >= -53; y--, i++){
-            stairwell = stairwell.down();
+            mineshaft.add(origin.add(-1, -i, -1));
+            mineshaft.add(origin.add(0, -i, -1));
+            mineshaft.add(origin.add(1, -i, -1));
 
-            mineshaft.add(stairwell.add(-1, 0, -1));
-            mineshaft.add(stairwell.add(0, 0, -1));
-            mineshaft.add(stairwell.add(1, 0, -1));
+            mineshaft.add(origin.add(-1, -i, 0));
+            mineshaft.add(origin.add(1, -i, 0));
 
-            mineshaft.add(stairwell.add(-1, 0, 0));
-            mineshaft.add(stairwell.add(1, 0, 0));
+            mineshaft.add(origin.add(-1, -i, 1));
+            mineshaft.add(origin.add(0, -i, 1));
+            mineshaft.add(origin.add(1, -i, 1));
 
-            mineshaft.add(stairwell.add(-1, 0, 1));
-            mineshaft.add(stairwell.add(0, 0, 1));
-            mineshaft.add(stairwell.add(1, 0, 1));
+            if (STRIP_MINE_LEVELS.contains(y)) {
+                mineshaft.add(origin.add(-2,-i,-2));
+                mineshaft.add(origin.add(-1,-i,-2));
+                mineshaft.add(origin.add(0,-i,-2));
+                mineshaft.add(origin.add(1,-i,-2));
+                mineshaft.add(origin.add(2,-i,-2));
 
-            if (STRIP_MINE_LEVELS.contains(i)) {
-                mineshaft.add(stairwell.add(-2,0,-2));
-                mineshaft.add(stairwell.add(-1,0,-2));
-                mineshaft.add(stairwell.add(0,0,-2));
-                mineshaft.add(stairwell.add(1,0,-2));
-                mineshaft.add(stairwell.add(2,0,-2));
+                mineshaft.add(origin.add(-2,-i,-1));
+                mineshaft.add(origin.add(2,-i,-1));
 
-                mineshaft.add(stairwell.add(-2,0,-1));
-                mineshaft.add(stairwell.add(2,0,-1));
+                mineshaft.add(origin.add(-2,-i,0));
+                mineshaft.add(origin.add(2,-i,0));
 
-                mineshaft.add(stairwell.add(-2,0,0));
-                mineshaft.add(stairwell.add(2,0,0));
+                mineshaft.add(origin.add(-2,-i,1));
+                mineshaft.add(origin.add(2,-i,1));
 
-                mineshaft.add(stairwell.add(-2,0,1));
-                mineshaft.add(stairwell.add(2,0,1));
-
-                mineshaft.add(stairwell.add(-2,0,2));
-                mineshaft.add(stairwell.add(-1,0,2));
-                mineshaft.add(stairwell.add(0,0,2));
-                mineshaft.add(stairwell.add(1,0,2));
-                mineshaft.add(stairwell.add(2,0,2));
+                mineshaft.add(origin.add(-2,-i,2));
+                mineshaft.add(origin.add(-1,-i,2));
+                mineshaft.add(origin.add(0,-i,2));
+                mineshaft.add(origin.add(1,-i,2));
+                mineshaft.add(origin.add(2,-i,2));
 
                 createStripMine();
             }
         }
-        resources.add(new Vein(mineshaft));
+        resources.add(new Vein(mineshaft, true));
     }
 
     private void createStripMine(){

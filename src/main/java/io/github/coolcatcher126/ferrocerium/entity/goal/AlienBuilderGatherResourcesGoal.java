@@ -81,8 +81,9 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         if (vein.size() == 0) {
             return;
         }
-        blockToCollect = removePillar ? vein.size() -1 : 0;
+        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos()) || removePillar) ? vein.size() -1 : 0;
         if (vein.get(blockToCollect) == null) {
+            vein.remove(blockToCollect);
             return;
         }
 
@@ -105,7 +106,6 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
             countTicksToBreak--;
             int progress = Math.round((MAX_BREAK_TICKS - countTicksToBreak) / (float) MAX_BREAK_TICKS * 10);
             this.alienBuilderBot.getWorld().setBlockBreakingInfo(this.alienBuilderBot.getId(), vein.get(blockToCollect), progress);
-
             return;
         }
         countTicksToBreak = MAX_BREAK_TICKS;
@@ -116,7 +116,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
             countTicksToBreak--;
         } else {
             countTicksToBreak = MAX_BREAK_TICKS;
-            if (!this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect))){
+            if (!(vein.isShouldMineAnyways() || this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect)))){
                 alienBuilderBot.getVein().remove(blockToCollect);
                 return;
             }
@@ -163,7 +163,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
             return;
         }
         if (pillar == null) {
-            pillar = new Vein();
+            pillar = new Vein(true);
         }
         this.alienBuilderBot.setJumping(true);
         this.alienBuilderBot.jump();

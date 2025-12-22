@@ -8,15 +8,29 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class Vein {
-    ArrayList<BlockPos> points;
+    ArrayList<BlockPos> points;//TODO: Add should collect override to allow for mineshaft creation through the dirt.
+    boolean shouldMineAnyways;
+
+    public Vein(ArrayList<BlockPos> points, boolean shouldMineAnyways){
+        this.points = points;
+        this.points.sort(Comparator.comparingInt(Vec3i::getY));
+        this.shouldMineAnyways = shouldMineAnyways;
+    }
+
+    public Vein(boolean shouldMineAnyways){
+        this.points = new ArrayList<>();
+        this.shouldMineAnyways = shouldMineAnyways;
+    }
 
     public Vein(ArrayList<BlockPos> points){
         this.points = points;
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
+        this.shouldMineAnyways = false;
     }
 
     public Vein(){
         this.points = new ArrayList<>();
+        this.shouldMineAnyways = false;
     }
 
     public BlockPos get(int index){
@@ -63,5 +77,17 @@ public class Vein {
     public void append(Vein other){
         this.points.addAll(other.points);
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
+    }
+
+    public boolean isShouldMineAnyways(){
+        return this.shouldMineAnyways;
+    }
+
+    public boolean isAboveVein(BlockPos pos){
+        return getTop().getY() < pos.getY();
+    }
+
+    public boolean isBelowVein(BlockPos pos){
+        return getBottom().getY() > pos.getY();
     }
 }
