@@ -44,6 +44,8 @@ public class AlienBase {
 
     List<Block> COLLECTIBLE_BLOCKS = Stream.concat(COLLECTIBLE_WOOD_BLOCKS.stream(), Stream.concat(Stream.of(Blocks.STONE), COLLECTIBLE_ORE_BLOCKS.stream())).toList();
 
+    List<Integer> STRIP_MINE_LEVELS = List.of(-53, -52, 16, 17, 48, 49);
+
     World world;
 
     private int baseGrowTime;
@@ -229,9 +231,54 @@ public class AlienBase {
     }
 
     /// Creates a mineshaft starting at the middle of the base going down using a spiral staircase.
-    /// <p>Uses a stripming out of y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
+    /// <p>Uses a strip mining from y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
     private void createMineshaft(){
-        
+        ArrayList<BlockPos> mineshaft = new ArrayList<>();
+        BlockPos stairwell = origin;
+        for (int y = origin.getY(), i = 0; y >= -53; y--, i++){
+            stairwell = stairwell.down();
+
+            mineshaft.add(stairwell.add(-1, 0, -1));
+            mineshaft.add(stairwell.add(0, 0, -1));
+            mineshaft.add(stairwell.add(1, 0, -1));
+
+            mineshaft.add(stairwell.add(-1, 0, 0));
+            mineshaft.add(stairwell.add(1, 0, 0));
+
+            mineshaft.add(stairwell.add(-1, 0, 1));
+            mineshaft.add(stairwell.add(0, 0, 1));
+            mineshaft.add(stairwell.add(1, 0, 1));
+
+            if (STRIP_MINE_LEVELS.contains(i)) {
+                mineshaft.add(stairwell.add(-2,0,-2));
+                mineshaft.add(stairwell.add(-1,0,-2));
+                mineshaft.add(stairwell.add(0,0,-2));
+                mineshaft.add(stairwell.add(1,0,-2));
+                mineshaft.add(stairwell.add(2,0,-2));
+
+                mineshaft.add(stairwell.add(-2,0,-1));
+                mineshaft.add(stairwell.add(2,0,-1));
+
+                mineshaft.add(stairwell.add(-2,0,0));
+                mineshaft.add(stairwell.add(2,0,0));
+
+                mineshaft.add(stairwell.add(-2,0,1));
+                mineshaft.add(stairwell.add(2,0,1));
+
+                mineshaft.add(stairwell.add(-2,0,2));
+                mineshaft.add(stairwell.add(-1,0,2));
+                mineshaft.add(stairwell.add(0,0,2));
+                mineshaft.add(stairwell.add(1,0,2));
+                mineshaft.add(stairwell.add(2,0,2));
+
+                createStripMine();
+            }
+        }
+        resources.add(new Vein(mineshaft));
+    }
+
+    private void createStripMine(){
+
     }
 
     /// Searches in the area between the min and max search radii to find resources to collect.
