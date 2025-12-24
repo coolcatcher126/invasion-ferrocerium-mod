@@ -245,12 +245,13 @@ public class AlienBase {
             mineshaft.add(origin.add(0, -i, -1));
             mineshaft.add(origin.add(1, -i, -1));
 
-            mineshaft.add(origin.add(-1, -i, 0));
             mineshaft.add(origin.add(1, -i, 0));
 
-            mineshaft.add(origin.add(-1, -i, 1));
-            mineshaft.add(origin.add(0, -i, 1));
             mineshaft.add(origin.add(1, -i, 1));
+            mineshaft.add(origin.add(0, -i, 1));
+            mineshaft.add(origin.add(-1, -i, 1));
+
+            mineshaft.add(origin.add(-1, -i, 0));
 
             if (STRIP_MINE_LEVELS.contains(y)) {
                 mineshaft.add(origin.add(-2,-i,-2));

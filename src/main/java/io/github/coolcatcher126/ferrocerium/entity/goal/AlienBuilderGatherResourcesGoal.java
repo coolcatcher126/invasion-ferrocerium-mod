@@ -47,7 +47,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         }
         else {
             vein = alienBuilderBot.getVein();
-            blockToCollect = 0;
+            blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
             this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
             return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
         }
@@ -58,7 +58,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         if (vein.size() == 0) {
             return false;
         }
-        blockToCollect = 0;
+        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
         this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
         return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
     }
@@ -81,7 +81,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
         if (vein.size() == 0) {
             return;
         }
-        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos()) || removePillar) ? vein.size() -1 : 0;
+        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
         if (vein.get(blockToCollect) == null) {
             vein.remove(blockToCollect);
             return;
@@ -116,7 +116,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
             countTicksToBreak--;
         } else {
             countTicksToBreak = MAX_BREAK_TICKS;
-            if (!(vein.isShouldMineAnyways() || this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect)))){
+            if (alienBuilderBot.getWorld().isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect)))){
                 alienBuilderBot.getVein().remove(blockToCollect);
                 return;
             }
