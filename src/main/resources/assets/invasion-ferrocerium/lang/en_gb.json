@@ -39,5 +39,19 @@
   "sounds.invasion-ferrocerium.ant_scout_bot_ambient": "Ant Scout Bot Ambient",
   "sounds.invasion-ferrocerium.ant_scout_bot_hurt": "Ant Scout Bot is hurt",
   "sounds.invasion-ferrocerium.ant_scout_bot_death": "Ant Scout Bot dies",
-  "sounds.invasion-ferrocerium.ant_scout_bot_step": "Ant Scout Bot steps"
+  "sounds.invasion-ferrocerium.ant_scout_bot_step": "Ant Scout Bot steps",
+
+  "sounds.invasion-ferrocerium.ant_soldier_bot_ambient": "Ant Soldier Bot Ambient",
+  "sounds.invasion-ferrocerium.ant_soldier_bot_hurt": "Ant Soldier Bot is hurt",
+  "sounds.invasion-ferrocerium.ant_soldier_bot_death": "Ant Soldier Bot dies",
+  "sounds.invasion-ferrocerium.ant_soldier_bot_step": "Ant Soldier Bot steps",
+
+  "sounds.invasion-ferrocerium.alien_builder_bot_ambient": "Alien Builder Bot Ambient",
+  "sounds.invasion-ferrocerium.alien_builder_bot_hurt": "Alien Builder Bot is hurt",
+  "sounds.invasion-ferrocerium.alien_builder_bot_death": "Alien Builder Bot dies",
+  "sounds.invasion-ferrocerium.alien_builder_bot_step": "Alien Builder Bot steps",
+
+  "sounds.invasion-ferrocerium.alien_helicopter_bot_ambient": "Alien Helicopter Bot Ambient",
+  "sounds.invasion-ferrocerium.alien_helicopter_bot_hurt": "Alien Helicopter Bot is hurt",
+  "sounds.invasion-ferrocerium.alien_helicopter_bot_death": "Alien Helicopter Bot dies"
 }

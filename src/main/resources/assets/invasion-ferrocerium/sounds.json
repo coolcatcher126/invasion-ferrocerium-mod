@@ -23,5 +23,75 @@
     "sounds": [
       "invasion-ferrocerium:ant_scout_bot_step"
     ]
+  },
+  "ant_soldier_bot_ambient": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_soldier_bot_ambient",
+    "sounds": [
+      "invasion-ferrocerium:ant_soldier_bot_ambient_1",
+      "invasion-ferrocerium:ant_scout_bot_ambient_1"
+    ]
+  },
+  "ant_soldier_bot_hurt": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_soldier_bot_hurt",
+    "sounds": [
+      "invasion-ferrocerium:ant_soldier_bot_hurt"
+    ]
+  },
+  "ant_soldier_bot_death": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_soldier_bot_death",
+    "sounds": [
+      "invasion-ferrocerium:ant_soldier_bot_death"
+    ]
+  },
+  "ant_soldier_bot_step": {
+    "subtitle": "sounds.invasion-ferrocerium.ant_soldier_bot_step",
+    "sounds": [
+      "invasion-ferrocerium:ant_soldier_bot_step"
+    ]
+  },
+  "alien_builder_bot_ambient": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_builder_bot_ambient",
+    "sounds": [
+      "invasion-ferrocerium:alien_builder_bot_ambient_1",
+      "invasion-ferrocerium:alien_builder_bot_ambient_2",
+      "invasion-ferrocerium:alien_builder_bot_ambient_3"
+    ]
+  },
+  "alien_builder_bot_hurt": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_builder_bot_hurt",
+    "sounds": [
+      "invasion-ferrocerium:alien_builder_bot_hurt"
+    ]
+  },
+  "alien_builder_bot_death": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_builder_bot_death",
+    "sounds": [
+      "invasion-ferrocerium:alien_builder_bot_death"
+    ]
+  },
+  "alien_builder_bot_step": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_builder_bot_step",
+    "sounds": [
+      "invasion-ferrocerium:alien_builder_bot_step"
+    ]
+  },
+  "alien_helicopter_bot_ambient": {
+    "subtitle": "sound.invasion-ferrocerium.alien_helicopter_bot_ambient",
+    "sounds": [
+      "invasion-ferrocerium:alien_helicopter_bot_ambient_1",
+      "invasion-ferrocerium:alien_helicopter_bot_ambient_2"
+    ]
+  },
+  "alien_helicopter_bot_hurt": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_helicopter_bot_hurt",
+    "sounds": [
+      "invasion-ferrocerium:alien_helicopter_bot_hurt"
+    ]
+  },
+  "alien_helicopter_bot_death": {
+    "subtitle": "sounds.invasion-ferrocerium.alien_helicopter_bot_death",
+    "sounds": [
+      "invasion-ferrocerium:alien_helicopter_bot_death"
+    ]
   }
 }

@@ -95,12 +95,12 @@ public class AlienHelicopterBotEntity extends FlyingEntity implements Monster, I
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return ModSounds.ANT_SCOUT_BOT_HURT;
+        return ModSounds.ALIEN_HELICOPTER_BOT_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.ANT_SCOUT_BOT_DEATH;
+        return ModSounds.ALIEN_HELICOPTER_BOT_DEATH;
     }
 
     static class HelicopterMoveControl extends MoveControl {

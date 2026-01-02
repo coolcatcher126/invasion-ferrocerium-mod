@@ -160,22 +160,22 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     @Override
     protected SoundEvent getAmbientSound() {
-        return ModSounds.ANT_SCOUT_BOT_AMBIENT;
+        return ModSounds.ALIEN_BUILDER_BOT_AMBIENT;
     }
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return ModSounds.ANT_SCOUT_BOT_HURT;
+        return ModSounds.ALIEN_BUILDER_BOT_HURT;
     }
 
     @Override
     protected SoundEvent getDeathSound() {
-        return ModSounds.ANT_SCOUT_BOT_DEATH;
+        return ModSounds.ALIEN_BUILDER_BOT_DEATH;
     }
 
     @Override
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(ModSounds.ANT_SCOUT_BOT_STEP, 0.15F, 1.0F);
+        this.playSound(ModSounds.ALIEN_BUILDER_BOT_STEP, 0.15F, 1.0F);
     }
 
     private void setBuilding(boolean attacking)
