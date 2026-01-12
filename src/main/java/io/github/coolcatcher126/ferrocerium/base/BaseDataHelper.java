@@ -1,7 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
-import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -13,7 +12,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Optional;

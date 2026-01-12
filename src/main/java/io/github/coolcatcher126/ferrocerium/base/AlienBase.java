@@ -241,17 +241,31 @@ public class AlienBase {
     private void createMineshaft(){
         ArrayList<BlockPos> mineshaft = new ArrayList<>();
         for (int y = origin.getY(), i = 0; y >= -53; y--, i++){
-            mineshaft.add(origin.add(-1, -i, -1));
-            mineshaft.add(origin.add(0, -i, -1));
-            mineshaft.add(origin.add(1, -i, -1));
-
-            mineshaft.add(origin.add(1, -i, 0));
-
-            mineshaft.add(origin.add(1, -i, 1));
-            mineshaft.add(origin.add(0, -i, 1));
-            mineshaft.add(origin.add(-1, -i, 1));
-
-            mineshaft.add(origin.add(-1, -i, 0));
+            int step = i%8;
+            if (step != 7) {
+                mineshaft.add(origin.add(-1, -i, -1));
+            }
+            if (step != 6) {
+                mineshaft.add(origin.add(0, -i, -1));
+            }
+            if (step != 5) {
+                mineshaft.add(origin.add(1, -i, -1));
+            }
+            if (step != 4) {
+                mineshaft.add(origin.add(1, -i, 0));
+            }
+            if (step != 3) {
+                mineshaft.add(origin.add(1, -i, 1));
+            }
+            if (step != 2) {
+                mineshaft.add(origin.add(0, -i, 1));
+            }
+            if (step != 1) {
+                mineshaft.add(origin.add(-1, -i, 1));
+            }
+            if (step != 0) {
+                mineshaft.add(origin.add(-1, -i, 0));
+            }
 
             if (STRIP_MINE_LEVELS.contains(y)) {
                 mineshaft.add(origin.add(-2,-i,-2));
