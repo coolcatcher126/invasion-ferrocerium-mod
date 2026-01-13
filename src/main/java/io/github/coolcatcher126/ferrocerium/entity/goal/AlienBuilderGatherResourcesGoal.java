@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.goal;
 
+import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -14,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 
 /// Gather the resources required to build bases. Gathers wood from trees, ores and stone.

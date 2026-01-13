@@ -20,7 +20,7 @@ public class StairwellTemplate extends BaseSectionTemplate {
     public ArrayList<BaseBlock> getRelativeBlockData(World world) {
         ArrayList<BaseBlock> steps = new ArrayList<>();
         BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
-        for (int y = 60, i = 0; y >= -53; y--, i++) {
+        for (int y = 0, i = 0; y >= -53; y--, i++) {
             int step = i % 8;
             if (step != 7) {
                 steps.add(new BaseBlock(new BlockPos(-1, -i, -1), bs));

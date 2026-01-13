@@ -6,6 +6,7 @@ import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegist
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -53,7 +54,8 @@ public class AlienBase {
     private final int SEARCH_TIME = 20;
     private int search_time_count = SEARCH_TIME;
 
-    ArrayList<Vein> resources = new ArrayList<>();
+    ArrayList<Vein> resources = new ArrayList<>();//Things to mine
+    ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
@@ -293,6 +295,38 @@ public class AlienBase {
             }
         }
         resources.add(new Vein(mineshaft, true));
+        createStairwell();
+    }
+
+    void createStairwell() {
+        BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
+        for (int y = 0, i = 0; y >= -53; y--, i++) {
+            int step = i % 8;
+            if (step != 7) {
+                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, -1), bs));
+            }
+            if (step != 6) {
+                baseBlocks.add(new BaseBlock(new BlockPos(0, -i, -1), bs));
+            }
+            if (step != 5) {
+                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, -1), bs));
+            }
+            if (step != 4) {
+                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, 0), bs));
+            }
+            if (step != 3) {
+                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, 1), bs));
+            }
+            if (step != 2) {
+                baseBlocks.add(new BaseBlock(new BlockPos(0, -i, 1), bs));
+            }
+            if (step != 1) {
+                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, 1), bs));
+            }
+            if (step != 0) {
+                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, 0), bs));
+            }
+        }
     }
 
     private void createStripMine(){
@@ -410,6 +444,10 @@ public class AlienBase {
         }
 
         return collectible;
+    }
+
+    public ArrayList<BaseBlock> getBaseBlocks(){
+        return this.baseBlocks;
     }
 
 }
