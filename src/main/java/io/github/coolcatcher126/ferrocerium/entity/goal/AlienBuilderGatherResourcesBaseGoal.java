@@ -1,8 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.goal;
 
-import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -12,15 +10,13 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 
 /// Gather the resources required to build bases. Gathers wood from trees, ores and stone.
 /// <p>Gathers in an area around the base</p>
-public class AlienBuilderGatherResourcesGoal extends Goal {
+public class AlienBuilderGatherResourcesBaseGoal extends Goal {
     private final AlienBuilderBotEntity alienBuilderBot;
 
     private final int SQR_REACH_RANGE = 25;//The furthest from the AlienBuilderBotEntity a block can be broken from
@@ -36,7 +32,7 @@ public class AlienBuilderGatherResourcesGoal extends Goal {
     private int blockToCollect;
     private boolean removePillar = false;
 
-    public AlienBuilderGatherResourcesGoal(AlienBuilderBotEntity alienBuilderBot, double speed){
+    public AlienBuilderGatherResourcesBaseGoal(AlienBuilderBotEntity alienBuilderBot, double speed){
         this.alienBuilderBot = alienBuilderBot;
         this.speed = speed;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
