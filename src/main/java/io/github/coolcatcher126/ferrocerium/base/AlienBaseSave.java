@@ -13,11 +13,13 @@ public class AlienBaseSave {
 
     public BlockPos origin;
     public ArrayList<BaseSectionSave> sections;
+    public ArrayList<BaseBlock> baseBlocks;
     public UUID uuid;
 
-    public AlienBaseSave(BlockPos origin, ArrayList<BaseSectionSave> sections, UUID uuid){
+    public AlienBaseSave(BlockPos origin, ArrayList<BaseSectionSave> sections, ArrayList<BaseBlock> baseBlocks, UUID uuid){
         this.origin = origin;
         this.sections = sections;
+        this.baseBlocks = baseBlocks;
         this.uuid = uuid;
     }
 }

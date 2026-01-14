@@ -60,11 +60,12 @@ public class AlienBase {
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
         this.world = world;
         this.origin = origin;
 
         this.sections = sections;
+        this.baseBlocks = baseBlocks;
         this.builders = builders;
         this.uuid = uuid;
 
@@ -294,7 +295,7 @@ public class AlienBase {
                 createStripMine();
             }
         }
-        resources.add(new Vein(mineshaft, true));
+        resources.add(new Vein(mineshaft, ResourceCategory.ALL, true));
         createStairwell();
     }
 

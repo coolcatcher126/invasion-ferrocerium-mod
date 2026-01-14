@@ -1,35 +1,40 @@
 package io.github.coolcatcher126.ferrocerium.resources;
 
-import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 
 public class Vein {
-    ArrayList<BlockPos> points;//TODO: Add should collect override to allow for mineshaft creation through the dirt.
+    ArrayList<BlockPos> points;
+    ResourceCategory category;
     boolean shouldMineAnyways;
 
-    public Vein(ArrayList<BlockPos> points, boolean shouldMineAnyways){
+    public Vein(ArrayList<BlockPos> points, ResourceCategory category, boolean shouldMineAnyways){
         this.points = points;
+        this.category = category;
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
         this.shouldMineAnyways = shouldMineAnyways;
     }
 
     public Vein(boolean shouldMineAnyways){
         this.points = new ArrayList<>();
+        this.category = ResourceCategory.ALL;
         this.shouldMineAnyways = shouldMineAnyways;
     }
 
     public Vein(ArrayList<BlockPos> points){
         this.points = points;
+        this.category = ResourceCategory.ALL;
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
         this.shouldMineAnyways = false;
     }
 
     public Vein(){
         this.points = new ArrayList<>();
+        this.category = ResourceCategory.ALL;
         this.shouldMineAnyways = false;
     }
 
