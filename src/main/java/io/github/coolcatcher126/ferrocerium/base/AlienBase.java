@@ -60,7 +60,7 @@ public class AlienBase {
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
         this.world = world;
         this.origin = origin;
 
@@ -68,14 +68,16 @@ public class AlienBase {
         this.baseBlocks = baseBlocks;
         this.builders = builders;
         this.uuid = uuid;
-
+        this.resources = resources;
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
         this.availablePos = new ArrayList<>();
         baseSectGetAvailablePos();
 
-        createMineshaft();
+        if (this.resources == null) {
+            createMineshaft();
+        }
         mineResourceVein(resources.get(0));
     }
 
@@ -449,6 +451,10 @@ public class AlienBase {
 
     public ArrayList<BaseBlock> getBaseBlocks(){
         return this.baseBlocks;
+    }
+
+    public ArrayList<Vein> getResources(){
+        return  this.resources;
     }
 
 }

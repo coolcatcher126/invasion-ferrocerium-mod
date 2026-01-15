@@ -3,6 +3,8 @@ package io.github.coolcatcher126.ferrocerium.components;
 import io.github.coolcatcher126.ferrocerium.base.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
+import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.*;
@@ -131,7 +133,27 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         }
         nbtCompound.put("alien_base_base_blocks", nbtList);
 
+        nbtList = new NbtList();
+        for (Vein resource : alienBase.resources){
+            nbtList.add(writeToNbtVein(resource));
+        }
+        nbtCompound.put("resource_veins", nbtList);
+
         nbtCompound.putUuid("alien_base_uuid", alienBase.uuid);
+        return nbtCompound;
+    }
+
+    private static NbtCompound writeToNbtVein(Vein vein){
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putBoolean("should_always_mine", vein.isShouldMineAnyways());
+        nbtCompound.putString("resource_category", vein.getCategory().name());
+        BlockPos blockPos;
+        while (vein.size() > 0){
+            blockPos = vein.remove(0);
+            nbtCompound.putInt("vein_block_z", blockPos.getZ());
+            nbtCompound.putInt("vein_block_y", blockPos.getY());
+            nbtCompound.putInt("vein_block_x", blockPos.getX());
+        }
         return nbtCompound;
     }
 
@@ -189,15 +211,26 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
     private AlienBaseSave loadAlienBaseSave(NbtCompound nbtCompound) {
         //Get UUID
         UUID uuid = nbtCompound.getUuid("alien_base_uuid");
+        //Get veins to mine
+        NbtList nbtList = nbtCompound.getList("resource_veins", NbtElement.COMPOUND_TYPE);
+        ArrayList<Vein> veins = new ArrayList<>();
+        for (NbtElement nbtElement : nbtList) {
+            if (nbtElement instanceof NbtCompound){
+                veins.add(readfromNbtVein((NbtCompound) nbtElement));
+            }
+            else{
+                throw new InvalidNbtException("Vein data does not exist");
+            }
+        }
         //Get base blocks
-        NbtList nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
+        nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
         ArrayList<BaseBlock> baseBlocks = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
             if (nbtElement instanceof NbtCompound){
                 baseBlocks.add(readfromNbtBaseBlock((NbtCompound) nbtElement));
             }
             else{
-                throw new InvalidNbtException("Base data does not exist");
+                throw new InvalidNbtException("Base block data does not exist");
             }
         }
         //Get base sections
@@ -216,7 +249,31 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
                 nbtCompound.getInt("alien_base_x"),
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
-        return new AlienBaseSave(origin, savedSections, baseBlocks, uuid);
+        return new AlienBaseSave(origin, savedSections, baseBlocks, veins, uuid);
+    }
+
+    private Vein readfromNbtVein(NbtCompound nbtCompound){
+        ArrayList<BlockPos> blocks = new ArrayList<>();
+        NbtList nbtList = nbtCompound.getList("", NbtElement.COMPOUND_TYPE);
+        for (NbtElement nbtElement : nbtList){
+            if (nbtElement instanceof NbtCompound){
+                blocks.add(
+                  new BlockPos(
+                          ((NbtCompound) nbtElement).getInt("vein_block_x"),
+                          ((NbtCompound) nbtElement).getInt("vein_block_y"),
+                          ((NbtCompound) nbtElement).getInt("vein_block_z")
+                  )
+                );
+            }
+            else{
+                throw new InvalidNbtException("Vein data does not exist");
+            }
+        }
+        return new Vein(
+                blocks,
+                ResourceCategory.valueOf(nbtCompound.getString("resource_category")),
+                nbtCompound.getBoolean("should_always_mine")
+        );
     }
 
     private BaseBlock readfromNbtBaseBlock(NbtCompound nbtCompound){
@@ -247,7 +304,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSection section : alienBase.getSections()) {
             sections.add(baseSectionSaveFromBaseSection(section));
         }
-        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getBaseBlocks(), alienBase.getUuid());
+        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getBaseBlocks(), alienBase.getResources(), alienBase.getUuid());
     }
 
     /// Gets the BaseSectionSave from the BaseSection data.
@@ -261,7 +318,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSectionSave section : alienBaseSave.sections) {
             sections.add(baseSectionFromBaseSectionSave(section));
         }
-        return  new AlienBase(world, alienBaseSave.origin, sections, alienBaseSave.baseBlocks, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid);
+        return new AlienBase(world, alienBaseSave.origin, sections, alienBaseSave.baseBlocks, alienBaseSave.resources, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid);
     }
 
     /// Gets the BaseSection from the BaseSectionSave

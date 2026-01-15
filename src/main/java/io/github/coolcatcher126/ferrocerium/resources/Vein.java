@@ -95,4 +95,8 @@ public class Vein {
     public boolean isBelowVein(BlockPos pos){
         return getBottom().getY() > pos.getY();
     }
+
+    public ResourceCategory getCategory(){
+        return this.category;
+    }
 }
