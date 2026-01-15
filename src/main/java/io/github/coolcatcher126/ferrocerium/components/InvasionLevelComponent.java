@@ -123,13 +123,13 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSectionSave section : alienBase.sections) {
             nbtList.add(saveBaseSectionSave(section));
         }
-        nbtCompound.put("alien_base_base_blocks", nbtList);
+        nbtCompound.put("alien_base_sections", nbtList);
 
         nbtList = new NbtList();
         for (BaseBlock block : alienBase.baseBlocks) {
             nbtList.add(writeToNbtBaseBlock(block));
         }
-        nbtCompound.put("alien_base_sections", nbtList);
+        nbtCompound.put("alien_base_base_blocks", nbtList);
 
         nbtCompound.putUuid("alien_base_uuid", alienBase.uuid);
         return nbtCompound;
