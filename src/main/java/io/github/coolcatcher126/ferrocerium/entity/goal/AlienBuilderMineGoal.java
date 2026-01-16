@@ -22,4 +22,6 @@ public class AlienBuilderMineGoal extends AlienBuilderGatherResourcesBaseGoal {
     public AlienBuilderMineGoal(AlienBuilderBotEntity alienBuilderBot, double speed) {
         super(alienBuilderBot, speed);
     }
+
+
 }
