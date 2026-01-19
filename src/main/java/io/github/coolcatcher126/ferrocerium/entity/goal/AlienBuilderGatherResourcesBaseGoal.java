@@ -16,7 +16,7 @@ import java.util.EnumSet;
 
 /// Gather the resources required to build bases. Gathers wood from trees, ores and stone.
 /// <p>Gathers in an area around the base</p>
-public class AlienBuilderGatherResourcesBaseGoal extends Goal {
+public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
     protected final AlienBuilderBotEntity alienBuilderBot;
 
     protected final int SQR_REACH_RANGE = 25;//The furthest from the AlienBuilderBotEntity a block can be broken from
@@ -39,20 +39,23 @@ public class AlienBuilderGatherResourcesBaseGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        //TODO: Add base logic to check if the entity can start
         if (alienBuilderBot.getBase() == null || alienBuilderBot.getVein() == null || alienBuilderBot.getVein().size() == 0) {
             return false;
         }
-        return true;
+        vein = alienBuilderBot.getVein();
+        blockToCollect = getBlockToCollect();
+        this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
+        return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
     }
 
     @Override
     public boolean shouldContinue() {
-        //TODO: Add base logic to check if the entity can continue
         if (vein.size() == 0) {
             return false;
         }
-        return true;
+        blockToCollect = getBlockToCollect();
+        this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
+        return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
     }
 
     @Override
@@ -68,12 +71,12 @@ public class AlienBuilderGatherResourcesBaseGoal extends Goal {
         this.alienBuilderBot.getNavigation().stop();
     }
 
+    /// base logic for resource gathering ran on each tick.
     public void tick(){
-        //TODO: Add base logic for resource gathering ran on each tick
         if (vein.size() == 0) {
             return;
         }
-        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
+        blockToCollect = getBlockToCollect();
         if (vein.get(blockToCollect) == null) {
             vein.remove(blockToCollect);
             return;
@@ -90,7 +93,10 @@ public class AlienBuilderGatherResourcesBaseGoal extends Goal {
         if (canMove) {
             return;
         }
+    }
 
+    protected int getBlockToCollect(){
+        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up())) ? vein.size() -1 : 0;
     }
 
     /// Sets the block breaking info on the block being mined

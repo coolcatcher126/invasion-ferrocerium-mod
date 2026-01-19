@@ -6,8 +6,7 @@ import jdk.jfr.BooleanFlag;
 public enum ResourceCategory {
     WOOD(1<<0),
     ORES(1<<1),
-    STONE(1<<2),
-    ALL((1<<0) + (1<<1) + (1<<2));
+    STONE(1<<2);
 
     int resourceCategory;
 

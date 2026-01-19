@@ -1,23 +1,20 @@
 package io.github.coolcatcher126.ferrocerium.entity.goal;
 
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.event.GameEvent;
 
 import java.util.EnumSet;
 
 /// Gather the resources required to build bases. Gathers wood from trees, ores and stone.
 /// <p>Gathers in an area around the base</p>
 public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseGoal {
-
     private Vein pillar;
     protected boolean removePillar = false;
 
@@ -27,24 +24,12 @@ public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseG
 
     @Override
     public boolean canStart() {
-        if (super.canStart()) {
-            return true;
-        }
-        vein = alienBuilderBot.getVein();
-        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
-        this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
-        return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
+        return super.canStart() && vein.getCategories().contains(ResourceCategory.WOOD);
     }
 
     @Override
     public boolean shouldContinue() {
-        if (super.shouldContinue()) {
-            return true;
-        }
-
-        blockToCollect = (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
-        this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
-        return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
+        return super.shouldContinue() && vein.getCategories().contains(ResourceCategory.WOOD);
     }
 
     @Override
@@ -57,6 +42,11 @@ public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseG
     public void tick() {
         super.tick();
         pillarUp();
+    }
+
+    @Override
+    protected int getBlockToCollect() {
+        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
     }
 
     private void pillarUp(){

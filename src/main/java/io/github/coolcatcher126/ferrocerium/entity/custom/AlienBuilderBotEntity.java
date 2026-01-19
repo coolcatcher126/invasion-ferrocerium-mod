@@ -169,7 +169,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
         this.goalSelector.add(4, new AlienBuilderBuildGoal(this, 1.0));
         this.goalSelector.add(5, new AlienBuilderGatherWoodGoal(this, 1.0F));
-        this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
+        //COMMENTED OUT FOR DEBUGGING
+        //this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));

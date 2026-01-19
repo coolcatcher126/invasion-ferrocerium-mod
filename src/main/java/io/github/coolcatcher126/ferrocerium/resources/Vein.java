@@ -9,10 +9,10 @@ import java.util.EnumSet;
 
 public class Vein {
     ArrayList<BlockPos> points;
-    ResourceCategory category;
+    EnumSet<ResourceCategory> category;
     boolean shouldMineAnyways;
 
-    public Vein(ArrayList<BlockPos> points, ResourceCategory category, boolean shouldMineAnyways){
+    public Vein(ArrayList<BlockPos> points, EnumSet<ResourceCategory> category, boolean shouldMineAnyways){
         this.points = points;
         this.category = category;
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
@@ -21,20 +21,20 @@ public class Vein {
 
     public Vein(boolean shouldMineAnyways){
         this.points = new ArrayList<>();
-        this.category = ResourceCategory.ALL;
+        this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = shouldMineAnyways;
     }
 
     public Vein(ArrayList<BlockPos> points){
         this.points = points;
-        this.category = ResourceCategory.ALL;
+        this.category = EnumSet.allOf(ResourceCategory.class);
         this.points.sort(Comparator.comparingInt(Vec3i::getY));
         this.shouldMineAnyways = false;
     }
 
     public Vein(){
         this.points = new ArrayList<>();
-        this.category = ResourceCategory.ALL;
+        this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = false;
     }
 
@@ -96,7 +96,7 @@ public class Vein {
         return getBottom().getY() > pos.getY();
     }
 
-    public ResourceCategory getCategory(){
+    public EnumSet<ResourceCategory> getCategories(){
         return this.category;
     }
 }
