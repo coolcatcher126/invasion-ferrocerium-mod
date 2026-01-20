@@ -3,13 +3,9 @@ package io.github.coolcatcher126.ferrocerium.entity.goal;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.EnumSet;
@@ -71,32 +67,36 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
         this.alienBuilderBot.getNavigation().stop();
     }
 
+
+    public void tick() {
+        gatherTick();
+    }
+
     /// base logic for resource gathering ran on each tick.
-    public void tick(){
+    protected boolean gatherTick()
+    {
         if (vein.size() == 0) {
-            return;
+            return false;
         }
         blockToCollect = getBlockToCollect();
         if (vein.get(blockToCollect) == null) {
             vein.remove(blockToCollect);
-            return;
+            return false;
         }
 
         if (this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE) {
            this.alienBuilderBot.getLookControl().lookAt(vein.get(blockToCollect).toCenterPos());
            breakingInfoTick();
            mineBlocks();
-           return;
+           return  false;
         }
 
         boolean canMove = this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
-        if (canMove) {
-            return;
-        }
+        return !canMove;
     }
 
     protected int getBlockToCollect(){
-        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up())) ? vein.size() -1 : 0;
+        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up())) ? (vein.size() - 1) : 0;
     }
 
     /// Sets the block breaking info on the block being mined

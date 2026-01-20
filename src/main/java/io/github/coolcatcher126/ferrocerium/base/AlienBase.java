@@ -297,7 +297,7 @@ public class AlienBase {
                 createStripMine();
             }
         }
-        resources.add(new Vein(mineshaft, EnumSet.allOf(ResourceCategory.class), true));
+        resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
         createStairwell();
     }
 

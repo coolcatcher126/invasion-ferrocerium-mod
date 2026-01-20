@@ -10,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.EnumSet;
-
 /// Gather the resources required to build bases. Gathers wood from trees, ores and stone.
 /// <p>Gathers in an area around the base</p>
 public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseGoal {
@@ -40,13 +38,14 @@ public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseG
 
     @Override
     public void tick() {
-        super.tick();
-        pillarUp();
+        if (gatherTick()) {
+            pillarUp();
+        }
     }
 
     @Override
     protected int getBlockToCollect() {
-        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? vein.size() -1 : 0;
+        return (vein.isAboveVein(alienBuilderBot.getBlockPos().up()) || removePillar) ? (vein.size() - 1) : 0;
     }
 
     private void pillarUp(){
