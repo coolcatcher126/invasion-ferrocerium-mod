@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -213,6 +214,7 @@ public class AlienBase {
         }
         else{
             findResourcesToCollect();
+            extendStripMines(5);
             mineResourceVeins();
             search_time_count = SEARCH_TIME;
         }
@@ -297,8 +299,6 @@ public class AlienBase {
                 mineshaft.add(origin.add(0,-i,2));
                 mineshaft.add(origin.add(1,-i,2));
                 mineshaft.add(origin.add(2,-i,2));
-
-                createStripMine();
             }
         }
         resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
@@ -336,8 +336,34 @@ public class AlienBase {
         }
     }
 
-    private void createStripMine(){
+    void extendStripMines(int length) {
+        for (Integer y : STRIP_MINE_LEVELS) {
+                if (y % 2 == 0) {
+                    BlockPos mineshaftCenter = new BlockPos(origin.getX(), y, origin.getZ());
+                    extendStripMine(mineshaftCenter, Direction.NORTH, length);
+                    extendStripMine(mineshaftCenter, Direction.EAST, length);
+                    extendStripMine(mineshaftCenter, Direction.SOUTH, length);
+                    extendStripMine(mineshaftCenter, Direction.WEST, length);
+                }
+            }
 
+    }
+
+    private void extendStripMine(BlockPos mineFront, Direction direction, int length) {
+        ArrayList<BlockPos> mineshaft = new ArrayList<>();
+
+        //Start the side branches outside the stairwell
+        mineFront = mineFront.offset(direction, 2);
+        do {
+            mineFront = mineFront.offset(direction);
+        }
+        while (world.getBlockState(mineFront).isAir());
+
+        for (int i = 0; i < length; i++) {
+            mineshaft.add(mineFront);
+            mineFront = mineFront.offset(direction);
+        }
+        resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
     }
 
     /// Searches in the area between the min and max search radii to find resources to collect.
@@ -459,6 +485,14 @@ public class AlienBase {
 
     public ArrayList<Vein> getResources(){
         return  this.resources;
+    }
+
+    public int getBaseGrowTime(){
+        return this.baseGrowTime;
+    }
+
+    public int getSearch_time_count(){
+        return this.search_time_count;
     }
 
 }
