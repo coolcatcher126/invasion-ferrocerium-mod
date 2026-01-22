@@ -51,7 +51,7 @@ public class AlienBase {
 
     private int baseGrowTime;
 
-    private final int SEARCH_TIME = 20;
+    private final int SEARCH_TIME = 1200;
     private int search_time_count = SEARCH_TIME;
 
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
@@ -60,7 +60,7 @@ public class AlienBase {
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid, int baseGrowTime, int search_time_count){
         this.world = world;
         this.origin = origin;
 
@@ -68,6 +68,10 @@ public class AlienBase {
         this.baseBlocks = baseBlocks;
         this.builders = builders;
         this.uuid = uuid;
+
+        this.baseGrowTime = baseGrowTime;
+        this.search_time_count = search_time_count;
+
         this.resources = resources;
 
         sectionTemplateList = new ArrayList<>();

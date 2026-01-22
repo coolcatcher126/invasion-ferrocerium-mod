@@ -139,6 +139,9 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         nbtCompound.put("resource_veins", nbtList);
 
         nbtCompound.putUuid("alien_base_uuid", alienBase.uuid);
+
+        nbtCompound.putInt("baseGrowTime", alienBase.baseGrowTime);
+        nbtCompound.putInt("search_time_count", alienBase.search_time_count);
         return nbtCompound;
     }
 
@@ -219,6 +222,9 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     /// Loads data from NBT into the class AlienBaseSave.
     private AlienBaseSave loadAlienBaseSave(NbtCompound nbtCompound) {
+        //Get timers
+        int baseGrowTime = nbtCompound.getInt("baseGrowTime");
+        int search_time_count = nbtCompound.getInt("search_time_count");
         //Get UUID
         UUID uuid = nbtCompound.getUuid("alien_base_uuid");
         //Get veins to mine
@@ -259,7 +265,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
                 nbtCompound.getInt("alien_base_x"),
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
-        return new AlienBaseSave(origin, savedSections, baseBlocks, veins, uuid);
+        return new AlienBaseSave(origin, savedSections, baseBlocks, veins, uuid, baseGrowTime, search_time_count);
     }
 
     private Vein readfromNbtVein(NbtCompound nbtCompound){
@@ -324,7 +330,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSection section : alienBase.getSections()) {
             sections.add(baseSectionSaveFromBaseSection(section));
         }
-        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getBaseBlocks(), alienBase.getResources(), alienBase.getUuid());
+        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getBaseBlocks(), alienBase.getResources(), alienBase.getUuid(), alienBase.getBaseGrowTime(), alienBase.getSearch_time_count());
     }
 
     /// Gets the BaseSectionSave from the BaseSection data.
@@ -338,7 +344,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSectionSave section : alienBaseSave.sections) {
             sections.add(baseSectionFromBaseSectionSave(section));
         }
-        return new AlienBase(world, alienBaseSave.origin, sections, alienBaseSave.baseBlocks, alienBaseSave.resources, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid);
+        return new AlienBase(world, alienBaseSave.origin, sections, alienBaseSave.baseBlocks, alienBaseSave.resources, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid, alienBaseSave.baseGrowTime, alienBaseSave.search_time_count);
     }
 
     /// Gets the BaseSection from the BaseSectionSave
