@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.components;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
@@ -95,6 +96,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        this.world.getProfiler().push("invasion_level_component_write_to_nbt");
         if (this.invasionState > 0) {
             nbtCompound.putInt("invasion_state", this.invasionState);
         }
@@ -103,7 +105,8 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
             baseSaves.add(alienBaseSaveFromAlienBase(base));
         }
         saveBaseListData(nbtCompound, baseSaves);
-
+        InvasionFerrocerium.LOGGER.debug("Finished saving InvasionLevelComponent");
+        this.world.getProfiler().pop();
     }
 
     private static void saveBaseListData(NbtCompound nbtCompound, ArrayList<AlienBaseSave> basesToSave){
@@ -195,6 +198,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        this.world.getProfiler().push("invasion_level_component_read_from_nbt");
         ArrayList<AlienBaseSave> baseSaves = loadBaseListData(nbtCompound);
         bases = new ArrayList<>();
         for (AlienBaseSave baseSave : baseSaves) {
@@ -204,6 +208,8 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         if (nbtCompound.contains("invasion_state", NbtElement.INT_TYPE)) {
             this.invasionState = nbtCompound.getInt("invasion_state");
         }
+        InvasionFerrocerium.LOGGER.debug("Finished loading InvasionLevelComponent");
+        this.world.getProfiler().pop();
     }
 
     private ArrayList<AlienBaseSave> loadBaseListData(NbtCompound nbtCompound){
@@ -361,8 +367,11 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void serverTick() {
+        this.world.getProfiler().push("invasion_level_component_server_tick");
         for (AlienBase base : bases) {
             base.tick();
         }
+
+        this.world.getProfiler().pop();
     }
 }

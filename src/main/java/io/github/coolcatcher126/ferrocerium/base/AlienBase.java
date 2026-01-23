@@ -194,6 +194,7 @@ public class AlienBase {
 
     /// Ticks this alien base.
     public void tick(){
+        this.world.getProfiler().push("alien_base_tick");
         //Grow the base after the timer finishes
         if (baseGrowTime > 0) {
             baseGrowTime--;
@@ -218,6 +219,7 @@ public class AlienBase {
             mineResourceVeins();
             search_time_count = SEARCH_TIME;
         }
+        this.world.getProfiler().pop();
     }
 
     public BlockPos getOrigin(){
@@ -354,11 +356,11 @@ public class AlienBase {
 
         //Start the side branches outside the stairwell
         mineFront = mineFront.offset(direction, 2);
-        do {
+        while (world.getBlockState(mineFront).isAir()) {
             mineFront = mineFront.offset(direction);
         }
-        while (world.getBlockState(mineFront).isAir());
 
+        //Add the blocks to mine
         for (int i = 0; i < length; i++) {
             mineshaft.add(mineFront);
             mineFront = mineFront.offset(direction);
