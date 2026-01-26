@@ -55,6 +55,9 @@ public class AlienBase {
     private final int SEARCH_TIME = 1200;
     private int search_time_count = SEARCH_TIME;
 
+    private final int ASSIGN_RES_MINE_TIME = 20;
+    private int assignResMineTime = ASSIGN_RES_MINE_TIME;
+
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
     ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
 
@@ -216,8 +219,15 @@ public class AlienBase {
         else{
             findResourcesToCollect();
             extendStripMines(5);
-            mineResourceVeins();
             search_time_count = SEARCH_TIME;
+        }
+
+        if (assignResMineTime > 0){
+            assignResMineTime--;
+        }
+        else{
+            mineResourceVeins();
+            assignResMineTime = ASSIGN_RES_MINE_TIME;
         }
         this.world.getProfiler().pop();
     }
@@ -340,14 +350,14 @@ public class AlienBase {
 
     void extendStripMines(int length) {
         for (Integer y : STRIP_MINE_LEVELS) {
-                if (y % 2 == 0) {
-                    BlockPos mineshaftCenter = new BlockPos(origin.getX(), y, origin.getZ());
-                    extendStripMine(mineshaftCenter, Direction.NORTH, length);
-                    extendStripMine(mineshaftCenter, Direction.EAST, length);
-                    extendStripMine(mineshaftCenter, Direction.SOUTH, length);
-                    extendStripMine(mineshaftCenter, Direction.WEST, length);
-                }
+            if (y < origin.getY() && y % 2 == 0) {
+                BlockPos mineshaftCenter = new BlockPos(origin.getX(), y, origin.getZ());
+                extendStripMine(mineshaftCenter, Direction.NORTH, length);
+                extendStripMine(mineshaftCenter, Direction.EAST, length);
+                extendStripMine(mineshaftCenter, Direction.SOUTH, length);
+                extendStripMine(mineshaftCenter, Direction.WEST, length);
             }
+        }
 
     }
 
@@ -363,6 +373,7 @@ public class AlienBase {
         //Add the blocks to mine
         for (int i = 0; i < length; i++) {
             mineshaft.add(mineFront);
+            mineshaft.add(mineFront.add(0, 1, 0));
             mineFront = mineFront.offset(direction);
         }
         resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
