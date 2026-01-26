@@ -100,16 +100,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
             if (vein != null){
-                NbtList veinNbt = new NbtList();
-                for (int i = 0; i < vein.size(); i++) {
-                    NbtCompound blockPosNbt = new NbtCompound();
-                    BlockPos blockPos = vein.get(i);
-                    blockPosNbt.putInt("block_z",blockPos.getZ());
-                    blockPosNbt.putInt("block_y",blockPos.getY());
-                    blockPosNbt.putInt("block_x",blockPos.getX());
-                    veinNbt.add(blockPosNbt);
-                }
-                nbt.put("vein", veinNbt);
+                nbt.put("vein", Vein.writeToNbt(vein));
             }
         }
         this.writeInventory(nbt, this.getRegistryManager());
@@ -134,23 +125,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             }*/
         }
         if (nbt.contains("vein")) {
-            NbtList nbtList = nbt.getList("vein", NbtElement.COMPOUND_TYPE);
-            BlockPos blockPos;
-            vein = new Vein();
-            for (NbtElement nbtElement : nbtList) {
-                if (nbtElement instanceof NbtCompound) {
-                    blockPos = new BlockPos(
-                            ((NbtCompound) nbtElement).getInt("block_x"),
-                            ((NbtCompound) nbtElement).getInt("block_y"),
-                            ((NbtCompound) nbtElement).getInt("block_z")
-                    );
-                    vein.add(blockPos);
-                }
-                else{
-                    throw new InvalidNbtException("Vein data does not exist");
-                }
-            }
-
+            vein = Vein.readfromNbt(nbt.getCompound("vein"));
         }
         this.readInventory(nbt, this.getRegistryManager());
     }

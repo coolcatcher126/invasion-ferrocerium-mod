@@ -137,7 +137,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
         nbtList = new NbtList();
         for (Vein resource : alienBase.resources){
-            nbtList.add(writeToNbtVein(resource));
+            nbtList.add(Vein.writeToNbt(resource));
         }
         nbtCompound.put("resource_veins", nbtList);
 
@@ -145,31 +145,6 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
         nbtCompound.putInt("baseGrowTime", alienBase.baseGrowTime);
         nbtCompound.putInt("search_time_count", alienBase.search_time_count);
-        return nbtCompound;
-    }
-
-    private static NbtCompound writeToNbtVein(Vein vein){
-        NbtCompound nbtCompound = new NbtCompound();
-        nbtCompound.putBoolean("should_always_mine", vein.isShouldMineAnyways());
-        NbtCompound nbtCompound1 = new NbtCompound();
-        NbtList nbtList = new NbtList();
-        for (ResourceCategory category : vein.getCategories()) {
-
-            nbtCompound1.putString("resource", category.name());
-            nbtList.add(nbtCompound1);
-        }
-        nbtCompound1 = new NbtCompound();
-        nbtCompound.put("resource_category", nbtList);
-        BlockPos blockPos;
-        nbtList = new NbtList();
-        while (vein.size() > 0){
-            blockPos = vein.remove(0);
-            nbtCompound1.putInt("vein_block_z", blockPos.getZ());
-            nbtCompound1.putInt("vein_block_y", blockPos.getY());
-            nbtCompound1.putInt("vein_block_x", blockPos.getX());
-            nbtList.add(nbtCompound1);
-        }
-        nbtCompound.put("vein", nbtList);
         return nbtCompound;
     }
 
@@ -238,7 +213,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         ArrayList<Vein> veins = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
             if (nbtElement instanceof NbtCompound){
-                veins.add(readfromNbtVein((NbtCompound) nbtElement));
+                veins.add(Vein.readfromNbt((NbtCompound) nbtElement));
             }
             else{
                 throw new InvalidNbtException("Vein data does not exist");
@@ -272,40 +247,6 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
         return new AlienBaseSave(origin, savedSections, baseBlocks, veins, uuid, baseGrowTime, search_time_count);
-    }
-
-    private Vein readfromNbtVein(NbtCompound nbtCompound){
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-        NbtList nbtList = nbtCompound.getList("vein", NbtElement.COMPOUND_TYPE);
-        for (NbtElement nbtElement : nbtList){
-            if (nbtElement instanceof NbtCompound){
-                blocks.add(
-                  new BlockPos(
-                          ((NbtCompound) nbtElement).getInt("vein_block_x"),
-                          ((NbtCompound) nbtElement).getInt("vein_block_y"),
-                          ((NbtCompound) nbtElement).getInt("vein_block_z")
-                  )
-                );
-            }
-            else{
-                throw new InvalidNbtException("Vein data does not exist");
-            }
-        }
-        EnumSet<ResourceCategory> resources = EnumSet.noneOf(ResourceCategory.class);
-        nbtList = nbtCompound.getList("resource_category", NbtElement.COMPOUND_TYPE);
-        for (NbtElement nbtElement : nbtList){
-            if (nbtElement instanceof NbtCompound){
-                resources.add(ResourceCategory.valueOf(nbtCompound.getString("resource")));
-            }
-            else{
-                throw new InvalidNbtException("Resource category data does not exist");
-            }
-        }
-        return new Vein(
-                blocks,
-                resources,
-                nbtCompound.getBoolean("should_always_mine")
-        );
     }
 
     private BaseBlock readfromNbtBaseBlock(NbtCompound nbtCompound){
