@@ -315,11 +315,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.inventory.clearToList().forEach(this::dropStack);
     }
 
-    protected ItemStack addItem(ItemStack stack) {
+    public ItemStack addItem(ItemStack stack) {
         return this.inventory.addStack(stack);
     }
 
-    protected boolean canInsertIntoInventory(ItemStack stack) {
+    public boolean canInsertIntoInventory(ItemStack stack) {
         return this.inventory.canInsert(stack);
     }
 }

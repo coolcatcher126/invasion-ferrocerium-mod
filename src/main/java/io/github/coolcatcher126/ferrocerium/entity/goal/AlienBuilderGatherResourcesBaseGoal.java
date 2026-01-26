@@ -3,9 +3,11 @@ package io.github.coolcatcher126.ferrocerium.entity.goal;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
+import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.EnumSet;
@@ -105,6 +107,7 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
             countTicksToBreak--;
             int progress = Math.round((MAX_BREAK_TICKS - countTicksToBreak) / (float) MAX_BREAK_TICKS * 10);
             this.alienBuilderBot.getWorld().setBlockBreakingInfo(this.alienBuilderBot.getId(), vein.get(blockToCollect), progress);
+            alienBuilderBot.swingHand(Hand.MAIN_HAND);
             return;
         }
         countTicksToBreak = MAX_BREAK_TICKS;
@@ -125,7 +128,11 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
             ItemStack blockMinedAsItem = new ItemStack(blockMined.asItem(), 1);
             if (this.alienBuilderBot.getWorld().breakBlock(vein.get(blockToCollect), false) && this.alienBuilderBot.getInventory().canInsert(blockMinedAsItem)){
                 this.alienBuilderBot.getWorld().emitGameEvent(GameEvent.BLOCK_DESTROY, vein.get(blockToCollect), GameEvent.Emitter.of(this.alienBuilderBot));
-                this.alienBuilderBot.getInventory().addStack(blockMinedAsItem);
+                blockMinedAsItem = this.alienBuilderBot.addItem(blockMinedAsItem);
+                if (!blockMinedAsItem.isEmpty()) {
+                    LookTargetUtil.give(alienBuilderBot, blockMinedAsItem, alienBuilderBot.getPos().add(0.0, 1.0, 0.0));
+                }
+
                 alienBuilderBot.getVein().remove(blockToCollect);
             }
         }
