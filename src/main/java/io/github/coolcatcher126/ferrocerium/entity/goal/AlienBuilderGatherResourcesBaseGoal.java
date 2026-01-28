@@ -37,10 +37,10 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        if (alienBuilderBot.getBase() == null || alienBuilderBot.getVein() == null || alienBuilderBot.getVein().size() == 0) {
+        vein = alienBuilderBot.getVein();
+        if (alienBuilderBot.getBase() == null || vein == null || vein.size() == 0) {
             return false;
         }
-        vein = alienBuilderBot.getVein();
         blockToCollect = getBlockToCollect();
         this.path = this.alienBuilderBot.getNavigation().findPathTo(vein.get(blockToCollect), 0);
         return this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(vein.get(blockToCollect)) < SQR_REACH_RANGE;
@@ -59,12 +59,10 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
     @Override
     public void start() {
         this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
-        alienBuilderBot.setGathering(true);
     }
 
     @Override
     public void stop() {
-        alienBuilderBot.setGathering(false);
         vein = null;
         this.alienBuilderBot.getNavigation().stop();
     }
@@ -115,14 +113,16 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
 
     /// Allows the entity to mine blocks. Shared between all mining and gathering goals
     private void mineBlocks(){
+        if (alienBuilderBot.getWorld().isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect)))){
+            vein.remove(blockToCollect);
+            return;
+        }
+
         if (countTicksToBreak > 0) {
             countTicksToBreak--;
         } else {
             countTicksToBreak = MAX_BREAK_TICKS;
-            if (alienBuilderBot.getWorld().isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || this.alienBuilderBot.getBase().blockIsCollectible(vein.get(blockToCollect)))){
-                alienBuilderBot.getVein().remove(blockToCollect);
-                return;
-            }
+
             //Make the bot  mine it as well as all/many other adjacent blocks of the same type.
             Block blockMined = this.alienBuilderBot.getWorld().getBlockState(vein.get(blockToCollect)).getBlock();
             ItemStack blockMinedAsItem = new ItemStack(blockMined.asItem(), 1);
@@ -133,7 +133,7 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
                     LookTargetUtil.give(alienBuilderBot, blockMinedAsItem, alienBuilderBot.getPos().add(0.0, 1.0, 0.0));
                 }
 
-                alienBuilderBot.getVein().remove(blockToCollect);
+                vein.remove(blockToCollect);
             }
         }
     }

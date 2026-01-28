@@ -150,7 +150,7 @@ public class Vein {
         String resName;
         for (NbtElement nbtElement : nbtList){
             if (nbtElement instanceof NbtCompound){
-                resName = nbtCompound.getString("resource");
+                resName = ((NbtCompound) nbtElement).getString("resource");
                 resources.add(ResourceCategory.valueOf(resName));
             }
             else{

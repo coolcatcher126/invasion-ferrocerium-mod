@@ -31,8 +31,15 @@ public class AlienBuilderGatherWoodGoal extends AlienBuilderGatherResourcesBaseG
     }
 
     @Override
+    public void start() {
+        super.start();
+        alienBuilderBot.setGathering(true);
+    }
+
+    @Override
     public void stop() {
         removePillar = false;
+        alienBuilderBot.setGathering(false);
         super.stop();
     }
 

@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
@@ -39,6 +40,7 @@ import java.util.UUID;
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable
     private BaseSection sectionToBuild;
@@ -94,14 +96,26 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        if (alienBase != null){
+        if (vein != null && vein.size() > 0) {
+            nbt.put("vein", Vein.writeToNbt(vein));
+        }
+        if (alienBase != null) {
             nbt.putUuid("alien_base", alienBase.getUuid());
-            if (sectionToBuild != null){
+            if (sectionToBuild != null) {
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
-            if (vein != null){
-                nbt.put("vein", Vein.writeToNbt(vein));
-            }
+        }
+        if (this.isMining())
+        {
+            nbt.putBoolean("is_mining", true);
+        }
+        if (this.isGathering())
+        {
+            nbt.putBoolean("is_gathering", true);
+        }
+        if (this.isBuilding())
+        {
+            nbt.putBoolean("is_building", true);
         }
         this.writeInventory(nbt, this.getRegistryManager());
     }
@@ -109,6 +123,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
+        setBuilding(nbt.getBoolean("is_building"));
+        setGathering(nbt.getBoolean("is_gathering"));
+        setMining(nbt.getBoolean("is_mining"));
         if(nbt.contains("alien_base")){
             UUID alienBaseUuid = nbt.getUuid("alien_base");
             alienBase = (InvasionFerroceriumComponents.getAlienBases(getEntityWorld())).stream()
@@ -117,12 +134,13 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 .orElse(null);
             if (alienBase != null) {
                 //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
+                alienBase.hireBuilder(this);
                 if (nbt.contains("section_to_build")){
                     sectionToBuild = alienBase.getSections().get(nbt.getInt("section_to_build"));
                 }
-            } /*else {
+            } else {
                 InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
-            }*/
+            }
         }
         if (nbt.contains("vein")) {
             vein = Vein.readfromNbt(nbt.getCompound("vein"));
@@ -223,6 +241,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.dataTracker.get(GATHERING);
     }
 
+    public void setMining(boolean mining)
+    {
+        this.dataTracker.set(MINING, mining);
+    }
+
+    public boolean isMining()
+    {
+        return this.dataTracker.get(MINING);
+    }
+
     public void setSection(BaseSection sectionToBuild){
         this.sectionToBuild = sectionToBuild;
     }
@@ -244,6 +272,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         super.initDataTracker(builder);
         builder.add(BUILDING, false);
         builder.add(GATHERING, false);
+        builder.add(MINING, false);
     }
 
     @Override

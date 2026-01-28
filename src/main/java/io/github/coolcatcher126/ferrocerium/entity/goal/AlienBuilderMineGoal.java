@@ -34,7 +34,14 @@ public class AlienBuilderMineGoal extends AlienBuilderGatherResourcesBaseGoal {
     }
 
     @Override
+    public void start() {
+        super.start();
+        alienBuilderBot.setMining(true);
+    }
+
+    @Override
     public void stop() {
+        alienBuilderBot.setMining(false);
         super.stop();
     }
 }

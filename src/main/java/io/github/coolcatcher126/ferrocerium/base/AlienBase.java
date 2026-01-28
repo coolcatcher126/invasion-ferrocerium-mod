@@ -83,10 +83,10 @@ public class AlienBase {
         this.availablePos = new ArrayList<>();
         baseSectGetAvailablePos();
 
-        if (this.resources == null) {
+        if (this.resources.isEmpty()) {
             createMineshaft();
         }
-        mineResourceVein(resources.get(0));
+        mineResourceVein(resources.getFirst());
     }
 
     public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder)
@@ -109,7 +109,7 @@ public class AlienBase {
         baseSectGetAvailablePos();
 
         createMineshaft();
-        mineResourceVein(resources.get(0));
+        mineResourceVein(resources.getFirst());
     }
 
     /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
