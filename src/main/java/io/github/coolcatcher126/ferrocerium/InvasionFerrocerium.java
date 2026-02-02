@@ -11,6 +11,7 @@ import io.github.coolcatcher126.ferrocerium.components.InvasionLevelComponent;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.item.ModItemGroups;
 import io.github.coolcatcher126.ferrocerium.item.ModItems;
+import io.github.coolcatcher126.ferrocerium.resources.BuilderBotConversions;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import io.github.coolcatcher126.ferrocerium.world.gen.ModWorldGeneration;
 import net.fabricmc.api.ModInitializer;
@@ -22,15 +23,22 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.command.argument.DimensionArgumentType;
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class InvasionFerrocerium implements ModInitializer {
 	public static final String MOD_ID = "invasion-ferrocerium";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+
+    public static final BuilderBotConversions RECIPES = new BuilderBotConversions();
 
 	@Override
 	public void onInitialize() {
@@ -54,6 +62,11 @@ public class InvasionFerrocerium implements ModInitializer {
 		FabricDefaultAttributeRegistry.register(ModEntities.ALIEN_BUILDER_BOT, AlienBuilderBotEntity.createAttributes());
 
         BaseSectionTemplates.registerBaseSections();
+
+        RECIPES.addRecipe(Items.STONE_BRICKS, (ArrayList<Item>) List.<Item>of(Items.STONE));
+        RECIPES.addRecipe(Items.CHEST, (ArrayList<Item>) List.<Item>of(Items.OAK_WOOD, Items.OAK_WOOD));
+        RECIPES.addRecipe(Items.IRON_BARS, (ArrayList<Item>) List.<Item>of(Items.IRON_ORE));
+        RECIPES.addRecipe(Items.STONE_BRICK_STAIRS, (ArrayList<Item>) List.<Item>of(Items.STONE_BRICKS));
 
         //Make invasion automatically start after x amount of time.
         ServerTickEvents.END_WORLD_TICK.register((world) ->
