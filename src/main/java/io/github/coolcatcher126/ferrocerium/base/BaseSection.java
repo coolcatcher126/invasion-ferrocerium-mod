@@ -1,11 +1,14 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 public class BaseSection {
     private BaseSectionTemplate section;
@@ -49,6 +52,10 @@ public class BaseSection {
             block.setBlockPos(pos);
         }
         return blocks;
+    }
+
+    public Set<Item> getBaseBlockPallete(){
+        return section.getBlockPallete(world);
     }
 
     public String getTemplateName(){
