@@ -1,23 +1,24 @@
 package io.github.coolcatcher126.ferrocerium.entity.goal;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /// Lets the mob convert one resource into another.
 public class CraftGoal extends Goal {
-    Inventory inventory;
     AlienBuilderBotEntity bot;
     ArrayList<Item> itemsToCraft;
 
 
-    public CraftGoal(AlienBuilderBotEntity bot, Inventory inventory){
+    public CraftGoal(AlienBuilderBotEntity bot){
         this.bot = bot;
-        this.inventory = inventory;
     }
 
     @Override
@@ -27,9 +28,32 @@ public class CraftGoal extends Goal {
 
     @Override
     public void tick() {
-        //TODO: Craft the gathered raw materials into the requested usable materials
+        Map<Item, Integer> itemsRequired;
         for (Item item : itemsToCraft) {
+            if (InvasionFerrocerium.RECIPES.canCraft(item, bot.getInventory())) {
+                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(item);
+                for (Map.Entry<Item, Integer> ingredientType : itemsRequired.entrySet()) {
+                    int count = ingredientType.getValue();
+                    for (int i = 0; i < bot.getInventory().size(); i++) {
+                        ItemStack stack = bot.getInventory().getStack(i);
 
+                        if (stack.getItem() == ingredientType.getKey()) {
+                            if (stack.getCount() <= count) {
+                                count -= stack.getCount();
+                                bot.getInventory().setStack(i, ItemStack.EMPTY);
+                                bot.getInventory().addStack(item.getDefaultStack());
+                            } else {
+                                stack.setCount(stack.getCount() - count);
+                                count = 0;
+                            }
+                        }
+
+                        if (count <= 0) {
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

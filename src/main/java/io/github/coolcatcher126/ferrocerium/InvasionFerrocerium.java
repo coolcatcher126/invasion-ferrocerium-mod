@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class InvasionFerrocerium implements ModInitializer {
 	public static final String MOD_ID = "invasion-ferrocerium";
@@ -63,10 +64,10 @@ public class InvasionFerrocerium implements ModInitializer {
 
         BaseSectionTemplates.registerBaseSections();
 
-        RECIPES.addRecipe(Items.STONE_BRICKS, (ArrayList<Item>) List.<Item>of(Items.STONE));
-        RECIPES.addRecipe(Items.CHEST, (ArrayList<Item>) List.<Item>of(Items.OAK_WOOD, Items.OAK_WOOD));
-        RECIPES.addRecipe(Items.IRON_BARS, (ArrayList<Item>) List.<Item>of(Items.IRON_ORE));
-        RECIPES.addRecipe(Items.STONE_BRICK_STAIRS, (ArrayList<Item>) List.<Item>of(Items.STONE_BRICKS));
+        RECIPES.addRecipe(Items.STONE_BRICKS, Map.of(Items.STONE, 1));
+        RECIPES.addRecipe(Items.CHEST, Map.of(Items.OAK_WOOD, 2));
+        RECIPES.addRecipe(Items.IRON_BARS, Map.of(Items.IRON_ORE, 1));
+        RECIPES.addRecipe(Items.STONE_BRICK_STAIRS, Map.of(Items.STONE_BRICKS, 1));
 
         //Make invasion automatically start after x amount of time.
         ServerTickEvents.END_WORLD_TICK.register((world) ->
