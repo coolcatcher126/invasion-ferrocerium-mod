@@ -42,6 +42,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    private CraftGoal craftGoal;
+
     @Nullable
     private BaseSection sectionToBuild;
     @Nullable
@@ -150,13 +152,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     @Override
     protected void initGoals() {
+        craftGoal = new CraftGoal(this);
+
         this.goalSelector.add(1, new SwimGoal(this));
+        this.goalSelector.add(3, craftGoal);
         this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
-        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, 1.0));
+        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, craftGoal, 1.0));
         this.goalSelector.add(5, new AlienBuilderGatherWoodGoal(this, 1.0F));
         this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-        this.goalSelector.add(6, new CraftGoal(this));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(6, new LookAroundGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this));

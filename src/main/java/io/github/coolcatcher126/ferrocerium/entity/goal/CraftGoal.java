@@ -9,16 +9,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /// Lets the mob convert one resource into another.
 public class CraftGoal extends Goal {
     AlienBuilderBotEntity bot;
-    ArrayList<Item> itemsToCraft;
-
+    List<Item> itemsToCraft;
 
     public CraftGoal(AlienBuilderBotEntity bot){
         this.bot = bot;
+        itemsToCraft = new ArrayList<>();
     }
 
     @Override
@@ -56,4 +57,15 @@ public class CraftGoal extends Goal {
             }
         }
     }
+
+    public void addCraftingRequest(Item requestedItem, int count){
+        for (int i = 0; i < count; i++) {
+            itemsToCraft.add(requestedItem);
+        }
+    }
+
+    public void addCraftingRequest(Item requestedItem){
+        addCraftingRequest(requestedItem, 1);
+    }
+
 }
