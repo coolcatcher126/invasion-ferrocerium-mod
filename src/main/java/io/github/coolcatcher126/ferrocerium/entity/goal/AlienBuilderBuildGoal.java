@@ -70,17 +70,6 @@ public class AlienBuilderBuildGoal extends Goal {
         if (block != null) {
             BlockPos blockPos = this.alienBuilderBot.getBase().getOrigin().add(block.getBlockPos());
 
-            if (!(this.alienBuilderBot.getBlockPos().getSquaredDistance(blockPos.toCenterPos()) < SQR_REACH_RANGE)) {
-                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
-                return;
-            }
-
-            this.alienBuilderBot.getLookControl().lookAt(blockPos.toCenterPos());
-            if (delay > 0) {
-                delay--;
-                return;
-            }
-
             World world = this.alienBuilderBot.getEntityWorld();
 
             if (block.isWantedBlock(world)) {
@@ -89,17 +78,31 @@ public class AlienBuilderBuildGoal extends Goal {
 
             BlockState blockState = block.getBlockState();
             Item blockItem = blockState.getBlock().asItem();
-            if (alienBuilderBot.getInventory().containsAny(blockPallete)) {
-                alienBuilderBot.swingHand(Hand.MAIN_HAND);
-
-                world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
-                world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
-                blocks.remove(block);
-                alienBuilderBot.getInventory().removeItem(blockItem, 1);
-            } else {
+            if (!alienBuilderBot.getInventory().containsAny(x -> x.getItem() == blockItem)) {
                 craftGoal.addCraftingRequest(blockItem);
+                return;
+            }
+
+
+            this.alienBuilderBot.getLookControl().lookAt(blockPos.toCenterPos());
+
+            if (!(this.alienBuilderBot.getBlockPos().getSquaredDistance(blockPos.toCenterPos()) < SQR_REACH_RANGE)) {
+                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
+                return;
+            }
+
+            if (delay > 0) {
+                delay--;
+                return;
             }
             delay = 5;
+
+            alienBuilderBot.swingHand(Hand.MAIN_HAND);
+
+            world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
+            world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
+            blocks.remove(block);
+            alienBuilderBot.getInventory().removeItem(blockItem, 1);
         }
     }
 

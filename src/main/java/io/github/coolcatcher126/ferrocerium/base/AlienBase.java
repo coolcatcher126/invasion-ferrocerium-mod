@@ -155,7 +155,7 @@ public class AlienBase {
 
     public void repairBaseSection(BaseSection section) {
         //TODO: Add base repair logic
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
     }
 
     private boolean checkSectionLocationClear(BaseSectPos pos){
@@ -168,7 +168,7 @@ public class AlienBase {
     }
 
     private void addBaseSection(BaseSectionTemplate sectionTemplate, boolean isCore, BaseSectPos offset, BlockRotation rot){
-        BaseSection newSection = new BaseSection(sectionTemplate, world, offset, rot, false);
+        BaseSection newSection = new BaseSection(sectionTemplate, world, offset, rot, isCore);
         sections.add(newSection);
         availablePos.remove(offset);
         baseSectCheckAdjPos(newSection);
@@ -220,7 +220,7 @@ public class AlienBase {
                         shouldRepair = true;
                     }
                 }
-                if (shouldRepair){
+                if (!shouldRepair){
                     growBase();
                 }
             }
@@ -326,9 +326,15 @@ public class AlienBase {
                 mineshaft.add(origin.add(0,-i,2));
                 mineshaft.add(origin.add(1,-i,2));
                 mineshaft.add(origin.add(2,-i,2));
+
+                if (i%2 == 0){
+                    //Split the mineshaft staircase into sections
+                    resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+                    mineshaft = new ArrayList<>();
+                }
             }
         }
-        resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+
         createStairwell();
     }
 
