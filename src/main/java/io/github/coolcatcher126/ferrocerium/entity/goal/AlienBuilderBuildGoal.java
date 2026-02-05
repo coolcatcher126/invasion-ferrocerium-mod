@@ -66,36 +66,40 @@ public class AlienBuilderBuildGoal extends Goal {
     public void tick(){
         assert this.alienBuilderBot.getBase() != null;
 
-        this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
-
         BaseBlock block = blocks.peekFirst();
         if (block != null) {
             BlockPos blockPos = this.alienBuilderBot.getBase().getOrigin().add(block.getBlockPos());
+
+            if (!(this.alienBuilderBot.getBlockPos().getSquaredDistance(blockPos.toCenterPos()) < SQR_REACH_RANGE)) {
+                this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
+                return;
+            }
+
             this.alienBuilderBot.getLookControl().lookAt(blockPos.toCenterPos());
-
-            if (delay == 0){
-                World world = this.alienBuilderBot.getEntityWorld();
-
-                if (!block.isWantedBlock(world)){
-                    BlockState blockState = block.getBlockState();
-                    Item blockItem = blockState.getBlock().asItem();
-                    if (alienBuilderBot.getInventory().containsAny(blockPallete)) {
-                        alienBuilderBot.swingHand(Hand.MAIN_HAND);
-
-                        world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
-                        world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
-                        blocks.remove(block);
-                        alienBuilderBot.getInventory().removeItem(blockItem,1);
-                    }
-                    else {
-                        craftGoal.addCraftingRequest(blockItem);
-                    }
-                    delay = 5;
-                }
-            }
-            else {
+            if (delay > 0) {
                 delay--;
+                return;
             }
+
+            World world = this.alienBuilderBot.getEntityWorld();
+
+            if (block.isWantedBlock(world)) {
+                return;
+            }
+
+            BlockState blockState = block.getBlockState();
+            Item blockItem = blockState.getBlock().asItem();
+            if (alienBuilderBot.getInventory().containsAny(blockPallete)) {
+                alienBuilderBot.swingHand(Hand.MAIN_HAND);
+
+                world.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
+                world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this.alienBuilderBot, blockState));
+                blocks.remove(block);
+                alienBuilderBot.getInventory().removeItem(blockItem, 1);
+            } else {
+                craftGoal.addCraftingRequest(blockItem);
+            }
+            delay = 5;
         }
     }
 
