@@ -153,6 +153,11 @@ public class AlienBase {
         addBaseSection(sectionTemplateList.get(randomInt), false, offset, rot);
     }
 
+    public void repairBaseSection(BaseSection section) {
+        //TODO: Add base repair logic
+        throw new NotImplementedException();
+    }
+
     private boolean checkSectionLocationClear(BaseSectPos pos){
         for (BaseSection section : sections) {
             if (section.getOrigin().equals(pos)){
@@ -208,10 +213,20 @@ public class AlienBase {
                 spawnBuilder();
             }
             else {
-                growBase();
+                boolean shouldRepair = false;
+                for (BaseSection section : sections) {
+                    if (!section.isBuilt()){
+                        repairBaseSection(section);
+                        shouldRepair = true;
+                    }
+                }
+                if (shouldRepair){
+                    growBase();
+                }
             }
-            baseGrowTime = random.nextBetween(3000, 12000);
         }
+        baseGrowTime = random.nextBetween(3000, 12000);
+
         //Don't look for things to mine all the time
         if (search_time_count > 0){
             search_time_count--;
