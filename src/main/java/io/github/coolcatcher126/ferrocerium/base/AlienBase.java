@@ -154,8 +154,8 @@ public class AlienBase {
     }
 
     public void repairBaseSection(BaseSection section) {
-        //TODO: Add base repair logic
-        //throw new NotImplementedException();
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+        bot.ifPresent(x -> x.setSection(section));
     }
 
     private boolean checkSectionLocationClear(BaseSectPos pos){
@@ -211,21 +211,21 @@ public class AlienBase {
             Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
             if (bot.isEmpty()) {
                 spawnBuilder();
-            }
-            else {
+            } else {
                 boolean shouldRepair = false;
                 for (BaseSection section : sections) {
-                    if (!section.isBuilt()){
+                    if (!section.isBuilt()) {
                         repairBaseSection(section);
                         shouldRepair = true;
+                        break;
                     }
                 }
-                if (!shouldRepair){
+                if (!shouldRepair) {
                     growBase();
                 }
             }
+            baseGrowTime = random.nextBetween(3000, 12000);
         }
-        baseGrowTime = random.nextBetween(3000, 12000);
 
         //Don't look for things to mine all the time
         if (search_time_count > 0){
@@ -485,8 +485,8 @@ public class AlienBase {
 
     private void mineResourceVeins(){
         if (resources.isEmpty()) return;
-        int randomInt = random.nextInt(resources.size());
-        mineResourceVein(resources.remove(randomInt));
+        //int randomInt = random.nextInt(resources.size());
+        mineResourceVein(resources.remove(0));
     }
 
     private void mineResourceVein(Vein vein){

@@ -42,7 +42,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
-    private CraftGoal craftGoal;
 
     @Nullable
     private BaseSection sectionToBuild;
@@ -152,7 +151,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     @Override
     protected void initGoals() {
-        craftGoal = new CraftGoal(this);
+        CraftGoal craftGoal = new CraftGoal(this);
 
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(3, craftGoal);

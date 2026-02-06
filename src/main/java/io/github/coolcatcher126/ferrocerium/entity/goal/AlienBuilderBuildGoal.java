@@ -40,7 +40,7 @@ public class AlienBuilderBuildGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        if (this.alienBuilderBot.getBase() == null || this.alienBuilderBot.getSection() == null){
+        if (this.alienBuilderBot.getBase() == null || this.alienBuilderBot.getSection() == null && this.alienBuilderBot.isBuilding()){
             return false;
         }
         else{
@@ -59,7 +59,7 @@ public class AlienBuilderBuildGoal extends Goal {
 
     @Override
     public boolean shouldContinue() {
-        return (this.alienBuilderBot.getBase() != null && this.alienBuilderBot.getSection() != null && this.alienBuilderBot.getInventory().containsAny(blockPallete) && blocks.peekFirst() != null && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
+        return (this.alienBuilderBot.getBase() != null && this.alienBuilderBot.getSection() != null && this.alienBuilderBot.isBuilding() && this.alienBuilderBot.getInventory().containsAny(blockPallete) && blocks.peekFirst() != null && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
     }
 
 
@@ -109,7 +109,7 @@ public class AlienBuilderBuildGoal extends Goal {
     @Override
     public void start() {
         this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
-        this.alienBuilderBot.setBuilding(true);
+        //this.alienBuilderBot.setBuilding(true);
         assert this.alienBuilderBot.getSection() != null;
         blocks = new LinkedList<>(this.alienBuilderBot.getSection().getBaseBlockData());
         delay = 0;
@@ -118,7 +118,7 @@ public class AlienBuilderBuildGoal extends Goal {
     @Override
     public void stop() {
         this.alienBuilderBot.setBuilding(false);
-        this.alienBuilderBot.setSection(null);
+        //this.alienBuilderBot.setSection(null);
         this.alienBuilderBot.getNavigation().stop();
     }
 }
