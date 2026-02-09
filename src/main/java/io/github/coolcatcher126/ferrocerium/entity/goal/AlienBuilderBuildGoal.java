@@ -40,26 +40,32 @@ public class AlienBuilderBuildGoal extends Goal {
 
     @Override
     public boolean canStart() {
-        if (this.alienBuilderBot.getBase() == null || this.alienBuilderBot.getSection() == null && this.alienBuilderBot.isBuilding()){
+        if (!this.alienBuilderBot.isBuilding() || this.alienBuilderBot.getBase() == null || this.alienBuilderBot.getSection() == null){
             return false;
         }
-        else{
-            if (prevSection != this.alienBuilderBot.getSection()) {
-                prevSection = this.alienBuilderBot.getSection();
-                blockPallete = this.alienBuilderBot.getSection().getBaseBlockPallete();
-            }
-//            if (!this.alienBuilderBot.getInventory().containsAny(blockPallete)){
-//                return false;
-//            }
-            this.sectToBuildPos = this.alienBuilderBot.getBase().getOrigin().add(this.alienBuilderBot.getSection().getOrigin().toBlockPos());
-            this.path = this.alienBuilderBot.getNavigation().findPathTo(this.sectToBuildPos, 0);
-            return !this.alienBuilderBot.getSection().isBuilt() && (this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(sectToBuildPos.toCenterPos()) < SQR_REACH_RANGE);
+
+        if (prevSection != this.alienBuilderBot.getSection()) {
+            prevSection = this.alienBuilderBot.getSection();
+            blockPallete = this.alienBuilderBot.getSection().getBaseBlockPallete();
         }
+
+        this.sectToBuildPos = this.alienBuilderBot.getBase().getOrigin().add(this.alienBuilderBot.getSection().getOrigin().toBlockPos());
+        this.path = this.alienBuilderBot.getNavigation().findPathTo(this.sectToBuildPos, 0);
+        return !this.alienBuilderBot.getSection().isBuilt() && (this.path != null || this.alienBuilderBot.getBlockPos().getSquaredDistance(sectToBuildPos.toCenterPos()) < SQR_REACH_RANGE);
     }
 
     @Override
     public boolean shouldContinue() {
-        return (this.alienBuilderBot.getBase() != null && this.alienBuilderBot.getSection() != null && this.alienBuilderBot.isBuilding() && this.alienBuilderBot.getInventory().containsAny(blockPallete) && blocks.peekFirst() != null && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
+        if (!this.alienBuilderBot.isBuilding() || this.alienBuilderBot.getBase() == null || this.alienBuilderBot.getSection() == null){
+            return false;
+        }
+
+        if (prevSection != this.alienBuilderBot.getSection()) {
+            prevSection = this.alienBuilderBot.getSection();
+            blockPallete = this.alienBuilderBot.getSection().getBaseBlockPallete();
+        }
+
+        return (this.alienBuilderBot.getInventory().containsAny(blockPallete) && blocks.peekFirst() != null && this.alienBuilderBot.isInWalkTargetRange(sectToBuildPos));
     }
 
 

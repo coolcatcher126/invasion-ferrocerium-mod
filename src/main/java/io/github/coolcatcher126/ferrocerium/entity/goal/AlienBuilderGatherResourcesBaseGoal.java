@@ -63,7 +63,7 @@ public abstract class AlienBuilderGatherResourcesBaseGoal extends Goal {
 
     @Override
     public void stop() {
-        vein = null;
+        //vein = null;
         this.alienBuilderBot.getNavigation().stop();
     }
 

@@ -25,19 +25,19 @@ public class AlienBuilderMineGoal extends AlienBuilderGatherResourcesBaseGoal {
 
     @Override
     public boolean canStart() {
-        return super.canStart() && (vein.getCategories().contains(ResourceCategory.STONE) || vein.getCategories().contains(ResourceCategory.ORES));
+        return alienBuilderBot.isMining() && super.canStart() && (vein.getCategories().contains(ResourceCategory.STONE) || vein.getCategories().contains(ResourceCategory.ORES));
     }
 
     @Override
     public boolean shouldContinue() {
-        return super.shouldContinue() && (vein.getCategories().contains(ResourceCategory.STONE) || vein.getCategories().contains(ResourceCategory.ORES));
+        return alienBuilderBot.isMining() && super.shouldContinue() && (vein.getCategories().contains(ResourceCategory.STONE) || vein.getCategories().contains(ResourceCategory.ORES));
     }
 
-    @Override
-    public void start() {
-        super.start();
-        alienBuilderBot.setMining(true);
-    }
+//    @Override
+//    public void start() {
+//        super.start();
+//        alienBuilderBot.setMining(true);
+//    }
 
     @Override
     public void stop() {

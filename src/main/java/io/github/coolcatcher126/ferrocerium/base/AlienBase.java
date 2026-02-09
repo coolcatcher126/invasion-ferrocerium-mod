@@ -109,7 +109,7 @@ public class AlienBase {
         baseSectGetAvailablePos();
 
         createMineshaft();
-        mineResourceVein(resources.getFirst());
+        //mineResourceVein(resources.getFirst());
     }
 
     /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
@@ -155,7 +155,10 @@ public class AlienBase {
 
     public void repairBaseSection(BaseSection section) {
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> x.setSection(section));
+        bot.ifPresent(x -> {
+            x.setSection(section);
+            x.setBuilding(true);
+        });
     }
 
     private boolean checkSectionLocationClear(BaseSectPos pos){
@@ -174,13 +177,16 @@ public class AlienBase {
         baseSectCheckAdjPos(newSection);
 
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> x.setSection(newSection));
+        bot.ifPresent(x -> {
+            x.setSection(newSection);
+            x.setBuilding(true);
+        });
     }
 
     /// Returns the first alien builder bot to not be building.
     private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding() || builder.isGathering())){
+            if (!(builder.isBuilding()/* || builder.isMining() || builder.isGathering()*/)){
                 return Optional.of(builder);
             }
         }
@@ -491,7 +497,11 @@ public class AlienBase {
 
     private void mineResourceVein(Vein vein){
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> x.setVein(vein));
+        bot.ifPresent(x -> {
+            x.setVein(vein);
+            x.setMining(true);
+            x.setGathering(true);
+        });
     }
 
     public boolean blockIsCollectible(BlockPos blockPos){
