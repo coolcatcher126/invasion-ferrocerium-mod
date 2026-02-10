@@ -99,6 +99,8 @@ public class AlienBase {
 
         this.builders.add(initialBuilder);
 
+        createMineshaft();
+        mineResourceVein(resources.getFirst());
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
@@ -107,9 +109,6 @@ public class AlienBase {
         this.availablePos = new ArrayList<>();
         addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
         baseSectGetAvailablePos();
-
-        createMineshaft();
-        //mineResourceVein(resources.getFirst());
     }
 
     /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
@@ -217,18 +216,17 @@ public class AlienBase {
             Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
             if (bot.isEmpty()) {
                 spawnBuilder();
-            } else {
-                boolean shouldRepair = false;
-                for (BaseSection section : sections) {
-                    if (!section.isBuilt()) {
-                        repairBaseSection(section);
-                        shouldRepair = true;
-                        break;
-                    }
+            }
+            boolean shouldRepair = false;
+            for (BaseSection section : sections) {
+                if (!section.isBuilt()) {
+                    repairBaseSection(section);
+                    shouldRepair = true;
+                    break;
                 }
-                if (!shouldRepair) {
-                    growBase();
-                }
+            }
+            if (!shouldRepair) {
+                growBase();
             }
             baseGrowTime = random.nextBetween(3000, 12000);
         }
