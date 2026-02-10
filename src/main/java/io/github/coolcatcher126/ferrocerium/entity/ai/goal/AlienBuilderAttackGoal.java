@@ -1,4 +1,4 @@
-package io.github.coolcatcher126.ferrocerium.entity.goal;
+package io.github.coolcatcher126.ferrocerium.entity.ai.goal;
 
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
