@@ -2,6 +2,7 @@ package io.github.coolcatcher126.ferrocerium;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.custom.*;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
@@ -23,6 +24,7 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.command.argument.DimensionArgumentType;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
@@ -48,6 +50,8 @@ public class InvasionFerrocerium implements ModInitializer {
 		// Proceed with mild caution.
 
         InvasionFerroceriumRegistries.buildRegistries();
+
+        ModActivities.registerModActivities();
 
 		ModItemGroups.registerItemGroups();
 		ModBlocks.registerModBlocks();

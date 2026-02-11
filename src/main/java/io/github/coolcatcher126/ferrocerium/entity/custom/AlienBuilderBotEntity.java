@@ -1,5 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
@@ -10,6 +12,10 @@ import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -19,11 +25,14 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.AxolotlBrain;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
@@ -35,10 +44,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
+            SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY
+    );
+
+    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
+            MemoryModuleType.MOBS,
+            MemoryModuleType.VISIBLE_MOBS,
+            MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+            MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
+            MemoryModuleType.LOOK_TARGET,
+            MemoryModuleType.WALK_TARGET,
+            MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+            MemoryModuleType.PATH,
+            MemoryModuleType.ATTACK_TARGET,
+            MemoryModuleType.ATTACK_COOLING_DOWN,
+            MemoryModuleType.HURT_BY_ENTITY,
+            MemoryModuleType.NEAREST_ATTACKABLE
+    );
+
     private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-
 
     @Nullable
     private BaseSection sectionToBuild;
@@ -146,23 +173,23 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.readInventory(nbt, this.getRegistryManager());
     }
 
-    @Override
-    protected void initGoals() {
-        CraftGoal craftGoal = new CraftGoal(this);
-
-        this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(3, craftGoal);
-        this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
-        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, craftGoal, 1.0));
-        this.goalSelector.add(5, new AlienBuilderGatherWoodGoal(this, 1.0F));
-        this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(6, new LookAroundGoal(this));
-        this.targetSelector.add(1, new RevengeGoal(this));
-        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
-        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
-    }
+//    @Override
+//    protected void initGoals() {
+//        CraftGoal craftGoal = new CraftGoal(this);
+//
+//        this.goalSelector.add(1, new SwimGoal(this));
+//        this.goalSelector.add(3, craftGoal);
+//        this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
+//        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, craftGoal, 1.0));
+//        this.goalSelector.add(5, new AlienBuilderGatherWoodGoal(this, 1.0F));
+//        this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
+//        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
+//        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+//        this.goalSelector.add(6, new LookAroundGoal(this));
+//        this.targetSelector.add(1, new RevengeGoal(this));
+//        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
+//        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
+//    }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
         return MobEntity.createMobAttributes()
@@ -192,6 +219,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
             InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
         }
+    }
+
+    @Override
+    protected void mobTick(){
+        this.getWorld().getProfiler().push("alienBuilderBotBrain");
+        this.getBrain().tick((ServerWorld)this.getWorld(), this);
+        this.getWorld().getProfiler().pop();
+        this.getWorld().getProfiler().push("AlienBuilderBotUpdate");
+        AlienBuilderBotBrain.updateActivities(this);
+        this.getWorld().getProfiler().pop();
     }
 
     @Override
@@ -326,5 +363,26 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public boolean canInsertIntoInventory(ItemStack stack) {
         return this.inventory.canInsert(stack);
+    }
+
+    @Override
+    protected Brain.Profile<AlienBuilderBotEntity> createBrainProfile() {
+        return Brain.createProfile(MEMORY_MODULES, SENSORS);
+    }
+
+    @Override
+    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+        return AlienBuilderBotBrain.create(this.createBrainProfile().deserialize(dynamic));
+    }
+
+    @Override
+    public Brain<AlienBuilderBotEntity> getBrain() {
+        return (Brain<AlienBuilderBotEntity>)super.getBrain();
+    }
+
+    @Override
+    protected void sendAiDebugData() {
+        super.sendAiDebugData();
+        DebugInfoSender.sendBrainDebugData(this);
     }
 }
