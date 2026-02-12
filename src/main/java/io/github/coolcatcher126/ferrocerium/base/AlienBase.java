@@ -100,7 +100,9 @@ public class AlienBase {
         this.builders.add(initialBuilder);
 
         createMineshaft();
-        mineResourceVein(resources.getFirst());
+        if (!this.resources.isEmpty()) {
+            mineResourceVein(resources.getFirst());
+        }
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);

@@ -1,34 +1,28 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
+import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.*;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.*;
-import net.minecraft.entity.mob.BreezeEntity;
-import net.minecraft.entity.passive.AxolotlBrain;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class AlienBuilderBotBrain {
-    protected static Brain<?> create(Brain<AlienBuilderBotEntity> brain) {
+    protected static Brain<?> create(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         addCoreActivities(brain);
         addIdleActivities(brain);
-        addBuildActivities(brain);
-        addMineActivities(brain);
-        addChopWoodActivities(brain);
-        addFightActivities(brain);
+        //addBuildActivities(brain);
+        //addMineActivities(brain);
+        //addChopWoodActivities(brain);
+        //addCraftActivities(brain);
+        addFightActivities(bot, brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.resetPossibleActivities();
@@ -40,7 +34,9 @@ public class AlienBuilderBotBrain {
                 Activity.CORE,
                 0,
                 ImmutableList.of(
-                        new LookAroundTask(45, 90), new MoveToTargetTask()
+                        new StayAboveWaterTask(1.0F),
+                        new LookAroundTask(45, 90),
+                        new MoveToTargetTask()
                 )
         );
     }
@@ -49,7 +45,7 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 Activity.IDLE,
                 ImmutableList.of(
-                        Pair.of(0, UpdateAttackTargetTask.create(AlienBuilderBotBrain::getPreferredTarget)),
+                        Pair.of(0, UpdateAttackTargetTask.create(AlienBuilderBotBrain::isInvasionStarted, AlienBuilderBotBrain::getPreferredTarget)),
                         Pair.of(1, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
                 )
         );
@@ -82,23 +78,54 @@ public class AlienBuilderBotBrain {
         );
     }
 
-    private static void addFightActivities(Brain<AlienBuilderBotEntity> brain) {
+    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.CRAFT,
+                ImmutableList.of(
+
+                )
+        );
+    }
+
+    private static void addFightActivities(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
                 Activity.FIGHT,
                 0,
                 ImmutableList.of(
-
+                        ForgetAttackTargetTask.create(target -> !Sensor.testAttackableTargetPredicate(bot, target) || !isInvasionStarted(bot)),
+                        RangedApproachTask.create(1.0F),
+                        MeleeAttackTask.create(10)
                 ),
                 MemoryModuleType.ATTACK_TARGET
         );
     }
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
+        Brain<AlienBuilderBotEntity> brain = bot.getBrain();
+        brain.resetPossibleActivities(ImmutableList.of(/*ModActivities.BUILD, ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD,*/ Activity.FIGHT, Activity.IDLE));
+    }
 
+    private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
+        return (InvasionFerroceriumComponents.getInvasionLevel(bot.getEntityWorld()) > 0);
     }
 
     private static Optional<? extends LivingEntity> getPreferredTarget(AlienBuilderBotEntity bot){
-        Optional<LivingEntity> optional = bot.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE);
-        return optional;
+        Brain<AlienBuilderBotEntity> brain = bot.getBrain();
+        Optional<LivingEntity> optional = brain.getOptionalRegisteredMemory(MemoryModuleType.HURT_BY_ENTITY);
+        if (optional.isPresent()) {
+            return optional;
+        }
+
+        Optional<PlayerEntity> optional2 = brain.getOptionalRegisteredMemory(MemoryModuleType.NEAREST_VISIBLE_PLAYER);
+        if (optional2.isPresent()) {
+            return optional2;
+        }
+
+        Optional<LivingTargetCache> optional3 = brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
+        if (optional3.isPresent()) {
+            return optional3.get().findFirst((e) -> !(e instanceof InvasionBotEntity));
+        }
+
+        return Optional.empty();
     }
 }

@@ -25,9 +25,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AxolotlBrain;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -45,7 +42,7 @@ import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
-            SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY
+            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY
     );
 
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
@@ -215,10 +212,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         if (this.getEntityWorld().isClient()){
             this.setupAnimationStates();
         }
-        else if (this.alienBase == null && this.age >= 20){
-            this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
-            InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
-        }
+        //TEMPORARILY COMMENTED OUT FOR DEBUGGING
+//        else if (this.alienBase == null && this.age >= 20){
+//            this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
+//            InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
+//        }
     }
 
     @Override
@@ -229,6 +227,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.getWorld().getProfiler().push("AlienBuilderBotUpdate");
         AlienBuilderBotBrain.updateActivities(this);
         this.getWorld().getProfiler().pop();
+        super.mobTick();
     }
 
     @Override
@@ -372,12 +371,12 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     @Override
     protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return AlienBuilderBotBrain.create(this.createBrainProfile().deserialize(dynamic));
+        return AlienBuilderBotBrain.create(this, this.createBrainProfile().deserialize(dynamic));
     }
 
     @Override
     public Brain<AlienBuilderBotEntity> getBrain() {
-        return (Brain<AlienBuilderBotEntity>)super.getBrain();
+        return (Brain<AlienBuilderBotEntity>) super.getBrain();
     }
 
     @Override
