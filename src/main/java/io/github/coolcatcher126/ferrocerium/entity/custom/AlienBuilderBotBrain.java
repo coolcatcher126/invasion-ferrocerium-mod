@@ -5,20 +5,22 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PlaceBaseBlocksTask;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.*;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class AlienBuilderBotBrain {
     protected static Brain<?> create(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         addCoreActivities(brain);
         addIdleActivities(brain);
-        //addBuildActivities(brain);
+        addBuildActivities(brain);
         //addMineActivities(brain);
         //addChopWoodActivities(brain);
         //addCraftActivities(brain);
@@ -55,7 +57,11 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-
+                        Pair.of(0, makeGoToBaseSectionTask()),
+                        Pair.of(1, new PlaceBaseBlocksTask())
+                ),
+                ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
                 )
         );
     }
@@ -102,7 +108,7 @@ public class AlienBuilderBotBrain {
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(/*ModActivities.BUILD, ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD,*/ Activity.FIGHT, Activity.IDLE));
+        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, /*ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD,*/ Activity.FIGHT, Activity.IDLE));
     }
 
     private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
@@ -127,5 +133,9 @@ public class AlienBuilderBotBrain {
         }
 
         return Optional.empty();
+    }
+
+    private static Task<PathAwareEntity> makeGoToBaseSectionTask() {
+        return GoToRememberedPositionTask.createPosBased(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 8, false);
     }
 }

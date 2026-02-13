@@ -7,6 +7,7 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.ai.goal.*;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
@@ -57,12 +58,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             MemoryModuleType.ATTACK_TARGET,
             MemoryModuleType.ATTACK_COOLING_DOWN,
             MemoryModuleType.HURT_BY_ENTITY,
-            MemoryModuleType.NEAREST_ATTACKABLE
+            MemoryModuleType.NEAREST_ATTACKABLE,
+            ModMemoryModuleTypes.BASE_SECTION_LOCATION,
+            ModMemoryModuleTypes.BUILDING,
+            ModMemoryModuleTypes.GATHERING,
+            ModMemoryModuleTypes.MINING
     );
 
-    private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    //private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    //private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    //private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     @Nullable
     private BaseSection sectionToBuild;
@@ -127,27 +132,27 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
         }
-        if (this.isMining())
-        {
-            nbt.putBoolean("is_mining", true);
-        }
-        if (this.isGathering())
-        {
-            nbt.putBoolean("is_gathering", true);
-        }
-        if (this.isBuilding())
-        {
-            nbt.putBoolean("is_building", true);
-        }
+//        if (this.isMining())
+//        {
+//            nbt.putBoolean("is_mining", true);
+//        }
+//        if (this.isGathering())
+//        {
+//            nbt.putBoolean("is_gathering", true);
+//        }
+//        if (this.isBuilding())
+//        {
+//            nbt.putBoolean("is_building", true);
+//        }
         this.writeInventory(nbt, this.getRegistryManager());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        setBuilding(nbt.getBoolean("is_building"));
-        setGathering(nbt.getBoolean("is_gathering"));
-        setMining(nbt.getBoolean("is_mining"));
+//        setBuilding(nbt.getBoolean("is_building"));
+//        setGathering(nbt.getBoolean("is_gathering"));
+//        setMining(nbt.getBoolean("is_mining"));
         if(nbt.contains("alien_base")){
             UUID alienBaseUuid = nbt.getUuid("alien_base");
             alienBase = (InvasionFerroceriumComponents.getAlienBases(getEntityWorld())).stream()
@@ -260,32 +265,32 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.dataTracker.set(BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.MINING, building);
     }
 
     public boolean isBuilding()
     {
-        return this.dataTracker.get(BUILDING);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElseGet(() -> false);
     }
 
     public void setGathering(boolean gathering)
     {
-        this.dataTracker.set(GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
     }
 
     public boolean isGathering()
     {
-        return this.dataTracker.get(GATHERING);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElseGet(() -> false);
     }
 
     public void setMining(boolean mining)
     {
-        this.dataTracker.set(MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.MINING, mining);
     }
 
     public boolean isMining()
     {
-        return this.dataTracker.get(MINING);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElseGet(() -> false);
     }
 
     public void setSection(BaseSection sectionToBuild){
@@ -304,13 +309,13 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.vein;
     }
 
-    @Override
-    protected void initDataTracker(DataTracker.Builder builder) {
-        super.initDataTracker(builder);
-        builder.add(BUILDING, false);
-        builder.add(GATHERING, false);
-        builder.add(MINING, false);
-    }
+//    @Override
+//    protected void initDataTracker(DataTracker.Builder builder) {
+//        super.initDataTracker(builder);
+//        builder.add(BUILDING, false);
+//        builder.add(GATHERING, false);
+//        builder.add(MINING, false);
+//    }
 
     @Override
     public boolean cannotDespawn() {
