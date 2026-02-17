@@ -6,6 +6,8 @@ import com.mojang.datafixers.util.Pair;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.GatherTask;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PillarTask;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PlaceBaseBlocksTask;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
@@ -21,9 +23,9 @@ public class AlienBuilderBotBrain {
         addCoreActivities(brain);
         addIdleActivities(brain);
         addBuildActivities(brain);
-        //addMineActivities(brain);
-        //addChopWoodActivities(brain);
-        //addCraftActivities(brain);
+//        addMineActivities(brain);
+//        addChopWoodActivities(brain);
+//        addCraftActivities(brain);
         addFightActivities(bot, brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
@@ -66,32 +68,41 @@ public class AlienBuilderBotBrain {
         );
     }
 
-    private static void addMineActivities(Brain<AlienBuilderBotEntity> brain) {
-        brain.setTaskList(
-                ModActivities.MINE,
-                ImmutableList.of(
-
-                )
-        );
-    }
-
-    private static void addChopWoodActivities(Brain<AlienBuilderBotEntity> brain) {
-        brain.setTaskList(
-                ModActivities.CHOP_WOOD,
-                ImmutableList.of(
-
-                )
-        );
-    }
-
-    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
-        brain.setTaskList(
-                ModActivities.CRAFT,
-                ImmutableList.of(
-
-                )
-        );
-    }
+//    private static void addMineActivities(Brain<AlienBuilderBotEntity> brain) {
+//        brain.setTaskList(
+//                ModActivities.MINE,
+//                ImmutableList.of(
+//                        Pair.of(0, makeGoToResourceTask()),
+//                        Pair.of(1, new GatherTask())
+//                ),
+//                ImmutableSet.of(
+//                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
+//                )
+//        );
+//    }
+//
+//    private static void addChopWoodActivities(Brain<AlienBuilderBotEntity> brain) {
+//        brain.setTaskList(
+//                ModActivities.CHOP_WOOD,
+//                ImmutableList.of(
+//                        Pair.of(0, makeGoToResourceTask()),
+//                        Pair.of(1, new GatherTask()),
+//                        Pair.of(2, new PillarTask())
+//                ),
+//                ImmutableSet.of(
+//                        Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
+//                )
+//        );
+//    }
+//
+//    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
+//        brain.setTaskList(
+//                ModActivities.CRAFT,
+//                ImmutableList.of(
+//
+//                )
+//        );
+//    }
 
     private static void addFightActivities(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
@@ -136,6 +147,10 @@ public class AlienBuilderBotBrain {
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {
+        return GoToRememberedPositionTask.createPosBased(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 8, false);
+    }
+
+    private static Task<PathAwareEntity> makeGoToResourceTask() {
         return GoToRememberedPositionTask.createPosBased(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 8, false);
     }
 }
