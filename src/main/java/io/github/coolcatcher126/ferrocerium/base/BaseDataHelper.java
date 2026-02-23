@@ -31,7 +31,7 @@ public class BaseDataHelper {
             resourceManager = world.getServer().getResourceManager();
 
         NbtCompound nbt = getBuildingNbt(structureName, resourceManager);
-        InvasionFerrocerium.LOGGER.info(nbt.asString());
+        InvasionFerrocerium.LOGGER.debug(nbt.asString());
         ArrayList<BaseBlock> blocks = new ArrayList<>();
 
         // load in blocks (list of blockPos and their palette index)
@@ -48,7 +48,7 @@ public class BaseDataHelper {
             resourceManager = world.getServer().getResourceManager();
 
         NbtCompound nbt = getBuildingNbt(structureName, resourceManager);
-        InvasionFerrocerium.LOGGER.info(nbt.asString());
+        InvasionFerrocerium.LOGGER.debug(nbt.asString());
 
         Set<Item> set = new HashSet<>();
         getBuildingPalette(nbt).forEach(x -> set.add(x.getBlock().asItem()));

@@ -12,6 +12,7 @@ import java.util.Optional;
 
 public class ModMemoryModuleTypes {
     public static final MemoryModuleType<BlockPos> BASE_SECTION_LOCATION = register("base_section_location");
+    public static final MemoryModuleType<BlockPos> RESOURCE_LOCATION = register("resource_location");
     public static final MemoryModuleType<Boolean> BUILDING = register("building");
     public static final MemoryModuleType<Boolean> GATHERING = register("gathering");
     public static final MemoryModuleType<Boolean> MINING = register("mining");

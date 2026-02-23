@@ -89,8 +89,7 @@ public class AlienBase {
         mineResourceVein(resources.getFirst());
     }
 
-    public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder)
-    {
+    public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder) {
         this.world = world;
         this.origin = origin;
 
@@ -99,6 +98,8 @@ public class AlienBase {
 
         this.builders.add(initialBuilder);
 
+        this.baseGrowTime = 3000;
+
         createMineshaft();
         if (!this.resources.isEmpty()) {
             mineResourceVein(resources.getFirst());
@@ -106,6 +107,11 @@ public class AlienBase {
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
+
+    }
+
+    public void setUpInitialSection()
+    {
 
         //Create the core of the base
         this.availablePos = new ArrayList<>();

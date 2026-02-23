@@ -8,7 +8,6 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
-import io.github.coolcatcher126.ferrocerium.entity.ai.goal.*;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
@@ -17,13 +16,9 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -60,6 +55,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             MemoryModuleType.HURT_BY_ENTITY,
             MemoryModuleType.NEAREST_ATTACKABLE,
             ModMemoryModuleTypes.BASE_SECTION_LOCATION,
+            ModMemoryModuleTypes.RESOURCE_LOCATION,
             ModMemoryModuleTypes.BUILDING,
             ModMemoryModuleTypes.GATHERING,
             ModMemoryModuleTypes.MINING
@@ -220,6 +216,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         else if (this.alienBase == null && this.age >= 20){
             this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
+            this.alienBase.setUpInitialSection();
             InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
         }
     }
@@ -265,7 +262,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING, building);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
     }
 
     public boolean isBuilding()
@@ -294,7 +291,14 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     }
 
     public void setSection(BaseSection sectionToBuild){
+        setSection(sectionToBuild, this.alienBase);
+    }
+
+    public void setSection(BaseSection sectionToBuild, AlienBase alienBase){
         this.sectionToBuild = sectionToBuild;
+        if (alienBase != null) {
+            this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, sectionToBuild.getOrigin().toBlockPos().add(alienBase.getOrigin()));
+        }
     }
 
     public BaseSection getSection(){

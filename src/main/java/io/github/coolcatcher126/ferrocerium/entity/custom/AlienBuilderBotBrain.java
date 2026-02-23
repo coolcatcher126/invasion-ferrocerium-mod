@@ -63,7 +63,7 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, new PlaceBaseBlocksTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.REGISTERED), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
                 )
         );
     }
@@ -151,6 +151,6 @@ public class AlienBuilderBotBrain {
     }
 
     private static Task<PathAwareEntity> makeGoToResourceTask() {
-        return GoToRememberedPositionTask.createPosBased(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 8, false);
+        return GoToRememberedPositionTask.createPosBased(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 8, false);
     }
 }
