@@ -29,6 +29,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
@@ -297,7 +298,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public void setSection(BaseSection sectionToBuild, AlienBase alienBase){
         this.sectionToBuild = sectionToBuild;
         if (alienBase != null) {
-            this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, sectionToBuild.getOrigin().toBlockPos().add(alienBase.getOrigin()));
+            this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, new GlobalPos(alienBase.getDimension(), sectionToBuild.getOrigin().toBlockPos().add(alienBase.getOrigin())));
         }
     }
 

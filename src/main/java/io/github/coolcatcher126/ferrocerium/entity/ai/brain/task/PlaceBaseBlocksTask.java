@@ -11,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.LinkedList;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
-    private static final double MAX_DISTANCE = 1.73;
+    private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
 
@@ -27,17 +28,18 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
-        Optional<BlockPos> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.BASE_SECTION_LOCATION);
+        Optional<GlobalPos> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.BASE_SECTION_LOCATION);
         if (optional.isEmpty()) {
             return false;
         }
-        basePos = optional.get();
+        basePos = optional.get().pos();
 
         if (alienBuilderBotEntity.getSection().isBuilt()){
             return false;
         }
 
-        return /*alienBuilderBotEntity.getBase().dimension() == serverWorld.getRegistryKey() &&*/ basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        return withinDistance;
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -46,11 +48,12 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
-        return /*alienBuilderBotEntity.getBase().dimension() == serverWorld.getRegistryKey() &&*/ basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        return  withinDistance;
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getBaseBlockData());
+        blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {

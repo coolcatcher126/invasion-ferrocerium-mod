@@ -8,6 +8,7 @@ import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -543,6 +544,10 @@ public class AlienBase {
 
     public int getSearch_time_count(){
         return this.search_time_count;
+    }
+
+    public RegistryKey<World> getDimension(){
+        return this.world.getRegistryKey();
     }
 
 }

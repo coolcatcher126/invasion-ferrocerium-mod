@@ -117,7 +117,7 @@ public class AlienBuilderBuildGoal extends Goal {
         this.alienBuilderBot.getNavigation().startMovingAlong(this.path, this.speed);
         //this.alienBuilderBot.setBuilding(true);
         assert this.alienBuilderBot.getSection() != null;
-        blocks = new LinkedList<>(this.alienBuilderBot.getSection().getBaseBlockData());
+        blocks = new LinkedList<>(this.alienBuilderBot.getSection().getOrCalculateBaseBlockData());
         delay = 0;
     }
 
