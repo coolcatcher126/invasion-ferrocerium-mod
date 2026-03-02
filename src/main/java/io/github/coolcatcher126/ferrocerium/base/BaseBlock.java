@@ -37,6 +37,6 @@ public class BaseBlock {
                 (desiredBlock instanceof PaneBlock && worldBlock instanceof PaneBlock))
             return true;
 
-        return /*!this.blockState.isAir() &&*/ (bs == this.blockState || isMatchingWallBlock);
+        return !this.blockState.isAir() && (bs == this.blockState || isMatchingWallBlock);
     }
 }

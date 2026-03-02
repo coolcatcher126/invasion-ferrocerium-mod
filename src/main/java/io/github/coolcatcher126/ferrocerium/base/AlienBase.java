@@ -69,6 +69,8 @@ public class AlienBase {
         this.world = world;
         this.origin = origin;
 
+        sections.forEach(s -> s.setAlienBase(this));
+
         this.sections = sections;
         this.baseBlocks = baseBlocks;
         this.builders = builders;
@@ -183,6 +185,7 @@ public class AlienBase {
         sections.add(newSection);
         availablePos.remove(offset);
         baseSectCheckAdjPos(newSection);
+        newSection.setAlienBase(this);
 
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
         bot.ifPresent(x -> {
@@ -194,7 +197,7 @@ public class AlienBase {
     /// Returns the first alien builder bot to not be building.
     private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding()/* || builder.isMining() || builder.isGathering()*/)){
+            if (!(builder.isBuilding() /*|| builder.isMining() || builder.isGathering()*/)){
                 return Optional.of(builder);
             }
         }
@@ -231,7 +234,6 @@ public class AlienBase {
                 if (!section.isBuilt()) {
                     repairBaseSection(section);
                     shouldRepair = true;
-                    break;
                 }
             }
             if (!shouldRepair) {

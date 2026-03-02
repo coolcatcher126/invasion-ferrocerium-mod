@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 public class BaseSection {
+    private AlienBase alienBase;
     private final BaseSectionTemplate section;
     private final World world;
     private final BaseSectPos origin;
@@ -31,13 +32,14 @@ public class BaseSection {
         this.isCore = isCore;
     }
 
+    public void setAlienBase(AlienBase base){
+        this.alienBase = base;
+    }
+
     /// Returns true when the blocks in the location of the base section matches the base section's template
     public boolean isBuilt(){
-        if (blocks == null){
-            calculateBaseBlockData();
-        }
-        for (BaseBlock block : blocks) {
-            if (!block.isWantedBlock(world)){
+        for (BaseBlock block : getOrCalculateBaseBlockData()) {
+            if (!(block.getBlockState().isAir() || block.isWantedBlock(world))){
                 return false;
             }
         }
@@ -51,6 +53,7 @@ public class BaseSection {
             pos = pos.subtract(new Vec3i(5, 1, 5));//Center the section to the middle
             pos = pos.rotate(rotation);
             pos = pos.add(origin.toBlockPos());
+            pos = pos.add(this.alienBase.getOrigin());
             block.setBlockPos(pos);
         }
     }

@@ -68,7 +68,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return;
         }
 
-        BlockPos blockPos = basePos.add(block.getBlockPos());
+        BlockPos blockPos = block.getBlockPos();
 
         if (block.isWantedBlock(serverWorld)) {
             return;
