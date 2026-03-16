@@ -22,6 +22,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
+    int blockIndex;
 
     public PlaceBaseBlocksTask() {
         super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT));
@@ -54,6 +55,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
+        blockIndex = 0;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -63,20 +65,27 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return;
         }
 
-        BaseBlock block = blocks.peekFirst();
+        if (blocks.size() < blockIndex){
+            blockIndex = 0;
+        }
+
+        BaseBlock block = blocks.get(blockIndex);
         if (block == null) {
+            blockIndex++;
             return;
         }
 
         BlockPos blockPos = block.getBlockPos();
 
         if (block.isWantedBlock(serverWorld)) {
+            blockIndex++;
             return;
         }
 
         BlockState blockState = block.getBlockState();
         Item blockItem = blockState.getBlock().asItem();
 //            if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
+//                blockIndex++;
 //                return;
 //            }
 
@@ -84,8 +93,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
         serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
-        blocks.remove(block);
 //            alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
+        blockIndex++;
     }
 
     @Override
