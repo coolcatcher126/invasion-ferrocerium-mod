@@ -84,16 +84,16 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         BlockState blockState = block.getBlockState();
         Item blockItem = blockState.getBlock().asItem();
-//            if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
-//                blockIndex++;
-//                return;
-//            }
+            if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
+                blockIndex++;
+                return;
+            }
 
         alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
 
         serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
         serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
-//            alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
+        alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
         blockIndex++;
     }
 

@@ -197,7 +197,7 @@ public class AlienBase {
     /// Returns the first alien builder bot to not be building.
     private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding() /*|| builder.isMining() || builder.isGathering()*/)){
+            if (!(builder.isBuilding() || builder.isMining() || builder.isGathering())){
                 return Optional.of(builder);
             }
         }
