@@ -17,6 +17,7 @@ import net.minecraft.world.event.GameEvent;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
@@ -25,7 +26,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     int blockIndex;
 
     public PlaceBaseBlocksTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT));
+        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -39,6 +40,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
+        if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+                block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            return false;
+        }
+
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
         return withinDistance;
     }
@@ -46,6 +52,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Check to see if the building is built
         if (alienBuilderBotEntity.getSection().isBuilt()){
+            return false;
+        }
+
+        if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+                block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
             return false;
         }
 
@@ -100,5 +111,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     @Override
     protected boolean isTimeLimitExceeded(long time) {
         return false;
+    }
+
+    @Override
+    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
+        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING);
     }
 }

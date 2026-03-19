@@ -104,9 +104,6 @@ public class AlienBase {
         this.baseGrowTime = 3000;
 
         createMineshaft();
-        if (!this.resources.isEmpty()) {
-            mineResourceVein(resources.getFirst());
-        }
 
         sectionTemplateList = new ArrayList<>();
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
@@ -115,6 +112,7 @@ public class AlienBase {
 
     public void setUpInitialSection()
     {
+        mineResourceVein(resources.getFirst());
 
         //Create the core of the base
         this.availablePos = new ArrayList<>();
@@ -499,17 +497,21 @@ public class AlienBase {
     }
 
     private void mineResourceVeins(){
-        if (resources.isEmpty()) return;
-        //int randomInt = random.nextInt(resources.size());
-        mineResourceVein(resources.remove(0));
+        Vein vein;
+        do{
+            if (resources.isEmpty()) return;
+            vein = resources.remove(0);
+        }
+        while (vein.size() == 0);
+        mineResourceVein(vein);
     }
 
     private void mineResourceVein(Vein vein){
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
         bot.ifPresent(x -> {
             x.setVein(vein);
-            x.setMining(true);
-            x.setGathering(true);
+            x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
+            x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
         });
     }
 

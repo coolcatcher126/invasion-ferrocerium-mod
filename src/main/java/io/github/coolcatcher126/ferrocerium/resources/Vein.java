@@ -82,6 +82,19 @@ public class Vein {
     public BlockPos getTop(){
         return this.getLast();
     }
+    public BlockPos getClosest(BlockPos pos) {
+        int y = pos.getY();
+        BlockPos top = this.getTop();
+        BlockPos bottom = this.getBottom();
+        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? bottom : top;
+    }
+
+    public int getClosestIndex(BlockPos pos) {
+        int y = pos.getY();
+        BlockPos top = this.getTop();
+        BlockPos bottom = this.getBottom();
+        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? 0 : this.size()-1;
+    }
 
     public void append(Vein other){
         this.points.addAll(other.points);

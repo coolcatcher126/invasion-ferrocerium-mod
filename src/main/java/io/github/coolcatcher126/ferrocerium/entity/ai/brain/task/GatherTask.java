@@ -58,10 +58,12 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
         breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
         mineBlocks(serverWorld, alienBuilderBotEntity, l);
     }
@@ -94,7 +96,6 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             Block blockMined = serverWorld.getBlockState(vein.get(blockToCollect)).getBlock();
             ItemStack blockMinedAsItem = new ItemStack(blockMined.asItem(), 1);
             if (serverWorld.breakBlock(vein.get(blockToCollect), false) && alienBuilderBotEntity.getInventory().canInsert(blockMinedAsItem)){
-                serverWorld.emitGameEvent(GameEvent.BLOCK_DESTROY, vein.get(blockToCollect), GameEvent.Emitter.of(alienBuilderBotEntity));
                 blockMinedAsItem = alienBuilderBotEntity.addItem(blockMinedAsItem);
                 if (!blockMinedAsItem.isEmpty()) {
                     LookTargetUtil.give(alienBuilderBotEntity, blockMinedAsItem, alienBuilderBotEntity.getPos().add(0.0, 1.0, 0.0));
