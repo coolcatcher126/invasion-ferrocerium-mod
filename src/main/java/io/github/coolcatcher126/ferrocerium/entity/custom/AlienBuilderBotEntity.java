@@ -160,14 +160,14 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
                 alienBase.hireBuilder(this);
                 if (nbt.contains("section_to_build")){
-                    sectionToBuild = alienBase.getSections().get(nbt.getInt("section_to_build"));
+                    setSection(alienBase.getSections().get(nbt.getInt("section_to_build")));
                 }
             } else {
                 InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
             }
         }
         if (nbt.contains("vein")) {
-            vein = Vein.readfromNbt(nbt.getCompound("vein"));
+            setVein(Vein.readfromNbt(nbt.getCompound("vein")));
         }
         this.readInventory(nbt, this.getRegistryManager());
     }
@@ -308,6 +308,14 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setVein(@Nullable Vein vein){
         this.vein = vein;
+        if (vein != null) {
+            if (alienBase != null) {
+                this.brain.remember(ModMemoryModuleTypes.RESOURCE_LOCATION, new GlobalPos(alienBase.getDimension(), vein.getClosest(this.getBlockPos())));
+            }
+        }
+        else {
+            this.brain.forget(ModMemoryModuleTypes.RESOURCE_LOCATION);
+        }
     }
 
     public @Nullable Vein getVein(){
