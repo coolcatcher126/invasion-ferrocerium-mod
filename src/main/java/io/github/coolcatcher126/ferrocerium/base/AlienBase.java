@@ -342,7 +342,7 @@ public class AlienBase {
 
                 if (i%2 == 0){
                     //Split the mineshaft staircase into sections
-                    resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+                    this.resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
                     mineshaft = new ArrayList<>();
                 }
             }
