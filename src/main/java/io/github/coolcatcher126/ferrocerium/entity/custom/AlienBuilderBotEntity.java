@@ -22,6 +22,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
@@ -35,6 +36,8 @@ import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
@@ -73,6 +76,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
+    private List<Item> itemsToCraft;
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -84,6 +88,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.setCanPickUpLoot(true);
+        this.itemsToCraft = new ArrayList<>();
     }
 
     /// Base helper spawn.
@@ -92,6 +97,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         super(ModEntities.ALIEN_BUILDER_BOT, world);
         this.setCanPickUpLoot(true);
         this.alienBase = base;
+        this.itemsToCraft = new ArrayList<>();
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
@@ -339,6 +345,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Override
     public SimpleInventory getInventory() {
         return this.inventory;
+    }
+
+    public void addCraftingRequest(Item requestedItem, int count){
+        for (int i = 0; i < count; i++) {
+            itemsToCraft.add(requestedItem);
+        }
+    }
+
+    public void addCraftingRequest(Item requestedItem){
+        itemsToCraft.add(requestedItem);
     }
 
     @Override

@@ -6,6 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.CraftTask;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.GatherTask;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PillarTask;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PlaceBaseBlocksTask;
@@ -25,7 +26,7 @@ public class AlienBuilderBotBrain {
         addBuildActivities(brain);
         addMineActivities(brain);
         addChopWoodActivities(brain);
-//        addCraftActivities(brain);
+        addCraftActivities(brain);
         addFightActivities(bot, brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
@@ -94,15 +95,18 @@ public class AlienBuilderBotBrain {
                 )
         );
     }
-//
-//    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
-//        brain.setTaskList(
-//                ModActivities.CRAFT,
-//                ImmutableList.of(
-//
-//                )
-//        );
-//    }
+
+    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.CRAFT,
+                ImmutableList.of(
+                        Pair.of(1, new CraftTask())
+                ),
+                ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)
+                )
+        );
+    }
 
     private static void addFightActivities(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
@@ -119,7 +123,7 @@ public class AlienBuilderBotBrain {
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, /*ModActivities.CRAFT,*/ ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
     }
 
     private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
