@@ -100,7 +100,7 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.CRAFT,
                 ImmutableList.of(
-                        Pair.of(1, new CraftTask())
+                        Pair.of(0, new CraftTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)

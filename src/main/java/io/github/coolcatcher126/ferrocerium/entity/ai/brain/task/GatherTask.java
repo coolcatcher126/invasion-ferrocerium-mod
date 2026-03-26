@@ -102,6 +102,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
                 }
 
                 vein.remove(blockToCollect);
+                alienBuilderBotEntity.setVein(vein);
             }
         }
     }
