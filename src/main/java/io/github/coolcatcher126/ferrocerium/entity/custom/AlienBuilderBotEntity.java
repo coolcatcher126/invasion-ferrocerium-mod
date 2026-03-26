@@ -61,6 +61,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.BASE_SECTION_LOCATION,
             ModMemoryModuleTypes.RESOURCE_LOCATION,
             ModMemoryModuleTypes.BUILDING,
+            ModMemoryModuleTypes.CRAFTING,
             ModMemoryModuleTypes.GATHERING,
             ModMemoryModuleTypes.MINING
     );
@@ -349,12 +350,18 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void addCraftingRequest(Item requestedItem, int count){
         for (int i = 0; i < count; i++) {
-            itemsToCraft.add(requestedItem);
+            this.itemsToCraft.add(requestedItem);
         }
+        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
     }
 
     public void addCraftingRequest(Item requestedItem){
-        itemsToCraft.add(requestedItem);
+        this.itemsToCraft.add(requestedItem);
+        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
+    }
+
+    public List<Item> getItemsToCraft(){
+        return this.itemsToCraft;
     }
 
     @Override

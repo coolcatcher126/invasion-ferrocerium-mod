@@ -25,19 +25,19 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
-        throw new NotImplementedException();
+        return !alienBuilderBotEntity.getItemsToCraft().isEmpty();
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        throw new NotImplementedException();
+        return !itemsToCraft.isEmpty();
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        itemsToCraft = new ArrayList<>();
+        itemsToCraft = alienBuilderBotEntity.getItemsToCraft();
     }
 
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-
+        alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {

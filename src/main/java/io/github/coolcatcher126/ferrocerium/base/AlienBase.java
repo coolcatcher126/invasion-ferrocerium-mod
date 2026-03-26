@@ -8,6 +8,7 @@ import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -20,6 +21,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /// A single base.
@@ -162,7 +164,7 @@ public class AlienBase {
     }
 
     public void repairBaseSection(BaseSection section) {
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
         bot.ifPresent(x -> {
             x.setSection(section);
             x.setBuilding(true);
@@ -185,17 +187,18 @@ public class AlienBase {
         baseSectCheckAdjPos(newSection);
         newSection.setAlienBase(this);
 
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
         bot.ifPresent(x -> {
+            craftRequiredResources(x, newSection.getOrCalculateBaseBlockData().stream().map(block -> block.getBlockState().getBlock().asItem()).toList());
             x.setSection(newSection);
             x.setBuilding(true);
         });
     }
 
     /// Returns the first alien builder bot to not be building.
-    private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
+    private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(boolean ignoreBuilding, boolean ignoreMining, boolean ignoreGathering){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding() || builder.isMining() || builder.isGathering())){
+            if (!((!ignoreBuilding && builder.isBuilding()) || (!ignoreMining && builder.isMining()) || (!ignoreGathering && builder.isGathering()))){
                 return Optional.of(builder);
             }
         }
@@ -223,7 +226,7 @@ public class AlienBase {
             baseGrowTime--;
         }
         else {
-            Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+            Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
             if (bot.isEmpty()) {
                 spawnBuilder();
             }
@@ -507,12 +510,19 @@ public class AlienBase {
     }
 
     private void mineResourceVein(Vein vein){
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity();
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(true, false, false);
         bot.ifPresent(x -> {
             x.setVein(vein);
             x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
             x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
         });
+    }
+
+    private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
+        Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
+        for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
+            bot.addCraftingRequest(resEntry.getKey(), Math.toIntExact(resEntry.getValue()));
+        }
     }
 
     public boolean blockIsCollectible(BlockPos blockPos){
