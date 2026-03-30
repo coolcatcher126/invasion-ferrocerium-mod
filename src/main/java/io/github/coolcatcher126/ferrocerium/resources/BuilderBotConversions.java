@@ -23,6 +23,9 @@ public class BuilderBotConversions {
 
     public boolean canCraft(Item item, Inventory sourceInventory){
         Map<Item, Integer> ingredients = getRequiredItemsToCraft(item);
+        if (ingredients == null){
+            return false;
+        }
         for (Map.Entry<Item, Integer> ingredientType : ingredients.entrySet()){
             if (ingredientType.getValue() > sourceInventory.count(ingredientType.getKey())){
                 return false;

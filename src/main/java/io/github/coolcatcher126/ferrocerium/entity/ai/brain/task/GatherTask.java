@@ -12,6 +12,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.NotImplementedException;
 
@@ -52,7 +53,9 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
-        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
+        withinDistance = withinDistance  && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        withinDistance = withinDistance && serverWorld.raycast(new RaycastContext(alienBuilderBotEntity.getPos(), resourcePos.toCenterPos(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, alienBuilderBotEntity)).getBlockPos().equals(resourcePos);
         return withinDistance;
     }
 
