@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.block.ModBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
@@ -521,7 +522,9 @@ public class AlienBase {
     private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
         Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
         for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
-            bot.addCraftingRequest(resEntry.getKey(), Math.toIntExact(resEntry.getValue()));
+            if (null != InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(resEntry.getKey().asItem())) {
+                bot.addCraftingRequest(resEntry.getKey(), Math.toIntExact(resEntry.getValue()));
+            }
         }
     }
 

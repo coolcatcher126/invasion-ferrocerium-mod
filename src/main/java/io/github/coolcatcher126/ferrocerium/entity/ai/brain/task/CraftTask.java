@@ -8,14 +8,14 @@ import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     List<Item> itemsToCraft;
+    int i;
+    boolean crafted;
 
     public CraftTask() {
         super(Map.of(
@@ -34,27 +34,32 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         itemsToCraft = alienBuilderBotEntity.getItemsToCraft();
+        i = itemsToCraft.size() - 1;
+        crafted = false;
     }
 
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
+        if (itemsToCraft.isEmpty()) {
+            alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
+        }
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        Map<Item, Integer> itemsRequired;
-        for (Item item : itemsToCraft) {
-            if (InvasionFerrocerium.RECIPES.canCraft(item, alienBuilderBotEntity.getInventory())) {
-                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(item);
+        if (i >= 0) {
+            Map<Item, Integer> itemsRequired;
+            if (InvasionFerrocerium.RECIPES.canCraft(itemsToCraft.get(i), alienBuilderBotEntity.getInventory())) {
+                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(itemsToCraft.get(i));
                 for (Map.Entry<Item, Integer> ingredientType : itemsRequired.entrySet()) {
                     int count = ingredientType.getValue();
-                    for (int i = 0; i < alienBuilderBotEntity.getInventory().size(); i++) {
-                        ItemStack stack = alienBuilderBotEntity.getInventory().getStack(i);
+                    for (int ii = 0; ii < alienBuilderBotEntity.getInventory().size(); ii++) {
+                        ItemStack stack = alienBuilderBotEntity.getInventory().getStack(ii);
 
                         if (stack.getItem() == ingredientType.getKey()) {
                             if (stack.getCount() <= count) {
                                 count -= stack.getCount();
-                                alienBuilderBotEntity.getInventory().setStack(i, ItemStack.EMPTY);
-                                alienBuilderBotEntity.getInventory().addStack(item.getDefaultStack());
+                                alienBuilderBotEntity.getInventory().setStack(ii, ItemStack.EMPTY);
+                                alienBuilderBotEntity.getInventory().addStack(itemsToCraft.get(i).getDefaultStack());
+                                crafted = true;
                             } else {
                                 stack.setCount(stack.getCount() - count);
                                 count = 0;
@@ -62,8 +67,13 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
                         }
 
                         if (count <= 0) {
+                            itemsToCraft.remove(i);
+                            i--;
                             break;
                         }
+                    }
+                    if (!crafted) {
+                        InvasionFerrocerium.LOGGER.debug("Nothing crafted");
                     }
                 }
             }
