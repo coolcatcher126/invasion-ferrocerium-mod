@@ -14,8 +14,7 @@ import java.util.Map;
 
 public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     List<Item> itemsToCraft;
-    int i;
-    boolean crafted;
+    int craftItemIndex;
 
     public CraftTask() {
         super(Map.of(
@@ -25,58 +24,63 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
-        return !alienBuilderBotEntity.getItemsToCraft().isEmpty();
+        return !(alienBuilderBotEntity.getItemsToCraft().isEmpty() || alienBuilderBotEntity.getInventory().isEmpty());
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        return !itemsToCraft.isEmpty();
+        return !(itemsToCraft.isEmpty() || alienBuilderBotEntity.getInventory().isEmpty());
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         itemsToCraft = alienBuilderBotEntity.getItemsToCraft();
-        i = itemsToCraft.size() - 1;
-        crafted = false;
+        craftItemIndex = itemsToCraft.size() - 1;
     }
 
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (itemsToCraft.isEmpty()) {
             alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
         }
+//        else {
+//             alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
+//        }
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        if (i >= 0) {
+        if (craftItemIndex >= 0) {
             Map<Item, Integer> itemsRequired;
-            if (InvasionFerrocerium.RECIPES.canCraft(itemsToCraft.get(i), alienBuilderBotEntity.getInventory())) {
-                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(itemsToCraft.get(i));
+            if (InvasionFerrocerium.RECIPES.canCraft(itemsToCraft.get(craftItemIndex), alienBuilderBotEntity.getInventory())) {
+                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(itemsToCraft.get(craftItemIndex));
                 for (Map.Entry<Item, Integer> ingredientType : itemsRequired.entrySet()) {
                     int count = ingredientType.getValue();
-                    for (int ii = 0; ii < alienBuilderBotEntity.getInventory().size(); ii++) {
-                        ItemStack stack = alienBuilderBotEntity.getInventory().getStack(ii);
+                    //Look through the inventory for the items needed to craft
+                    for (int invSlot = 0; invSlot < alienBuilderBotEntity.getInventory().size(); invSlot++) {
+                        ItemStack stack = alienBuilderBotEntity.getInventory().getStack(invSlot);
 
                         if (stack.getItem() == ingredientType.getKey()) {
                             if (stack.getCount() <= count) {
                                 count -= stack.getCount();
-                                alienBuilderBotEntity.getInventory().setStack(ii, ItemStack.EMPTY);
-                                alienBuilderBotEntity.getInventory().addStack(itemsToCraft.get(i).getDefaultStack());
-                                crafted = true;
+                                alienBuilderBotEntity.getInventory().setStack(invSlot, ItemStack.EMPTY);
                             } else {
                                 stack.setCount(stack.getCount() - count);
                                 count = 0;
                             }
+                            if (count == 0) {
+                                break;
+                            }
                         }
-
-                        if (count <= 0) {
-                            itemsToCraft.remove(i);
-                            i--;
-                            break;
-                        }
-                    }
-                    if (!crafted) {
-                        InvasionFerrocerium.LOGGER.debug("Nothing crafted");
                     }
                 }
+                //The item has been crafted, put it in the inventory.
+                alienBuilderBotEntity.getInventory().addStack(itemsToCraft.remove(craftItemIndex).getDefaultStack());
             }
+
+            //Next item
+            craftItemIndex--;
         }
+        else {
+            //Go back to the first item
+            craftItemIndex = itemsToCraft.size() - 1;
+        }
+
     }
 }

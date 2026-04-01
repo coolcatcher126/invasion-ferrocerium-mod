@@ -100,7 +100,7 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.CRAFT,
                 ImmutableList.of(
-                        Pair.of(0, new CraftTask())
+                        Pair.of(2, new CraftTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)
@@ -123,7 +123,7 @@ public class AlienBuilderBotBrain {
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(ModActivities.CRAFT, ModActivities.BUILD, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
     }
 
     private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
