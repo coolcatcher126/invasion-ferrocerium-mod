@@ -67,6 +67,12 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+
+        if (serverWorld.isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(vein.get(blockToCollect)))){
+            vein.remove(blockToCollect);
+            return;
+        }
+
         breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
         mineBlocks(serverWorld, alienBuilderBotEntity, l);
     }
@@ -85,10 +91,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     /// Allows the entity to mine blocks. Shared between all mining and gathering goals
     private void mineBlocks(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l){
-        if (serverWorld.isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(vein.get(blockToCollect)))){
-            vein.remove(blockToCollect);
-            return;
-        }
+
 
         if (countTicksToBreak > 0) {
             countTicksToBreak--;

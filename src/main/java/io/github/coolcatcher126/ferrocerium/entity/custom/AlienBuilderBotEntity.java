@@ -8,6 +8,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.block.BlockState;
@@ -24,7 +25,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.InvalidNbtException;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -127,15 +131,29 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
+
         if (vein != null && vein.size() > 0) {
             nbt.put("vein", Vein.writeToNbt(vein));
         }
+
+        if (itemsToCraft != null && !itemsToCraft.isEmpty()){
+            NbtCompound nbtCompound;
+            NbtList nbtList = new NbtList();
+            for (Item item : itemsToCraft) {
+                nbtCompound = new NbtCompound();
+                nbtCompound.putInt("item", Item.getRawId(item));
+                nbtList.add(nbtCompound);
+            }
+            nbt.put("crafting_list", nbtList);
+        }
+
         if (alienBase != null) {
             nbt.putUuid("alien_base", alienBase.getUuid());
             if (sectionToBuild != null) {
                 nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
             }
         }
+
 //        if (this.isMining())
 //        {
 //            nbt.putBoolean("is_mining", true);
@@ -148,6 +166,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 //        {
 //            nbt.putBoolean("is_building", true);
 //        }
+
         this.writeInventory(nbt, this.getRegistryManager());
     }
 
@@ -157,6 +176,19 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 //        setBuilding(nbt.getBoolean("is_building"));
 //        setGathering(nbt.getBoolean("is_gathering"));
 //        setMining(nbt.getBoolean("is_mining"));
+
+        NbtList nbtList = nbt.getList("crafting_list", NbtElement.COMPOUND_TYPE);
+        int item;
+        for (NbtElement nbtElement : nbtList){
+            if (nbtElement instanceof NbtCompound){
+                item = ((NbtCompound) nbtElement).getInt("item");
+                addCraftingRequest(Item.byRawId(item));
+            }
+            else{
+                throw new InvalidNbtException("item data does not exist");
+            }
+        }
+
         if(nbt.contains("alien_base")){
             UUID alienBaseUuid = nbt.getUuid("alien_base");
             alienBase = (InvasionFerroceriumComponents.getAlienBases(getEntityWorld())).stream()
@@ -173,9 +205,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
             }
         }
+
         if (nbt.contains("vein")) {
             setVein(Vein.readfromNbt(nbt.getCompound("vein")));
         }
+
         this.readInventory(nbt, this.getRegistryManager());
     }
 
@@ -314,6 +348,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     }
 
     public void setVein(@Nullable Vein vein){
+        if (vein.size() == 0){
+            vein = null;
+        }
         this.vein = vein;
         if (vein != null) {
             if (alienBase != null) {
@@ -358,6 +395,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public void addCraftingRequest(Item requestedItem){
         this.itemsToCraft.add(requestedItem);
         brain.remember(ModMemoryModuleTypes.CRAFTING, true);
+    }
+
+    public void setItemsToCraft(List<Item> items){
+        this.itemsToCraft = items;
+        if (items != null && !items.isEmpty()) {
+            brain.remember(ModMemoryModuleTypes.CRAFTING, true);
+        }
+        else{
+            brain.forget(ModMemoryModuleTypes.CRAFTING);
+        }
     }
 
     public List<Item> getItemsToCraft(){
