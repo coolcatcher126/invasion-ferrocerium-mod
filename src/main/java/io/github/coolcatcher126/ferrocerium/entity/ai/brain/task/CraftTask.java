@@ -40,9 +40,9 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
         if (itemsToCraft.isEmpty()) {
             alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
         }
-//        else {
-//             alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
-//        }
+        else {
+             alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
+        }
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -72,6 +72,7 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
                 }
                 //The item has been crafted, put it in the inventory.
                 alienBuilderBotEntity.getInventory().addStack(itemsToCraft.remove(craftItemIndex).getDefaultStack());
+//                alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
             }
 
             //Next item
