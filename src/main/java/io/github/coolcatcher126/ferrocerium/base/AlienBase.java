@@ -522,7 +522,7 @@ public class AlienBase {
     private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
         Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
         for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
-            if (null != InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(resEntry.getKey().asItem())) {
+            if (null != InvasionFerrocerium.RECIPES.getCraftingStepsForItem(resEntry.getKey().asItem(), Optional.empty())) {
                 bot.addCraftingRequest(resEntry.getKey(), Math.toIntExact(resEntry.getValue()));
             }
         }
