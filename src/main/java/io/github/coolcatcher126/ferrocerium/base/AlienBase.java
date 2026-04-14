@@ -570,4 +570,8 @@ public class AlienBase {
         return this.world.getRegistryKey();
     }
 
+    public void addVein(Vein vein){
+        resources.add(vein);
+    }
+
 }
