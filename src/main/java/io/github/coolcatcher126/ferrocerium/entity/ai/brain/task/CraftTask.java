@@ -39,6 +39,7 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (itemsToCraft.isEmpty()) {
             alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
+            alienBuilderBotEntity.setItemsToCraft(null);
         }
         else {
              alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
