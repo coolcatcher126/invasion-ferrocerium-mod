@@ -70,10 +70,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.MINING
     );
 
-    //private static final TrackedData<Boolean> BUILDING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    //private static final TrackedData<Boolean> GATHERING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-    //private static final TrackedData<Boolean> MINING = DataTracker.registerData(AlienBuilderBotEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-
     @Nullable
     private BaseSection sectionToBuild;
     @Nullable
@@ -154,28 +150,12 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             }
         }
 
-//        if (this.isMining())
-//        {
-//            nbt.putBoolean("is_mining", true);
-//        }
-//        if (this.isGathering())
-//        {
-//            nbt.putBoolean("is_gathering", true);
-//        }
-//        if (this.isBuilding())
-//        {
-//            nbt.putBoolean("is_building", true);
-//        }
-
         this.writeInventory(nbt, this.getRegistryManager());
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-//        setBuilding(nbt.getBoolean("is_building"));
-//        setGathering(nbt.getBoolean("is_gathering"));
-//        setMining(nbt.getBoolean("is_mining"));
 
         NbtList nbtList = nbt.getList("crafting_list", NbtElement.COMPOUND_TYPE);
         int item;
@@ -213,23 +193,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.readInventory(nbt, this.getRegistryManager());
     }
 
-//    @Override
-//    protected void initGoals() {
-//        CraftGoal craftGoal = new CraftGoal(this);
-//
-//        this.goalSelector.add(1, new SwimGoal(this));
-//        this.goalSelector.add(3, craftGoal);
-//        this.goalSelector.add(4, new AlienBuilderAttackGoal(this, 1.0F, false));
-//        this.goalSelector.add(4, new AlienBuilderBuildGoal(this, craftGoal, 1.0));
-//        this.goalSelector.add(5, new AlienBuilderGatherWoodGoal(this, 1.0F));
-//        this.goalSelector.add(5, new AlienBuilderMineGoal(this, 1.0F));
-//        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
-//        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-//        this.goalSelector.add(6, new LookAroundGoal(this));
-//        this.targetSelector.add(1, new RevengeGoal(this));
-//        this.targetSelector.add(2, new AlienBotTargetGoal<>(this, PlayerEntity.class, true));
-//        this.targetSelector.add(3, new AlienBotTargetGoal<>(this, LivingEntity.class, true, (e) -> !(e instanceof InvasionBotEntity)));
-//    }
 
     public static DefaultAttributeContainer.Builder createAttributes(){
         return MobEntity.createMobAttributes()
@@ -366,13 +329,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.vein;
     }
 
-//    @Override
-//    protected void initDataTracker(DataTracker.Builder builder) {
-//        super.initDataTracker(builder);
-//        builder.add(BUILDING, false);
-//        builder.add(GATHERING, false);
-//        builder.add(MINING, false);
-//    }
 
     @Override
     public boolean cannotDespawn() {
