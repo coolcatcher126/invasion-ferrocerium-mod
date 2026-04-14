@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -29,7 +30,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     int countTicksToBreak = 0;
 
     public GatherTask() {
-        super(Map.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT));
+        super(Map.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), 24000);
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -112,8 +113,15 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             }
         }
     }
-    
-    protected boolean isTimeLimitExceeded(long time){
-        return false;
+
+    @Override
+    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
+        entity.getBase().addVein(vein);
+        entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);
+        entity.getBrain().forget(ModMemoryModuleTypes.MINING);
     }
+
+//    protected boolean isTimeLimitExceeded(long time){
+//        return false;
+//    }
 }

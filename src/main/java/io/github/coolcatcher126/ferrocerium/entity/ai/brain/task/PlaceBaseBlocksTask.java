@@ -26,7 +26,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     int blockIndex;
 
     public PlaceBaseBlocksTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT));
+        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -108,10 +108,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blockIndex++;
     }
 
-    @Override
-    protected boolean isTimeLimitExceeded(long time) {
-        return false;
-    }
+//    @Override
+//    protected boolean isTimeLimitExceeded(long time) {
+//        return false;
+//    }
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
