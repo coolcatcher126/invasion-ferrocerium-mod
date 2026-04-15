@@ -92,7 +92,7 @@ public class AlienBase {
         if (this.resources.isEmpty()) {
             createMineshaft();
         }
-        mineResourceVein(resources.getFirst());
+        mineResourceVein(resources.removeFirst());
     }
 
     public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder) {
@@ -115,7 +115,7 @@ public class AlienBase {
 
     public void setUpInitialSection()
     {
-        mineResourceVein(resources.getFirst());
+        mineResourceVein(resources.removeFirst());
 
         //Create the core of the base
         this.availablePos = new ArrayList<>();
@@ -254,12 +254,15 @@ public class AlienBase {
             search_time_count = SEARCH_TIME;
         }
 
-        if (assignResMineTime > 0){
-            assignResMineTime--;
-        }
-        else{
-            mineResourceVeins();
-            assignResMineTime = ASSIGN_RES_MINE_TIME;
+        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(true, false, false);
+        if (bot.isPresent()) {
+            if (assignResMineTime > 0){
+                assignResMineTime--;
+            }
+            else{
+                mineResourceVeins();
+                assignResMineTime = ASSIGN_RES_MINE_TIME;
+            }
         }
         this.world.getProfiler().pop();
     }
@@ -504,7 +507,7 @@ public class AlienBase {
         Vein vein;
         do{
             if (resources.isEmpty()) return;
-            vein = resources.remove(0);
+            vein = resources.removeFirst();
         }
         while (vein.size() == 0);
         mineResourceVein(vein);
@@ -512,11 +515,13 @@ public class AlienBase {
 
     private void mineResourceVein(Vein vein){
         Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(true, false, false);
-        bot.ifPresent(x -> {
+        bot.ifPresentOrElse(x -> {
             x.setVein(vein);
             x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
             x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
-        });
+        },
+        () -> resources.add(vein)
+        );
     }
 
     private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
@@ -571,7 +576,7 @@ public class AlienBase {
     }
 
     public void addVein(Vein vein){
-        resources.add(vein);
+        resources.addFirst(vein);
     }
 
 }
