@@ -301,8 +301,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setSection(BaseSection sectionToBuild, AlienBase alienBase){
         this.sectionToBuild = sectionToBuild;
-        if (alienBase != null) {
+        if (alienBase != null && sectionToBuild != null) {
             this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, new GlobalPos(alienBase.getDimension(), sectionToBuild.getOrigin().toBlockPos().add(alienBase.getOrigin())));
+        }
+        else {
+            this.brain.forget(ModMemoryModuleTypes.BASE_SECTION_LOCATION);
         }
     }
 
