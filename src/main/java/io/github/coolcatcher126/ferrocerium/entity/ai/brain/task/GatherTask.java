@@ -27,6 +27,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     int blockToCollect;
 
     final int MAX_BREAK_TICKS = 60;//The maximum time in ticks it takes to break a block
+    final int MAX_TICKS_TO_TIMEOUT = 120;
+    int countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
     int countTicksToBreak = 0;
 
     public GatherTask() {
@@ -56,26 +58,43 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
         withinDistance = withinDistance  && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        withinDistance = withinDistance && serverWorld.raycast(new RaycastContext(alienBuilderBotEntity.getPos(), resourcePos.toCenterPos(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, alienBuilderBotEntity)).getBlockPos().equals(resourcePos);
+        //withinDistance = withinDistance && serverWorld.raycast(new RaycastContext(alienBuilderBotEntity.getPos(), resourcePos.toCenterPos(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, alienBuilderBotEntity)).getBlockPos().equals(resourcePos);
+        withinDistance = withinDistance && countTicksToTimeOut > 0;
         return withinDistance;
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+        countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
 
-        if (serverWorld.isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(vein.get(blockToCollect)))){
+        while (serverWorld.isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(vein.get(blockToCollect)))) {
             vein.remove(blockToCollect);
+            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+        }
+
+        if (serverWorld.raycast(
+                new RaycastContext(
+                        alienBuilderBotEntity.getPos(),
+                        resourcePos.toCenterPos(),
+                        RaycastContext.ShapeType.OUTLINE,
+                        RaycastContext.FluidHandling.NONE,
+                        alienBuilderBotEntity
+                )
+        ).getBlockPos().equals(resourcePos)) {
+            countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
+
+            breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
+            mineBlocks(serverWorld, alienBuilderBotEntity, l);
             return;
         }
 
-        breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
-        mineBlocks(serverWorld, alienBuilderBotEntity, l);
+        countTicksToTimeOut--;
     }
 
     /// Sets the block breaking info on the block being mined
@@ -92,8 +111,6 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     /// Allows the entity to mine blocks. Shared between all mining and gathering goals
     private void mineBlocks(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l){
-
-
         if (countTicksToBreak > 0) {
             countTicksToBreak--;
         } else {
@@ -118,12 +135,9 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (vein != null && vein.size() > 0) {
             entity.getBase().addVein(vein);
+            entity.setSection(null);
         }
         entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);
         entity.getBrain().forget(ModMemoryModuleTypes.MINING);
     }
-
-//    protected boolean isTimeLimitExceeded(long time){
-//        return false;
-//    }
 }

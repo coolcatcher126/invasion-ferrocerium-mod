@@ -520,7 +520,7 @@ public class AlienBase {
             x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
             x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
         },
-        () -> resources.add(vein)
+        () -> resources.addFirst(vein)
         );
     }
 
