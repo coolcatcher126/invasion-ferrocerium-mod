@@ -24,6 +24,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
     int blockIndex;
+    final int MAX_TICKS_TO_TIMEOUT = 600;
+    long timeout = MAX_TICKS_TO_TIMEOUT;
 
     public PlaceBaseBlocksTask() {
         super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
@@ -50,23 +52,24 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        //Check to see if the building is built
-        if (alienBuilderBotEntity.getSection().isBuilt()){
+        //Check to see if the building is built or if the task has timed out
+        if (timeout <= l || alienBuilderBotEntity.getSection().isBuilt()){
             return false;
         }
 
         if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
-                block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
             return false;
         }
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        return  withinDistance;
+        return withinDistance;
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
         blockIndex = 0;
+        timeout = l + MAX_TICKS_TO_TIMEOUT;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -95,10 +98,12 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         BlockState blockState = block.getBlockState();
         Item blockItem = blockState.getBlock().asItem();
-            if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
-                blockIndex++;
-                return;
-            }
+        if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
+            blockIndex++;
+            return;
+        }
+
+        timeout = l + MAX_TICKS_TO_TIMEOUT;
 
         alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
 
