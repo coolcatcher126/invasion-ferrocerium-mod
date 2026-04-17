@@ -1,6 +1,5 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -14,8 +13,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.RaycastContext;
-import net.minecraft.world.event.GameEvent;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +24,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     int blockToCollect;
 
     final int MAX_BREAK_TICKS = 60;//The maximum time in ticks it takes to break a block
-    final int MAX_TICKS_TO_TIMEOUT = 120;
-    int countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
+    final int MAX_TICKS_TO_TIMEOUT = 600;
+    long timeout = MAX_TICKS_TO_TIMEOUT;
     int countTicksToBreak = 0;
 
     public GatherTask() {
@@ -51,31 +48,32 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        //Check to see if there is a vein to be collected
-        if (alienBuilderBotEntity.getVein().size() == 0){
+        //Check to see if there is a vein to be collected or the task has timed out
+        if (timeout <= l || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
         withinDistance = withinDistance  && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
         //withinDistance = withinDistance && serverWorld.raycast(new RaycastContext(alienBuilderBotEntity.getPos(), resourcePos.toCenterPos(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, alienBuilderBotEntity)).getBlockPos().equals(resourcePos);
-        withinDistance = withinDistance && countTicksToTimeOut > 0;
         return withinDistance;
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-        countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
+        timeout = l+MAX_TICKS_TO_TIMEOUT;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
 
-        while (serverWorld.isAir(vein.get(blockToCollect)) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(vein.get(blockToCollect)))) {
+        resourcePos = vein.get(blockToCollect);
+        while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(resourcePos))) {
             vein.remove(blockToCollect);
             blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+            resourcePos = vein.get(blockToCollect);
         }
 
         if (serverWorld.raycast(
@@ -87,14 +85,11 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
                         alienBuilderBotEntity
                 )
         ).getBlockPos().equals(resourcePos)) {
-            countTicksToTimeOut = MAX_TICKS_TO_TIMEOUT;
+            timeout = l + MAX_TICKS_TO_TIMEOUT;
 
             breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
             mineBlocks(serverWorld, alienBuilderBotEntity, l);
-            return;
         }
-
-        countTicksToTimeOut--;
     }
 
     /// Sets the block breaking info on the block being mined
@@ -135,7 +130,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (vein != null && vein.size() > 0) {
             entity.getBase().addVein(vein);
-            entity.setSection(null);
+            //entity.setVein(null);
         }
         entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);
         entity.getBrain().forget(ModMemoryModuleTypes.MINING);
