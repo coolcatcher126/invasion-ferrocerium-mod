@@ -62,7 +62,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-        timeout = l+MAX_TICKS_TO_TIMEOUT;
+        timeout = l + MAX_TICKS_TO_TIMEOUT;
+        countTicksToBreak = MAX_BREAK_TICKS;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -74,6 +75,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             vein.remove(blockToCollect);
             blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
             resourcePos = vein.get(blockToCollect);
+            alienBuilderBotEntity.setVein(vein);
         }
 
         if (serverWorld.raycast(
@@ -95,13 +97,10 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     /// Sets the block breaking info on the block being mined
     private void breakingInfoTick(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l){
         if (countTicksToBreak >= 0) {
-            countTicksToBreak--;
             int progress = Math.round((MAX_BREAK_TICKS - countTicksToBreak) / (float) MAX_BREAK_TICKS * 10);
             serverWorld.setBlockBreakingInfo(alienBuilderBotEntity.getId(), vein.get(blockToCollect), progress);
             alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
-            return;
         }
-        countTicksToBreak = MAX_BREAK_TICKS;
     }
 
     /// Allows the entity to mine blocks. Shared between all mining and gathering goals
