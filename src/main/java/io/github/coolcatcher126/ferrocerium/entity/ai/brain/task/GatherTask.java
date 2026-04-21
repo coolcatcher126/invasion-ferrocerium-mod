@@ -4,7 +4,9 @@ import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
+import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.item.ItemStack;
@@ -29,7 +31,10 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     int countTicksToBreak = 0;
 
     public GatherTask() {
-        super(Map.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), 24000);
+        super(Map.of(
+                ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT,
+                        MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED),
+                24000);
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -64,6 +69,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
         timeout = l + MAX_TICKS_TO_TIMEOUT;
         countTicksToBreak = MAX_BREAK_TICKS;
+        alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -80,7 +86,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (serverWorld.raycast(
                 new RaycastContext(
-                        alienBuilderBotEntity.getPos(),
+                        alienBuilderBotEntity.getEyePos(),
                         resourcePos.toCenterPos(),
                         RaycastContext.ShapeType.OUTLINE,
                         RaycastContext.FluidHandling.NONE,
@@ -88,6 +94,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
                 )
         ).getBlockPos().equals(resourcePos)) {
             timeout = l + MAX_TICKS_TO_TIMEOUT;
+
+            alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
 
             breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
             mineBlocks(serverWorld, alienBuilderBotEntity, l);
