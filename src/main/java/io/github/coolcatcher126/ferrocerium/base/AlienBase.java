@@ -68,6 +68,7 @@ public class AlienBase {
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
+    //Recreate alien base
     public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid, int baseGrowTime, int search_time_count){
         this.world = world;
         this.origin = origin;
@@ -95,6 +96,7 @@ public class AlienBase {
         mineResourceVein(resources.removeFirst());
     }
 
+    //Create new alien base
     public AlienBase(World world, BlockPos origin, AlienBuilderBotEntity initialBuilder) {
         this.world = world;
         this.origin = origin;
@@ -440,7 +442,6 @@ public class AlienBase {
                     if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && blockIsCollectible(searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
                         ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
                         findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                        resources.add(new Vein(vein));
                         resources.add(new Vein(vein));
                     }
                     //+x-z
