@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -78,7 +79,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
 
         resourcePos = vein.get(blockToCollect);
-        while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(resourcePos))) {
+        while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
             vein.remove(blockToCollect);
             blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
             resourcePos = vein.get(blockToCollect);
