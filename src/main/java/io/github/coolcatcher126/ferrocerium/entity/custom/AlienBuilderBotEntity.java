@@ -221,7 +221,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         else if (this.alienBase == null && this.age >= 20){
             this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
-            this.alienBase.setUpInitialSection();
             InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
         }
     }
