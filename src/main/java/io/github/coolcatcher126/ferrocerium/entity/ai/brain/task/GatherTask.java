@@ -138,7 +138,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (vein != null && vein.size() > 0) {
-            entity.getBase().addVein(vein);
+            entity.getBase().addVeinFirst(vein);
             //entity.setVein(null);
         }
         entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);

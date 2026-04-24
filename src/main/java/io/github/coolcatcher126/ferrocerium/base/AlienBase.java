@@ -1,55 +1,27 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
-import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.ai.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Optional;
+import java.util.UUID;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
 public class AlienBase {
-    private int minBlockSearchRadius = 0;//The minimum distance to search for blocks to collect (centered on the base)
-    private int maxBlockSearchRadius = 30;//The maximum distance to search for blocks to collect (centered on the base)
-
     BlockPos origin;
     ArrayList<BaseSection> sections;
     ArrayList<AlienBuilderBotEntity> builders;
-    ArrayList<BaseSectPos> availablePos;
-
-    ArrayList<BaseSectionTemplate> sectionTemplateList;
-
     AlienBaseTaskScheduler scheduler;
-
-    List<Integer> STRIP_MINE_LEVELS = List.of(-53, -52, 16, 17, 48, 49);
-
     World world;
-
-    private int baseGrowTime;
-
-    private final int SEARCH_TIME = 1200;
-    private int search_time_count = SEARCH_TIME;
-
-    private final int ASSIGN_RES_MINE_TIME = 20;
-    private int assignResMineTime = ASSIGN_RES_MINE_TIME;
-
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
     ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
 
@@ -57,7 +29,7 @@ public class AlienBase {
     UUID uuid = MathHelper.randomUuid(this.random);
 
     //Recreate alien base
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid, int baseGrowTime, int search_time_count){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
         this.world = world;
         this.origin = origin;
 
@@ -68,24 +40,13 @@ public class AlienBase {
         this.builders = builders;
         this.uuid = uuid;
 
-        this.baseGrowTime = baseGrowTime;
-        this.search_time_count = search_time_count;
-
         this.resources = resources;
-
-        sectionTemplateList = new ArrayList<>();
-        InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
 
         this.scheduler = new AlienBaseTaskScheduler();
 
-        this.availablePos = new ArrayList<>();
-        baseSectGetAvailablePos();
-
-        if (this.resources.isEmpty()) {
-            createMineshaft();
+        if (world != null && !world.isClient) {
+            initTasks();
         }
-        mineResourceVein(resources.removeFirst());
-        initTasks();
     }
 
     //Create new alien base
@@ -98,128 +59,26 @@ public class AlienBase {
 
         this.builders.add(initialBuilder);
 
-        this.baseGrowTime = 3000;
-
-        createMineshaft();
-
-        sectionTemplateList = new ArrayList<>();
-        InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
-
         this.scheduler = new AlienBaseTaskScheduler();
-        initTasks();
+        if (world != null && !world.isClient) {
+            initTasks();
+        }
     }
 
     private void initTasks(){
-        this.scheduler.add(new CreateMineshaft());
-        this.scheduler.add(new ScanForResources());
-        this.scheduler.add(new BaseGrower());
-        this.scheduler.add(new SectionBuilder());
-    }
-
-    public void setUpInitialSection()
-    {
-        mineResourceVein(resources.removeFirst());
-
-        //Create the core of the base
-        this.availablePos = new ArrayList<>();
-        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
-        baseSectGetAvailablePos();
-    }
-
-    /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
-    private void baseSectGetAvailablePos(){
-        for (BaseSection section : sections) {
-            baseSectCheckAdjPos(section);
-        }
-    }
-
-    private void baseSectCheckAdjPos(BaseSection section){
-        BaseSectPos pos = section.getOrigin();
-        BaseSectPos newPos;
-
-        newPos = pos.add(1, 0, 0);
-        if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
-            availablePos.add(newPos);
-        }
-
-        newPos = pos.add(-1, 0, 0);
-        if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
-            availablePos.add(newPos);
-        }
-
-        newPos = pos.add(0, 0, 1);
-        if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
-            availablePos.add(newPos);
-        }
-
-        newPos = pos.add(0, 0, -1);
-        if (!availablePos.contains(newPos) && checkSectionLocationClear(newPos)){
-            availablePos.add(newPos);
-        }
-    }
-
-    /// Grows the base at random by adding an extra base section to the base
-    public void growBase(){
-        int randomInt = random.nextInt(sectionTemplateList.size());
-        BaseSectPos offset = availablePos.toArray(new BaseSectPos[0])[random.nextInt(availablePos.size())];
-        BlockRotation rot = BlockRotation.NONE;
-
-        addBaseSection(sectionTemplateList.get(randomInt), false, offset, rot);
-    }
-
-    public void repairBaseSection(BaseSection section) {
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
-        bot.ifPresent(x -> {
-            x.setSection(section);
-            x.setBuilding(true);
-        });
-    }
-
-    private boolean checkSectionLocationClear(BaseSectPos pos){
-        for (BaseSection section : sections) {
-            if (section.getOrigin().equals(pos)){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void addBaseSection(BaseSectionTemplate sectionTemplate, boolean isCore, BaseSectPos offset, BlockRotation rot){
-        BaseSection newSection = new BaseSection(sectionTemplate, world, offset, rot, isCore);
-        sections.add(newSection);
-        availablePos.remove(offset);
-        baseSectCheckAdjPos(newSection);
-        newSection.setAlienBase(this);
-
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
-        bot.ifPresent(x -> {
-            craftRequiredResources(x, newSection.getOrCalculateBaseBlockData().stream().map(block -> block.getBlockState().getBlock().asItem()).toList());
-            x.setSection(newSection);
-            x.setBuilding(true);
-        });
+        this.scheduler.add(new ExpandWorkforce(this));
+        this.scheduler.add(new CreateMineshaft(this));
+        this.scheduler.add(new ScanForResources(this));
+        this.scheduler.add(new BaseGrower(this));
+        this.scheduler.add(new BuilderCommander(this));
     }
 
     /// Returns the first alien builder bot to not be building.
-    private Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(boolean ignoreBuilding, boolean ignoreMining, boolean ignoreGathering){
+    public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!((!ignoreBuilding && builder.isBuilding()) || (!ignoreMining && builder.isMining()) || (!ignoreGathering && builder.isGathering()))){
-                return Optional.of(builder);
-            }
+            return Optional.of(builder);
         }
         return Optional.empty();
-    }
-
-    /// Adds a preexisting builder to the builders
-    public void hireBuilder(AlienBuilderBotEntity builder){
-        builders.add(builder);
-    }
-
-    /// Adds a newly spawned builder to the builders
-    public void spawnBuilder(){
-        AlienBuilderBotEntity builder = new AlienBuilderBotEntity(world, this);
-        builder.refreshPositionAndAngles(Vec3d.of(this.origin), 0, 0);
-        hireBuilder(builder);
-        this.world.spawnEntity(builder);
     }
 
     /// Ticks this alien base.
@@ -229,50 +88,6 @@ public class AlienBase {
         this.scheduler.tick();
 
         this.world.getProfiler().pop();
-
-        //Grow the base after the timer finishes
-        if (baseGrowTime > 0) {
-            baseGrowTime--;
-        }
-        else {
-            Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(false, true, true);
-            if (bot.isEmpty()) {
-                spawnBuilder();
-            }
-            boolean shouldRepair = false;
-            for (BaseSection section : sections) {
-                if (!section.isBuilt()) {
-                    repairBaseSection(section);
-                    shouldRepair = true;
-                }
-            }
-            if (!shouldRepair) {
-                growBase();
-            }
-            baseGrowTime = random.nextBetween(3000, 12000);
-        }
-
-        //Don't look for things to mine all the time
-        if (search_time_count > 0){
-            search_time_count--;
-        }
-        else{
-            findResourcesToCollect();
-            extendStripMines(5);
-            search_time_count = SEARCH_TIME;
-        }
-
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(true, false, false);
-        if (bot.isPresent()) {
-            if (assignResMineTime > 0){
-                assignResMineTime--;
-            }
-            else{
-                mineResourceVeins();
-                assignResMineTime = ASSIGN_RES_MINE_TIME;
-            }
-        }
-
     }
 
     public BlockPos getOrigin(){
@@ -283,8 +98,17 @@ public class AlienBase {
         return this.sections;
     }
 
+    public void addBaseSection(BaseSection section){
+        this.sections.add(section);
+    }
+
     public ArrayList<AlienBuilderBotEntity> getBuilders(){
         return this.builders;
+    }
+
+    /// Adds a preexisting builder to the builders
+    public void hireBuilder(AlienBuilderBotEntity builder){
+        builders.add(builder);
     }
 
     public UUID getUuid(){
@@ -297,276 +121,42 @@ public class AlienBase {
         throw new NotImplementedException();
     }
 
-    public void setBlockSearchRadius(int minBlockSearchRadius, int maxBlockSearchRadius) {
-        this.minBlockSearchRadius = minBlockSearchRadius;
-        this.maxBlockSearchRadius = maxBlockSearchRadius;
-    }
-
-    /// Creates a mineshaft starting at the middle of the base going down using a spiral staircase.
-    /// <p>Uses a strip mining from y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
-    private void createMineshaft(){
-        ArrayList<BlockPos> mineshaft = new ArrayList<>();
-        for (int y = origin.getY(), i = 0; y >= -53; y--, i++){
-            int step = i%8;
-            if (step != 7) {
-                mineshaft.add(origin.add(-1, -i, -1));
-            }
-            if (step != 6) {
-                mineshaft.add(origin.add(0, -i, -1));
-            }
-            if (step != 5) {
-                mineshaft.add(origin.add(1, -i, -1));
-            }
-            if (step != 4) {
-                mineshaft.add(origin.add(1, -i, 0));
-            }
-            if (step != 3) {
-                mineshaft.add(origin.add(1, -i, 1));
-            }
-            if (step != 2) {
-                mineshaft.add(origin.add(0, -i, 1));
-            }
-            if (step != 1) {
-                mineshaft.add(origin.add(-1, -i, 1));
-            }
-            if (step != 0) {
-                mineshaft.add(origin.add(-1, -i, 0));
-            }
-
-            if (STRIP_MINE_LEVELS.contains(y)) {
-                mineshaft.add(origin.add(-2,-i,-2));
-                mineshaft.add(origin.add(-1,-i,-2));
-                mineshaft.add(origin.add(0,-i,-2));
-                mineshaft.add(origin.add(1,-i,-2));
-                mineshaft.add(origin.add(2,-i,-2));
-
-                mineshaft.add(origin.add(-2,-i,-1));
-                mineshaft.add(origin.add(2,-i,-1));
-
-                mineshaft.add(origin.add(-2,-i,0));
-                mineshaft.add(origin.add(2,-i,0));
-
-                mineshaft.add(origin.add(-2,-i,1));
-                mineshaft.add(origin.add(2,-i,1));
-
-                mineshaft.add(origin.add(-2,-i,2));
-                mineshaft.add(origin.add(-1,-i,2));
-                mineshaft.add(origin.add(0,-i,2));
-                mineshaft.add(origin.add(1,-i,2));
-                mineshaft.add(origin.add(2,-i,2));
-
-                if (i%2 == 0){
-                    //Split the mineshaft staircase into sections
-                    this.resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
-                    mineshaft = new ArrayList<>();
-                }
-            }
-        }
-
-        createStairwell();
-    }
-
-    void createStairwell() {
-        BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
-        for (int y = 0, i = 0; y >= -53; y--, i++) {
-            int step = i % 8;
-            if (step != 7) {
-                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, -1), bs));
-            }
-            if (step != 6) {
-                baseBlocks.add(new BaseBlock(new BlockPos(0, -i, -1), bs));
-            }
-            if (step != 5) {
-                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, -1), bs));
-            }
-            if (step != 4) {
-                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, 0), bs));
-            }
-            if (step != 3) {
-                baseBlocks.add(new BaseBlock(new BlockPos(1, -i, 1), bs));
-            }
-            if (step != 2) {
-                baseBlocks.add(new BaseBlock(new BlockPos(0, -i, 1), bs));
-            }
-            if (step != 1) {
-                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, 1), bs));
-            }
-            if (step != 0) {
-                baseBlocks.add(new BaseBlock(new BlockPos(-1, -i, 0), bs));
-            }
-        }
-    }
-
-    void extendStripMines(int length) {
-        for (Integer y : STRIP_MINE_LEVELS) {
-            if (y < origin.getY() && y % 2 == 0) {
-                BlockPos mineshaftCenter = new BlockPos(origin.getX(), y, origin.getZ());
-                extendStripMine(mineshaftCenter, Direction.NORTH, length);
-                extendStripMine(mineshaftCenter, Direction.EAST, length);
-                extendStripMine(mineshaftCenter, Direction.SOUTH, length);
-                extendStripMine(mineshaftCenter, Direction.WEST, length);
-            }
-        }
-
-    }
-
-    private void extendStripMine(BlockPos mineFront, Direction direction, int length) {
-        ArrayList<BlockPos> mineshaft = new ArrayList<>();
-
-        //Start the side branches outside the stairwell
-        mineFront = mineFront.offset(direction, 2);
-        while (world.getBlockState(mineFront).isAir()) {
-            mineFront = mineFront.offset(direction);
-        }
-
-        //Add the blocks to mine
-        for (int i = 0; i < length; i++) {
-            mineshaft.add(mineFront);
-            mineshaft.add(mineFront.add(0, 1, 0));
-            mineFront = mineFront.offset(direction);
-        }
-        resources.add(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
-    }
-
-    /// Searches in the area between the min and max search radii to find resources to collect.
-    /// <p>The base uses the resources found to send builder bots to investigate and mine</p>
-    /// <p>Resources being: Wood, ores, stone</p>
-    public void findResourcesToCollect(){
-        final AtomicReference<BlockPos> searchedBlock = new AtomicReference<>();
-        for (int x = this.minBlockSearchRadius; x <= this.maxBlockSearchRadius; x++) {
-            for (int y = -5; y <= 5; y++){
-                for (int z = this.minBlockSearchRadius; z <= this.maxBlockSearchRadius; z++) {
-                    //+x+z
-                    searchedBlock.set(getOrigin().add(x, y, z));
-                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                        resources.add(new Vein(vein));
-                    }
-                    //-x+z
-                    searchedBlock.set(getOrigin().add(-x, y, z));
-                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                        resources.add(new Vein(vein));
-                    }
-                    //+x-z
-                    searchedBlock.set(getOrigin().add(x, y, -z));
-                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                        resources.add(new Vein(vein));
-                    }
-                    //-x-z
-                    searchedBlock.set(getOrigin().add(-x, y, -z));
-                    if (resources.stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
-                        findAdjacentResourcesToCollect(searchedBlock.get(), vein);
-                        resources.add(new Vein(vein));
-                    }
-                }
-            }
-        }
-    }
-
-    /// Searches in the area around the given block pos recursively to find resources to collect.
-    void findAdjacentResourcesToCollect(BlockPos blockPos, List<BlockPos> resources){
-        BlockPos searchedBlock;
-        //Check +x
-        searchedBlock = blockPos.add(1, 0, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-        //Check -x
-        searchedBlock = blockPos.add(-1, 0, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-        //Check +y
-        searchedBlock = blockPos.add(0, 1, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-        //Check -y
-        searchedBlock = blockPos.add(0, -1, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-        //Check +z
-        searchedBlock = blockPos.add(0, 0, 1);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-        //Check -z
-        searchedBlock = blockPos.add(0, 0, -1);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(world, searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
-            findAdjacentResourcesToCollect(searchedBlock, resources);
-        }
-    }
-
-    private void mineResourceVeins(){
-        Vein vein;
-        do{
-            if (resources.isEmpty()) return;
-            vein = resources.removeFirst();
-        }
-        while (vein.size() == 0);
-        mineResourceVein(vein);
-    }
-
-    private void mineResourceVein(Vein vein){
-        Optional<AlienBuilderBotEntity> bot = getFirstAvailableAlienBuilderBotEntity(true, false, false);
-        bot.ifPresentOrElse(x -> {
-            x.setVein(vein);
-            x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
-            x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
-        },
-        () -> resources.addFirst(vein)
-        );
-    }
-
-    private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
-        Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
-        for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
-            Map<Item, Integer> craftingSteps = InvasionFerrocerium.RECIPES.getCraftingStepsForItem(resEntry.getKey().asItem(), Optional.of(Math.toIntExact(resEntry.getValue())));
-            if (null != craftingSteps) {
-                for (Map.Entry<Item, Integer> resEntry2 : craftingSteps.entrySet()) {
-                    bot.addCraftingRequest(resEntry2.getKey(), Math.toIntExact(resEntry2.getValue()));
-                }
-            }
-        }
-    }
-
 
 
     public ArrayList<BaseBlock> getBaseBlocks(){
         return this.baseBlocks;
     }
 
+    public void addBaseBlock(BaseBlock block){
+        this.baseBlocks.add(block);
+    }
+
     public ArrayList<Vein> getResources(){
         return  this.resources;
     }
 
-    public int getBaseGrowTime(){
-        return this.baseGrowTime;
+    public void addVein(Vein vein){
+        resources.add(vein);
     }
 
-    public int getSearch_time_count(){
-        return this.search_time_count;
+    public void addVeinFirst(Vein vein){
+        resources.addFirst(vein);
+    }
+
+    public Vein removeFirstVein(){
+        return resources.removeFirst();
     }
 
     public RegistryKey<World> getDimension(){
         return this.world.getRegistryKey();
     }
 
-    public void addVein(Vein vein){
-        resources.addFirst(vein);
+    public World getWorld(){
+        return this.world;
+    }
+
+    public Random getRandom(){
+        return random;
     }
 
 }
