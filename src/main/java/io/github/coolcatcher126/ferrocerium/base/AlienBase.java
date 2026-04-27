@@ -76,7 +76,9 @@ public class AlienBase {
     /// Returns the first alien builder bot to not be building.
     public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
         for (AlienBuilderBotEntity builder : builders) {
-            return Optional.of(builder);
+            if (!(builder.isBuilding() || builder.isGathering() || builder.isMining())) {
+                return Optional.of(builder);
+            }
         }
         return Optional.empty();
     }
@@ -141,6 +143,16 @@ public class AlienBase {
 
     public void addVeinFirst(Vein vein){
         resources.addFirst(vein);
+    }
+
+    public Vein removeClosestVein(BlockPos targetPos){
+        Vein vein = removeFirstVein();
+        for (Vein resource : resources) {
+            if (vein.getClosest(targetPos).getSquaredDistance(targetPos) > resource.getClosest(targetPos).getSquaredDistance(targetPos)) {
+                vein = resource;
+            }
+        }
+        return vein;
     }
 
     public Vein removeFirstVein(){
