@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public class ExpandWorkforce implements AlienBaseTask {
     private final AlienBase alienBase;
-    private int baseGrowTime;
+    private int baseGrowTime = 12000;
 
     public ExpandWorkforce(AlienBase alienBase){
         this.alienBase = alienBase;

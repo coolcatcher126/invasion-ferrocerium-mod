@@ -73,13 +73,6 @@ public class BaseGrower implements AlienBaseTask {
         availablePos.remove(offset);
         baseSectCheckAdjPos(newSection);
         newSection.setAlienBase(alienBase);
-
-        Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity();
-        bot.ifPresent(x -> {
-            craftRequiredResources(x, newSection.getOrCalculateBaseBlockData().stream().map(block -> block.getBlockState().getBlock().asItem()).toList());
-            x.setSection(newSection);
-            x.setBuilding(true);
-        });
     }
 
     /// Gets all the positions adjacent to a base section that itself is not occupied by a section.
@@ -121,17 +114,5 @@ public class BaseGrower implements AlienBaseTask {
             }
         }
         return true;
-    }
-
-    private void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
-        Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
-        for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
-            Map<Item, Integer> craftingSteps = InvasionFerrocerium.RECIPES.getCraftingStepsForItem(resEntry.getKey().asItem(), Optional.of(Math.toIntExact(resEntry.getValue())));
-            if (null != craftingSteps) {
-                for (Map.Entry<Item, Integer> resEntry2 : craftingSteps.entrySet()) {
-                    bot.addCraftingRequest(resEntry2.getKey(), Math.toIntExact(resEntry2.getValue()));
-                }
-            }
-        }
     }
 }

@@ -1,11 +1,14 @@
 package io.github.coolcatcher126.ferrocerium.resources;
 
 import com.google.common.collect.Maps;
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
+import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -88,6 +91,18 @@ public class BuilderBotConversions {
 
     public void addRecipe(Item item, Map<Item, Integer> resources){
         this.recipes.put(item, resources);
+    }
+
+    public void craftRequiredResources(AlienBuilderBotEntity bot, List<Item> requiredResources){
+        Map<Item, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(Item::asItem, Collectors.counting()));
+        for (Map.Entry<Item, Long> resEntry : resMap.entrySet()) {
+            Map<Item, Integer> craftingSteps = InvasionFerrocerium.RECIPES.getCraftingStepsForItem(resEntry.getKey().asItem(), Optional.of(Math.toIntExact(resEntry.getValue())));
+            if (null != craftingSteps) {
+                for (Map.Entry<Item, Integer> resEntry2 : craftingSteps.entrySet()) {
+                    bot.addCraftingRequest(resEntry2.getKey(), Math.toIntExact(resEntry2.getValue()));
+                }
+            }
+        }
     }
 }
 

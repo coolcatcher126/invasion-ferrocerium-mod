@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base.ai;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
@@ -17,7 +18,7 @@ public class BuilderCommander implements AlienBaseTask {
     private final AlienBase alienBase;
     private final int MAX_TICKS_TO_COMMAND = 20;
     private int ticksToCommand = MAX_TICKS_TO_COMMAND;
-    boolean build = true;
+    boolean build = false;
 
     public BuilderCommander(AlienBase alienBase){
         this.alienBase = alienBase;
@@ -37,20 +38,19 @@ public class BuilderCommander implements AlienBaseTask {
                             AlienBuilderBotEntity bot1 = bot.get();
                             bot1.setSection(section);
                             bot1.setBuilding(true);
+                            InvasionFerrocerium.RECIPES.craftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> block.getBlockState().getBlock().asItem()).toList());
                             break;
                         }
                     }
                 }
                 else {
                     if (!alienBase.getResources().isEmpty()) {
-                        Vein vein = alienBase.removeFirstVein();
-
-                        bot.ifPresentOrElse(x -> {
+                        bot.ifPresent(x -> {
+                                    Vein vein = alienBase.removeClosestVein(x.getBlockPos());
                                     x.setVein(vein);
                                     x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
                                     x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
-                                },
-                                () -> alienBase.addVeinFirst(vein)
+                                }
                         );
                     }
                 }
