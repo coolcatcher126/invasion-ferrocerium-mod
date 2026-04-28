@@ -146,17 +146,13 @@ public class AlienBase {
     }
 
     public Vein removeClosestVein(BlockPos targetPos){
-        Vein vein = removeFirstVein();
+        int vein = 0;
         for (Vein resource : resources) {
-            if (vein.getClosest(targetPos).getSquaredDistance(targetPos) > resource.getClosest(targetPos).getSquaredDistance(targetPos)) {
-                vein = resource;
+            if (resources.get(vein).getClosest(targetPos).getSquaredDistance(targetPos) > resource.getClosest(targetPos).getSquaredDistance(targetPos)) {
+                vein = resources.indexOf(resource);
             }
         }
-        return vein;
-    }
-
-    public Vein removeFirstVein(){
-        return resources.removeFirst();
+        return resources.remove(vein);
     }
 
     public RegistryKey<World> getDimension(){
