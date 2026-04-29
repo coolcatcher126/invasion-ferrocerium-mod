@@ -78,7 +78,8 @@ public class AlienBuilderBotBrain {
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
-                )
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.MINING)
         );
     }
 
@@ -92,6 +93,9 @@ public class AlienBuilderBotBrain {
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(
+                        ModMemoryModuleTypes.GATHERING
                 )
         );
     }
