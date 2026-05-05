@@ -156,18 +156,10 @@ public class AlienBuilderBotBrain {
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {
-        return new RandomTask<>(
-                ImmutableList.of(
-                    Pair.of(GoToIfNearbyTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 4), 0),
-                    Pair.of(GoToNearbyPositionTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 1, 50), 1)
-                ));
+        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 1, 50);
     }
 
     private static Task<PathAwareEntity> makeGoToResourceTask() {
-        return new RandomTask<>(
-                ImmutableList.of(
-                        Pair.of(GoToIfNearbyTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 4), 0),
-                        Pair.of(GoToNearbyPositionTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 1, 50), 1)
-                ));
+        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 1, 50);
     }
 }
