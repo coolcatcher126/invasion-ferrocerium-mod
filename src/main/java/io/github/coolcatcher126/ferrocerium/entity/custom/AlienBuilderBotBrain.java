@@ -73,8 +73,8 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.MINE,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToResourceTask()),
-                        Pair.of(1, new GatherTask())
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
@@ -87,8 +87,8 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.CHOP_WOOD,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToResourceTask()),
-                        Pair.of(1, new GatherTask()),
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask()),
                         Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(

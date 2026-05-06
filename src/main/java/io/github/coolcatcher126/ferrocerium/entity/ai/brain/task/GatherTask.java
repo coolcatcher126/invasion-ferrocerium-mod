@@ -51,6 +51,15 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
         withinDistance = withinDistance && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+        withinDistance = withinDistance && serverWorld.raycast(
+                new RaycastContext(
+                        alienBuilderBotEntity.getCameraPosVec(1),
+                        resourcePos.toCenterPos(),
+                        RaycastContext.ShapeType.OUTLINE,
+                        RaycastContext.FluidHandling.NONE,
+                        alienBuilderBotEntity
+                )
+        ).getBlockPos().equals(resourcePos);
         return withinDistance;
     }
 
@@ -88,7 +97,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (serverWorld.raycast(
                 new RaycastContext(
-                        alienBuilderBotEntity.getEyePos(),
+                        alienBuilderBotEntity.getCameraPosVec(1),
                         resourcePos.toCenterPos(),
                         RaycastContext.ShapeType.OUTLINE,
                         RaycastContext.FluidHandling.NONE,
