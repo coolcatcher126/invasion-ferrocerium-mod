@@ -95,6 +95,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             alienBuilderBotEntity.setVein(vein);
         }
 
+        alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
+
         if (serverWorld.raycast(
                 new RaycastContext(
                         alienBuilderBotEntity.getCameraPosVec(1),
@@ -106,7 +108,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         ).getBlockPos().equals(resourcePos)) {
             timeout = l + MAX_TICKS_TO_TIMEOUT;
 
-            alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
+
 
             breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
             mineBlocks(serverWorld, alienBuilderBotEntity, l);
