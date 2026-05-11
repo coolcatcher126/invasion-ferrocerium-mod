@@ -51,15 +51,11 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
         withinDistance = withinDistance && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        withinDistance = withinDistance && serverWorld.raycast(
-                new RaycastContext(
-                        alienBuilderBotEntity.getCameraPosVec(1),
-                        resourcePos.toCenterPos(),
-                        RaycastContext.ShapeType.OUTLINE,
-                        RaycastContext.FluidHandling.NONE,
-                        alienBuilderBotEntity
-                )
-        ).getBlockPos().equals(resourcePos);
+//        withinDistance = withinDistance && alienBuilderBotEntity.raycast(
+//                MAX_DISTANCE,
+//                0,
+//                false
+//        ).getPos().squaredDistanceTo(resourcePos.toCenterPos()) < 1;
         return withinDistance;
     }
 
@@ -97,15 +93,11 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
 
-        if (serverWorld.raycast(
-                new RaycastContext(
-                        alienBuilderBotEntity.getCameraPosVec(1),
-                        resourcePos.toCenterPos(),
-                        RaycastContext.ShapeType.OUTLINE,
-                        RaycastContext.FluidHandling.NONE,
-                        alienBuilderBotEntity
-                )
-        ).getBlockPos().equals(resourcePos)) {
+        if (alienBuilderBotEntity.raycast(
+                MAX_DISTANCE,
+                0,
+                false
+        ).getPos().squaredDistanceTo(resourcePos.toCenterPos()) < 1) {
             timeout = l + MAX_TICKS_TO_TIMEOUT;
 
 
