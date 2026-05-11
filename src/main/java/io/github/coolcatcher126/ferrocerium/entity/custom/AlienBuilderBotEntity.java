@@ -8,6 +8,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
@@ -17,6 +18,8 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -221,7 +224,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         else if (this.alienBase == null && this.age >= 20){
             this.alienBase = new AlienBase(this.getEntityWorld(), this.getBlockPos(), this);
-            this.alienBase.setUpInitialSection();
             InvasionFerroceriumComponents.addAlienBase(this.getEntityWorld(), this.alienBase);
         }
     }
@@ -430,5 +432,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     protected void sendAiDebugData() {
         super.sendAiDebugData();
         DebugInfoSender.sendBrainDebugData(this);
+    }
+
+    @Override
+    protected EntityNavigation createNavigation(World world) {
+        return new MinerNavigation(this, world);
+    }
+
+    @Override
+    public int getMaxLookPitchChange() {
+        return 170;
     }
 }

@@ -1,5 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -50,6 +51,11 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey();
         withinDistance = withinDistance && resourcePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+//        withinDistance = withinDistance && alienBuilderBotEntity.raycast(
+//                MAX_DISTANCE,
+//                0,
+//                false
+//        ).getPos().squaredDistanceTo(resourcePos.toCenterPos()) < 1;
         return withinDistance;
     }
 
@@ -78,25 +84,23 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
 
         resourcePos = vein.get(blockToCollect);
-        while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || alienBuilderBotEntity.getBase().blockIsCollectible(resourcePos))) {
+        while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
             vein.remove(blockToCollect);
             blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
             resourcePos = vein.get(blockToCollect);
             alienBuilderBotEntity.setVein(vein);
         }
 
-        if (serverWorld.raycast(
-                new RaycastContext(
-                        alienBuilderBotEntity.getEyePos(),
-                        resourcePos.toCenterPos(),
-                        RaycastContext.ShapeType.OUTLINE,
-                        RaycastContext.FluidHandling.NONE,
-                        alienBuilderBotEntity
-                )
-        ).getBlockPos().equals(resourcePos)) {
+        alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
+
+        if (alienBuilderBotEntity.raycast(
+                MAX_DISTANCE,
+                0,
+                false
+        ).getPos().squaredDistanceTo(resourcePos.toCenterPos()) < 1) {
             timeout = l + MAX_TICKS_TO_TIMEOUT;
 
-            alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
+
 
             breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
             mineBlocks(serverWorld, alienBuilderBotEntity, l);
@@ -137,7 +141,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (vein != null && vein.size() > 0) {
-            entity.getBase().addVein(vein);
+            entity.getBase().addVeinFirst(vein);
             //entity.setVein(null);
         }
         entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);

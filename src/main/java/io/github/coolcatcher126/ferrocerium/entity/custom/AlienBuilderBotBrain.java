@@ -6,10 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.CraftTask;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.GatherTask;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PillarTask;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PlaceBaseBlocksTask;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -73,12 +70,13 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.MINE,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToResourceTask()),
-                        Pair.of(1, new GatherTask())
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
-                )
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.MINING)
         );
     }
 
@@ -86,12 +84,15 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.CHOP_WOOD,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToResourceTask()),
-                        Pair.of(1, new GatherTask()),
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask()),
                         Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(
+                        ModMemoryModuleTypes.GATHERING
                 )
         );
     }
@@ -152,10 +153,10 @@ public class AlienBuilderBotBrain {
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {
-        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 4, 50);
+        return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 1, 50, 5);
     }
 
     private static Task<PathAwareEntity> makeGoToResourceTask() {
-        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 2, 50);
+        return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 1, 50, 5);
     }
 }

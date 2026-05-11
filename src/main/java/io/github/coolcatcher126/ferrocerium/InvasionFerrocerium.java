@@ -13,6 +13,7 @@ import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.item.ModItemGroups;
 import io.github.coolcatcher126.ferrocerium.item.ModItems;
 import io.github.coolcatcher126.ferrocerium.resources.BuilderBotConversions;
+import io.github.coolcatcher126.ferrocerium.resources.CollectibleResources;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import io.github.coolcatcher126.ferrocerium.world.gen.ModWorldGeneration;
 import net.fabricmc.api.ModInitializer;
@@ -24,8 +25,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.command.argument.DimensionArgumentType;
-import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -33,8 +32,6 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class InvasionFerrocerium implements ModInitializer {
@@ -42,6 +39,7 @@ public class InvasionFerrocerium implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
     public static final BuilderBotConversions RECIPES = new BuilderBotConversions();
+    public static final CollectibleResources COLLECTIBLE_RESOURCES = new CollectibleResources();
 
 	@Override
 	public void onInitialize() {

@@ -10,6 +10,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 public class AlienBuilderBotModel<T extends AlienBuilderBotEntity> extends BipedEntityModel<T> {
     public static final EntityModelLayer ALIEN_BUILDER_BOT = new EntityModelLayer(Identifier.of(InvasionFerrocerium.MOD_ID, "alien_builder_bot"), "main");
@@ -21,5 +22,10 @@ public class AlienBuilderBotModel<T extends AlienBuilderBotEntity> extends Biped
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = getModelData(Dilation.NONE, 0);
         return TexturedModelData.of(modelData, 64, 64);
+    }
+
+    @Override
+    public void setAngles(T livingEntity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        super.setAngles(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
     }
 }
