@@ -438,4 +438,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     protected EntityNavigation createNavigation(World world) {
         return new MinerNavigation(this, world);
     }
+
+    @Override
+    public int getMaxLookPitchChange() {
+        return 170;
+    }
 }
