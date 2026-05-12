@@ -16,6 +16,7 @@ public class ModMemoryModuleTypes {
     public static final MemoryModuleType<Boolean> BUILDING = register("building");
     public static final MemoryModuleType<Boolean> GATHERING = register("gathering");
     public static final MemoryModuleType<Boolean> MINING = register("mining");
+    public static final MemoryModuleType<Boolean> CRAFTING = register("crafting");
 
     private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
         return Registry.register(Registries.MEMORY_MODULE_TYPE, Identifier.ofVanilla(id), new MemoryModuleType<>(Optional.of(codec)));

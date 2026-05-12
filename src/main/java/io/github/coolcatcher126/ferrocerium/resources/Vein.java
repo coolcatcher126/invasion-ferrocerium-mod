@@ -82,6 +82,19 @@ public class Vein {
     public BlockPos getTop(){
         return this.getLast();
     }
+    public BlockPos getClosest(BlockPos pos) {
+        int y = pos.getY();
+        BlockPos top = this.getTop();
+        BlockPos bottom = this.getBottom();
+        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? bottom : top;
+    }
+
+    public int getClosestIndex(BlockPos pos) {
+        int y = pos.getY();
+        BlockPos top = this.getTop();
+        BlockPos bottom = this.getBottom();
+        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? 0 : this.size()-1;
+    }
 
     public void append(Vein other){
         this.points.addAll(other.points);
@@ -107,22 +120,26 @@ public class Vein {
     public static NbtCompound writeToNbt(Vein vein){
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.putBoolean("should_always_mine", vein.isShouldMineAnyways());
-        NbtCompound nbtCompound1 = new NbtCompound();
+        NbtCompound nbtCompound1;
         NbtList nbtList = new NbtList();
         for (ResourceCategory category : vein.getCategories()) {
+            nbtCompound1 = new NbtCompound();
             nbtCompound1.putString("resource", category.name());
             nbtList.add(nbtCompound1);
         }
-        nbtCompound1 = new NbtCompound();
         nbtCompound.put("resource_category", nbtList);
-        BlockPos blockPos;
+
         nbtList = new NbtList();
-        while (vein.size() > 0){
-            blockPos = vein.remove(0);
+        BlockPos blockPos;
+        int i = 0;
+        while (vein.size() > i){
+            blockPos = vein.get(i);
+            nbtCompound1 = new NbtCompound();
             nbtCompound1.putInt("vein_block_z", blockPos.getZ());
             nbtCompound1.putInt("vein_block_y", blockPos.getY());
             nbtCompound1.putInt("vein_block_x", blockPos.getX());
             nbtList.add(nbtCompound1);
+            i++;
         }
         nbtCompound.put("vein", nbtList);
         return nbtCompound;

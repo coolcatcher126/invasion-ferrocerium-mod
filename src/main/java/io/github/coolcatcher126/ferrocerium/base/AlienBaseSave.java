@@ -17,16 +17,12 @@ public class AlienBaseSave {
     public ArrayList<BaseBlock> baseBlocks;
     public ArrayList<Vein> resources;
     public UUID uuid;
-    public int baseGrowTime;
-    public int search_time_count;
 
-    public AlienBaseSave(BlockPos origin, ArrayList<BaseSectionSave> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, UUID uuid, int baseGrowTime, int search_time_count){
+    public AlienBaseSave(BlockPos origin, ArrayList<BaseSectionSave> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, UUID uuid){
         this.origin = origin;
         this.sections = sections;
         this.baseBlocks = baseBlocks;
         this.resources = resources;
         this.uuid = uuid;
-        this.baseGrowTime = baseGrowTime;
-        this.search_time_count = search_time_count;
     }
 }

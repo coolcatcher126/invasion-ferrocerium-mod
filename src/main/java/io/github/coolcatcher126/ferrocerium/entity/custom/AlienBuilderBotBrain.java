@@ -6,9 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.GatherTask;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PillarTask;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.PlaceBaseBlocksTask;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.task.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.*;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -23,11 +21,11 @@ public class AlienBuilderBotBrain {
         addCoreActivities(brain);
         addIdleActivities(brain);
         addBuildActivities(brain);
-//        addMineActivities(brain);
-//        addChopWoodActivities(brain);
-//        addCraftActivities(brain);
+        addMineActivities(brain);
+        addChopWoodActivities(brain);
+        addCraftActivities(brain);
         addFightActivities(bot, brain);
-        brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
+        brain.setCoreActivities(ImmutableSet.of(ModActivities.CRAFT, Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.resetPossibleActivities();
         return brain;
@@ -63,46 +61,54 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, new PlaceBaseBlocksTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.REGISTERED), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
                 )
         );
     }
 
-//    private static void addMineActivities(Brain<AlienBuilderBotEntity> brain) {
-//        brain.setTaskList(
-//                ModActivities.MINE,
-//                ImmutableList.of(
-//                        Pair.of(0, makeGoToResourceTask()),
-//                        Pair.of(1, new GatherTask())
-//                ),
-//                ImmutableSet.of(
-//                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
-//                )
-//        );
-//    }
-//
-//    private static void addChopWoodActivities(Brain<AlienBuilderBotEntity> brain) {
-//        brain.setTaskList(
-//                ModActivities.CHOP_WOOD,
-//                ImmutableList.of(
-//                        Pair.of(0, makeGoToResourceTask()),
-//                        Pair.of(1, new GatherTask()),
-//                        Pair.of(2, new PillarTask())
-//                ),
-//                ImmutableSet.of(
-//                        Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
-//                )
-//        );
-//    }
-//
-//    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
-//        brain.setTaskList(
-//                ModActivities.CRAFT,
-//                ImmutableList.of(
-//
-//                )
-//        );
-//    }
+    private static void addMineActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.MINE,
+                ImmutableList.of(
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask())
+                ),
+                ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.MINING)
+        );
+    }
+
+    private static void addChopWoodActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.CHOP_WOOD,
+                ImmutableList.of(
+                        Pair.of(0, new GatherTask()),
+                        Pair.of(1, makeGoToResourceTask()),
+                        Pair.of(2, new PillarTask())
+                ),
+                ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(
+                        ModMemoryModuleTypes.GATHERING
+                )
+        );
+    }
+
+    private static void addCraftActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.CRAFT,
+                ImmutableList.of(
+                    Pair.of(10, new CraftTask())
+
+                ),
+                ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)
+                )
+        );
+    }
 
     private static void addFightActivities(AlienBuilderBotEntity bot, Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
@@ -119,7 +125,7 @@ public class AlienBuilderBotBrain {
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, /*ModActivities.CRAFT, ModActivities.MINE, ModActivities.CHOP_WOOD,*/ Activity.FIGHT, Activity.IDLE));
+        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
     }
 
     private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
@@ -147,10 +153,10 @@ public class AlienBuilderBotBrain {
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {
-        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 5, 10);
+        return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.BASE_SECTION_LOCATION, 1.0F, 1, 50, 5);
     }
 
     private static Task<PathAwareEntity> makeGoToResourceTask() {
-        return GoToNearbyPositionTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 5, 10);
+        return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 1, 50, 5);
     }
 }

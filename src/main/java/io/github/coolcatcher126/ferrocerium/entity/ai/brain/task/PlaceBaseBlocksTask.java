@@ -17,14 +17,18 @@ import net.minecraft.world.event.GameEvent;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
+    int blockIndex;
+    final int MAX_TICKS_TO_TIMEOUT = 600;
+    long timeout = MAX_TICKS_TO_TIMEOUT;
 
     public PlaceBaseBlocksTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT));
+        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -38,22 +42,34 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
+        if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+                block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            return false;
+        }
+
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
         return withinDistance;
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        //Check to see if the building is built
-        if (alienBuilderBotEntity.getSection().isBuilt()){
+        //Check to see if the building is built or if the task has timed out
+        if (timeout <= l || alienBuilderBotEntity.getSection().isBuilt()){
+            return false;
+        }
+
+        if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+            block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
             return false;
         }
 
         boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        return  withinDistance;
+        return withinDistance;
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
+        blockIndex = 0;
+        timeout = l + MAX_TICKS_TO_TIMEOUT;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -63,33 +79,47 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return;
         }
 
-        BaseBlock block = blocks.peekFirst();
+        if (blocks.size() < blockIndex){
+            blockIndex = 0;
+        }
+
+        BaseBlock block = blocks.get(blockIndex);
         if (block == null) {
+            blockIndex++;
             return;
         }
 
         BlockPos blockPos = block.getBlockPos();
 
         if (block.isWantedBlock(serverWorld)) {
+            blockIndex++;
             return;
         }
 
         BlockState blockState = block.getBlockState();
         Item blockItem = blockState.getBlock().asItem();
-//            if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
-//                return;
-//            }
+        if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
+            blockIndex++;
+            return;
+        }
+
+        timeout = l + MAX_TICKS_TO_TIMEOUT;
 
         alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
 
         serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
         serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
-        blocks.remove(block);
-//            alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
+        alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
+        blockIndex++;
     }
 
+//    @Override
+//    protected boolean isTimeLimitExceeded(long time) {
+//        return false;
+//    }
+
     @Override
-    protected boolean isTimeLimitExceeded(long time) {
-        return false;
+    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
+        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING);
     }
 }
