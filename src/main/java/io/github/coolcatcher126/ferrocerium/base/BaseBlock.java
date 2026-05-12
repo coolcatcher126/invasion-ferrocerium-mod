@@ -9,7 +9,7 @@ public class BaseBlock {
     private BlockPos blockPos;
     private BlockState blockState;
 
-    BaseBlock(BlockPos blockPos, BlockState blockState){
+    public BaseBlock(BlockPos blockPos, BlockState blockState){
         this.blockPos = blockPos;
         this.blockState = blockState;
     }

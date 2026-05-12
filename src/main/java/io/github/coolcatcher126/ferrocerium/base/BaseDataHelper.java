@@ -1,10 +1,10 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
-import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.item.Item;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.BuiltinRegistries;
 import net.minecraft.registry.RegistryKeys;
@@ -13,10 +13,11 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 
 //A class that holds static helper functions relating to robot base building
@@ -30,13 +31,28 @@ public class BaseDataHelper {
             resourceManager = world.getServer().getResourceManager();
 
         NbtCompound nbt = getBuildingNbt(structureName, resourceManager);
-        InvasionFerrocerium.LOGGER.info(nbt.asString());
+        InvasionFerrocerium.LOGGER.debug(nbt.asString());
         ArrayList<BaseBlock> blocks = new ArrayList<>();
 
         // load in blocks (list of blockPos and their palette index)
         NbtList blocksNbt = nbt.getList("blocks", 10);
 
         return getBaseBlocksFromNbt(nbt);
+    }
+
+    public static Set<Item> getBaseBlockPalleteFromNbt(String structureName, World world){
+        ResourceManager resourceManager;
+        if (world.isClient())
+            resourceManager = MinecraftClient.getInstance().getResourceManager();
+        else
+            resourceManager = world.getServer().getResourceManager();
+
+        NbtCompound nbt = getBuildingNbt(structureName, resourceManager);
+        InvasionFerrocerium.LOGGER.debug(nbt.asString());
+
+        Set<Item> set = new HashSet<>();
+        getBuildingPalette(nbt).forEach(x -> set.add(x.getBlock().asItem()));
+        return set;
     }
 
     public static ArrayList<BaseBlock> getBaseBlocksFromNbt(NbtCompound nbt) {

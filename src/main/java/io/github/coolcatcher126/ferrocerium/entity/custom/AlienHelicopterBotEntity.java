@@ -1,7 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.custom;
 
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
-import io.github.coolcatcher126.ferrocerium.entity.goal.AlienBotTargetGoal;
+import io.github.coolcatcher126.ferrocerium.entity.ai.goal.AlienBotTargetGoal;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.EntityType;
@@ -13,7 +13,6 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.*;
-import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.*;

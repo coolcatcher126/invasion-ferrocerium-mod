@@ -1,8 +1,12 @@
 package io.github.coolcatcher126.ferrocerium.components;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.registries.InvasionFerroceriumRegistries;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
+import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import net.minecraft.block.Block;
 import net.minecraft.nbt.*;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.BlockRotation;
@@ -10,10 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.ladysnake.cca.api.v3.component.Component;
-import org.apache.commons.lang3.NotImplementedException;
 import org.ladysnake.cca.api.v3.component.tick.ServerTickingComponent;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -92,6 +96,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void writeToNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        this.world.getProfiler().push("invasion_level_component_write_to_nbt");
         if (this.invasionState > 0) {
             nbtCompound.putInt("invasion_state", this.invasionState);
         }
@@ -100,7 +105,8 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
             baseSaves.add(alienBaseSaveFromAlienBase(base));
         }
         saveBaseListData(nbtCompound, baseSaves);
-
+        InvasionFerrocerium.LOGGER.debug("Finished saving InvasionLevelComponent");
+        this.world.getProfiler().pop();
     }
 
     private static void saveBaseListData(NbtCompound nbtCompound, ArrayList<AlienBaseSave> basesToSave){
@@ -122,7 +128,32 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
             nbtList.add(saveBaseSectionSave(section));
         }
         nbtCompound.put("alien_base_sections", nbtList);
+
+        nbtList = new NbtList();
+        for (BaseBlock block : alienBase.baseBlocks) {
+            nbtList.add(writeToNbtBaseBlock(block));
+        }
+        nbtCompound.put("alien_base_base_blocks", nbtList);
+
+        nbtList = new NbtList();
+        for (Vein resource : alienBase.resources){
+            nbtList.add(Vein.writeToNbt(resource));
+        }
+        nbtCompound.put("resource_veins", nbtList);
+
         nbtCompound.putUuid("alien_base_uuid", alienBase.uuid);
+
+        nbtCompound.putInt("baseGrowTime", alienBase.baseGrowTime);
+        nbtCompound.putInt("search_time_count", alienBase.search_time_count);
+        return nbtCompound;
+    }
+
+    private static NbtCompound writeToNbtBaseBlock(BaseBlock block){
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putInt("block_state_id", Block.getRawIdFromState(block.getBlockState()));
+        nbtCompound.putInt("base_block_z",block.getBlockPos().getZ());
+        nbtCompound.putInt("base_block_y",block.getBlockPos().getY());
+        nbtCompound.putInt("base_block_x",block.getBlockPos().getX());
         return nbtCompound;
     }
 
@@ -142,6 +173,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void readFromNbt(NbtCompound nbtCompound, RegistryWrapper.WrapperLookup wrapperLookup) {
+        this.world.getProfiler().push("invasion_level_component_read_from_nbt");
         ArrayList<AlienBaseSave> baseSaves = loadBaseListData(nbtCompound);
         bases = new ArrayList<>();
         for (AlienBaseSave baseSave : baseSaves) {
@@ -151,6 +183,8 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         if (nbtCompound.contains("invasion_state", NbtElement.INT_TYPE)) {
             this.invasionState = nbtCompound.getInt("invasion_state");
         }
+        InvasionFerrocerium.LOGGER.debug("Finished loading InvasionLevelComponent");
+        this.world.getProfiler().pop();
     }
 
     private ArrayList<AlienBaseSave> loadBaseListData(NbtCompound nbtCompound){
@@ -169,8 +203,35 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     /// Loads data from NBT into the class AlienBaseSave.
     private AlienBaseSave loadAlienBaseSave(NbtCompound nbtCompound) {
+        //Get timers
+        int baseGrowTime = nbtCompound.getInt("baseGrowTime");
+        int search_time_count = nbtCompound.getInt("search_time_count");
+        //Get UUID
         UUID uuid = nbtCompound.getUuid("alien_base_uuid");
-        NbtList nbtList = nbtCompound.getList("alien_base_sections", NbtElement.COMPOUND_TYPE);
+        //Get veins to mine
+        NbtList nbtList = nbtCompound.getList("resource_veins", NbtElement.COMPOUND_TYPE);
+        ArrayList<Vein> veins = new ArrayList<>();
+        for (NbtElement nbtElement : nbtList) {
+            if (nbtElement instanceof NbtCompound){
+                veins.add(Vein.readfromNbt((NbtCompound) nbtElement));
+            }
+            else{
+                throw new InvalidNbtException("Vein data does not exist");
+            }
+        }
+        //Get base blocks
+        nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
+        ArrayList<BaseBlock> baseBlocks = new ArrayList<>();
+        for (NbtElement nbtElement : nbtList) {
+            if (nbtElement instanceof NbtCompound){
+                baseBlocks.add(readfromNbtBaseBlock((NbtCompound) nbtElement));
+            }
+            else{
+                throw new InvalidNbtException("Base block data does not exist");
+            }
+        }
+        //Get base sections
+        nbtList = nbtCompound.getList("alien_base_sections", NbtElement.COMPOUND_TYPE);
         ArrayList<BaseSectionSave> savedSections = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
             if (nbtElement instanceof NbtCompound){
@@ -180,11 +241,22 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
                 throw new InvalidNbtException("Base data does not exist");
             }
         }
+        //Get origin
         BlockPos origin = new BlockPos(
                 nbtCompound.getInt("alien_base_x"),
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
-        return new AlienBaseSave(origin, savedSections, uuid);
+        return new AlienBaseSave(origin, savedSections, baseBlocks, veins, uuid, baseGrowTime, search_time_count);
+    }
+
+    private BaseBlock readfromNbtBaseBlock(NbtCompound nbtCompound){
+        return new BaseBlock(
+                new BlockPos(
+                        nbtCompound.getInt("base_block_x"),
+                        nbtCompound.getInt("base_block_y"),
+                        nbtCompound.getInt("base_block_z")),
+                Block.getStateFromRawId(nbtCompound.getInt("block_state_id"))
+        );
     }
 
     /// Loads data from NBT into the class BaseSectionSave.
@@ -205,7 +277,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSection section : alienBase.getSections()) {
             sections.add(baseSectionSaveFromBaseSection(section));
         }
-        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getUuid());
+        return new AlienBaseSave(alienBase.getOrigin(), sections, alienBase.getBaseBlocks(), alienBase.getResources(), alienBase.getUuid(), alienBase.getBaseGrowTime(), alienBase.getSearch_time_count());
     }
 
     /// Gets the BaseSectionSave from the BaseSection data.
@@ -219,7 +291,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         for (BaseSectionSave section : alienBaseSave.sections) {
             sections.add(baseSectionFromBaseSectionSave(section));
         }
-        return  new AlienBase(world, alienBaseSave.origin, sections, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid);
+        return new AlienBase(world, alienBaseSave.origin, sections, alienBaseSave.baseBlocks, alienBaseSave.resources, new ArrayList<AlienBuilderBotEntity>(), alienBaseSave.uuid, alienBaseSave.baseGrowTime, alienBaseSave.search_time_count);
     }
 
     /// Gets the BaseSection from the BaseSectionSave
@@ -236,8 +308,11 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
     @Override
     public void serverTick() {
+        this.world.getProfiler().push("invasion_level_component_server_tick");
         for (AlienBase base : bases) {
             base.tick();
         }
+
+        this.world.getProfiler().pop();
     }
 }
