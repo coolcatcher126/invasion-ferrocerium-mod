@@ -58,7 +58,8 @@ public class AlienBuilderBotBrain {
                 ModActivities.BUILD,
                 ImmutableList.of(
                         Pair.of(0, makeGoToBaseSectionTask()),
-                        Pair.of(1, new PlaceBaseBlocksTask())
+                        Pair.of(1, new PlaceBaseBlocksTask()),
+                        Pair.of(2, FindUnwantedItemsTask.create())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)

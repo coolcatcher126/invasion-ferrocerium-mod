@@ -369,6 +369,12 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.itemsToCraft;
     }
 
+    public void giveAway(int slot){
+        if (!unwantedItems.contains(inventory.getStack(slot))) {
+            unwantedItems.add(inventory.getStack(slot));
+        }
+    }
+
     @Override
     protected void loot(ItemEntity item) {
         ItemStack itemStack = item.getStack();
