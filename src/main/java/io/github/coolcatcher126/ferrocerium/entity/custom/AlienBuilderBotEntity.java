@@ -78,7 +78,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
-    private List<Item> itemsToCraft;
+    private List<ItemStack> unwantedItems = new ArrayList<>();
+    private List<Item> itemsToCraft = new ArrayList<>();
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -90,7 +91,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.setCanPickUpLoot(true);
-        this.itemsToCraft = new ArrayList<>();
     }
 
     /// Base helper spawn.
@@ -99,7 +99,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         super(ModEntities.ALIEN_BUILDER_BOT, world);
         this.setCanPickUpLoot(true);
         this.alienBase = base;
-        this.itemsToCraft = new ArrayList<>();
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
