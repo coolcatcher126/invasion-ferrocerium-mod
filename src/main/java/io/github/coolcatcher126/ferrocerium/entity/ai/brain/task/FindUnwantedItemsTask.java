@@ -1,14 +1,18 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class FindUnwantedItemsTask {
     public static Task<AlienBuilderBotEntity> create(){
@@ -29,16 +33,24 @@ public class FindUnwantedItemsTask {
                           boolean foundUnwanted = false;
                           DefaultedList<ItemStack> held = entity.getInventory().getHeldStacks();
                           List<ItemStack> unwantedItems = entity.getUnwantedItems();
-                          for (int slot = 0; slot < held.size(); slot++) {
-                              if (!entity.getSection().getBaseBlockPallete().contains(held.get(slot).getItem())) {
-                                  if (!unwantedItems.contains(held.get(slot))) {
-                                      unwantedItems.add(held.get(slot));
+                          Set<Item> pallete = entity.getSection().getBaseBlockPallete();
+                          Set<Item> itemsToKeep = new java.util.HashSet<>(Set.copyOf(pallete));
+                          for (Item i : pallete) {
+                              Map<Item, Integer> map = InvasionFerrocerium.RECIPES.getReqItemsToCraftRec(i);
+                              if (map != null) {
+                                  itemsToKeep.addAll(map.keySet());
+                              }
+                          }
+                          for (ItemStack itemStack : held) {
+                              if (!(itemsToKeep.contains(itemStack.getItem()))) {
+                                  if (!unwantedItems.contains(itemStack)) {
+                                      unwantedItems.add(itemStack);
                                       foundUnwanted = true;
                                   }
                               }
                           }
 
-                          timer.setValue(time + 60L);
+                          timer.setValue(time + 180L);
                           return foundUnwanted;
                       }
                   }
