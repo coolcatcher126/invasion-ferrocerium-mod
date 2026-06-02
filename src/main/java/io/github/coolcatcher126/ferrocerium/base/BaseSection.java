@@ -1,12 +1,16 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class BaseSection {
@@ -17,6 +21,7 @@ public class BaseSection {
     private final BlockRotation rotation;
     private final boolean isCore;
     private ArrayList<BaseBlock> blocks;
+    private final ArrayList<BlockPos> chestLocations = new ArrayList<>();
 
     public BaseSection(
             BaseSectionTemplate sectionTemplate,
@@ -83,5 +88,21 @@ public class BaseSection {
 
     public boolean getIsCore(){
         return this.isCore;
+    }
+
+    /// Returns a list of all the chests held within the alien base.
+    /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
+    public ArrayList<BlockPos> getChestLocations(){
+        chestLocations.clear();
+        if (this.blocks == null) {
+            calculateBaseBlockData();
+        }
+        for (BaseBlock block : blocks) {
+            BlockState blockState = world.getBlockState(block.getBlockPos());
+            if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)){
+                chestLocations.add(block.getBlockPos());
+            }
+        }
+        return chestLocations;
     }
 }

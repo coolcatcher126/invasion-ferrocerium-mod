@@ -24,6 +24,7 @@ public class AlienBase {
     World world;
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
     ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
+    ArrayList<BlockPos> chestLocations = new ArrayList<>();
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
@@ -69,6 +70,7 @@ public class AlienBase {
         this.scheduler.add(new ExpandWorkforce(this));
         this.scheduler.add(new CreateMineshaft(this));
         this.scheduler.add(new ScanForResources(this));
+        this.scheduler.add(new UpdateChestLocations(this));
         this.scheduler.add(new BaseGrower(this));
         this.scheduler.add(new BuilderCommander(this));
     }
@@ -117,14 +119,6 @@ public class AlienBase {
         return this.uuid;
     }
 
-    /// Returns a list of all the chests held within the alien base.
-    /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
-    public ArrayList<BlockPos> getChestLocations(){
-        throw new NotImplementedException();
-    }
-
-
-
     public ArrayList<BaseBlock> getBaseBlocks(){
         return this.baseBlocks;
     }
@@ -165,6 +159,14 @@ public class AlienBase {
 
     public Random getRandom(){
         return random;
+    }
+
+    public void resetChestLocations(){
+        this.chestLocations.clear();
+    }
+
+    public void addChestLocation(BlockPos chestLocation){
+        this.chestLocations.add(chestLocation);
     }
 
 }
