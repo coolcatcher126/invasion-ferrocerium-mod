@@ -169,4 +169,8 @@ public class AlienBase {
         this.chestLocations.add(chestLocation);
     }
 
+    public ArrayList<BlockPos> getChestLocations(){
+        return new ArrayList<>(this.chestLocations);
+    }
+
 }
