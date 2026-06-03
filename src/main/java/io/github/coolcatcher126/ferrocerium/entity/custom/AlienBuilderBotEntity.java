@@ -8,6 +8,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModSensorType;
 import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
@@ -48,7 +49,7 @@ import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
-            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY
+            ModSensorType.NEAREST_CHEST, SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY
     );
 
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(

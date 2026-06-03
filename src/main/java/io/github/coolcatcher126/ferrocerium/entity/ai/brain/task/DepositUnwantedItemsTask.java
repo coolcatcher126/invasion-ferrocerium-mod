@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
@@ -17,45 +18,56 @@ import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DepositUnwantedItemsTask {
     private static final double MAX_DISTANCE = 5;
 
     public static Task<AlienBuilderBotEntity> create() {
+        MutableLong timer = new MutableLong(0L);
         return TaskTriggerer.task(
                 context -> context.group(
-                        context.queryMemoryValue(ModMemoryModuleTypes.BUILDING),
-                        context.queryMemoryValue(MemoryModuleType.LOOK_TARGET)
+                        context.queryMemoryValue(ModMemoryModuleTypes.CHEST_LOCATION)
                 ).apply(
                         context,
-                        (building, lookTarget) ->  (world, entity, time) -> {
-                            boolean isBuilding = context.getValue(building);
-                            if (!isBuilding || null == entity.getSection() || entity.getInventory().isEmpty()) {
+                        (chestLocation) ->  (world, entity, time) -> {
+                            if (null == entity.getSection() || entity.getUnwantedItems().isEmpty()) {
                                 return false;
-                            } else {
-                                BlockPos blockPos = context.getValue(lookTarget).getBlockPos();
+                            }
+                            else if (time < timer.getValue()) {
+                                return true;
+                            }
+                            else {
+                                BlockPos blockPos = context.getValue(chestLocation).pos();
+                                entity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(blockPos));
                                 if (entity.raycast(
                                         MAX_DISTANCE,
                                         0,
                                         false
                                 ).getPos().squaredDistanceTo(blockPos.toCenterPos()) > 1) {
-                                    return false;
+                                    return true;
                                 } else {
                                     BlockState blockState = world.getBlockState(blockPos);
                                     Inventory blockInventory = getBlockInventoryAt(world, blockPos, blockState);
                                     InventoryStorage inventoryStorage = InventoryStorage.of(blockInventory, null);
                                     InventoryStorage entityInv = entity.inventoryWrapper;
 
-                                    for (ItemStack unwantedItem : entity.getUnwantedItems()) {
-                                        try (Transaction transaction = Transaction.openOuter()){
+                                    List<ItemStack> unwantedItems = entity.getUnwantedItems();
+                                    for (int i = unwantedItems.size() - 1; i >= 0; i--) {
+                                        ItemStack unwantedItem = unwantedItems.get(i);
+                                        try (Transaction transaction = Transaction.openOuter()) {
                                             ItemVariant itemVariant = ItemVariant.of(unwantedItem);
                                             long stackMoved = inventoryStorage.insert(itemVariant, unwantedItem.getCount(), transaction);
                                             entityInv.extract(itemVariant, stackMoved, transaction);
+                                            transaction.commit();
+                                            unwantedItems.remove(i);
                                         }
                                     }
+                                    timer.setValue(time + 60L);
                                     return true;
                                 }
 

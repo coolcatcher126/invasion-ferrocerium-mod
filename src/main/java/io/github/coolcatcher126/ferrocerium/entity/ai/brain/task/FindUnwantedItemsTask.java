@@ -18,43 +18,37 @@ public class FindUnwantedItemsTask {
     public static Task<AlienBuilderBotEntity> create(){
         MutableLong timer = new MutableLong(0L);
         return TaskTriggerer.task(
-                context -> context.group(
-                    context.queryMemoryValue(ModMemoryModuleTypes.BUILDING)
-          ).apply(
-                  context,
-                  (building) ->  (world, entity, time) -> {
-                      boolean isBuilding = context.getValue(building);
-                      if (!isBuilding || null == entity.getSection() || entity.getInventory().isEmpty()) {
-                          return false;
-                      } else if (time < timer.getValue()) {
-                          timer.setValue(time + 60L);
-                          return true;}
-                      else {
-                          boolean foundUnwanted = false;
-                          DefaultedList<ItemStack> held = entity.getInventory().getHeldStacks();
-                          List<ItemStack> unwantedItems = entity.getUnwantedItems();
-                          Set<Item> pallete = entity.getSection().getBaseBlockPallete();
-                          Set<Item> itemsToKeep = new java.util.HashSet<>(Set.copyOf(pallete));
-                          for (Item i : pallete) {
-                              Map<Item, Integer> map = InvasionFerrocerium.RECIPES.getReqItemsToCraftRec(i);
-                              if (map != null) {
-                                  itemsToKeep.addAll(map.keySet());
-                              }
-                          }
-                          for (ItemStack itemStack : held) {
-                              if (!(itemsToKeep.contains(itemStack.getItem()))) {
-                                  if (!unwantedItems.contains(itemStack)) {
-                                      unwantedItems.add(itemStack);
-                                      foundUnwanted = true;
-                                  }
-                              }
-                          }
+            context -> context.point((world, entity, time) -> {
+                if (null == entity.getSection() || entity.getInventory().isEmpty()) {
+                    return false;
+                } else if (time < timer.getValue()) {
+                    return true;
+                }
+                else {
+                    boolean foundUnwanted = false;
+                    DefaultedList<ItemStack> held = entity.getInventory().getHeldStacks();
+                    List<ItemStack> unwantedItems = entity.getUnwantedItems();
+                    Set<Item> pallete = entity.getSection().getBaseBlockPallete();
+                    Set<Item> itemsToKeep = new java.util.HashSet<>(Set.copyOf(pallete));
+                    for (Item i : pallete) {
+                        Map<Item, Integer> map = InvasionFerrocerium.RECIPES.getReqItemsToCraftRec(i);
+                        if (map != null) {
+                            itemsToKeep.addAll(map.keySet());
+                        }
+                    }
+                    for (ItemStack itemStack : held) {
+                        if (!(itemsToKeep.contains(itemStack.getItem()))) {
+                            if (!unwantedItems.contains(itemStack)) {
+                                unwantedItems.add(itemStack);
+                                foundUnwanted = true;
+                            }
+                        }
+                    }
 
-                          timer.setValue(time + 180L);
-                          return foundUnwanted;
-                      }
-                  }
-          )
-        );
+                    timer.setValue(time + 180L);
+                    return foundUnwanted;
+                }
+            }
+        ));
     }
 }
