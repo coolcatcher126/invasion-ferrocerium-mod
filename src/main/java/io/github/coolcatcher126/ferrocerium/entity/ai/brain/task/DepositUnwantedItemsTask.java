@@ -3,6 +3,8 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -33,42 +35,32 @@ public class DepositUnwantedItemsTask {
                             boolean isBuilding = context.getValue(building);
                             if (!isBuilding || null == entity.getSection() || entity.getInventory().isEmpty()) {
                                 return false;
-                            } else{
+                            } else {
                                 BlockPos blockPos = context.getValue(lookTarget).getBlockPos();
                                 if (entity.raycast(
                                         MAX_DISTANCE,
                                         0,
                                         false
-                                ).getPos().squaredDistanceTo(blockPos.toCenterPos()) > 1){
+                                ).getPos().squaredDistanceTo(blockPos.toCenterPos()) > 1) {
                                     return false;
-                                }
-                                else{
+                                } else {
                                     BlockState blockState = world.getBlockState(blockPos);
                                     Inventory blockInventory = getBlockInventoryAt(world, blockPos, blockState);
                                     InventoryStorage inventoryStorage = InventoryStorage.of(blockInventory, null);
+                                    InventoryStorage entityInv = entity.inventoryWrapper;
 
-                                    int chestInventorySlot;
-
-                                    List<ItemStack> unwantedItems = entity.getUnwantedItems();
-                                    for (ItemStack unwantedItem : unwantedItems) {
-                                        chestInventorySlot = 0;
-                                        while (!blockInventory.isValid(chestInventorySlot, unwantedItem)){
-                                            chestInventorySlot++;
-                                        }
-                                        if (unwantedItem.isEmpty()) {
-                                            blockInventory.setStack(chestInventorySlot, unwantedItem);
-                                            unwantedItem = ItemStack.EMPTY;
-                                        } else if (canMergeItems(blockInventory.getStack(chestInventorySlot), unwantedItem)) {
-                                            int i = unwantedItem.getMaxCount() - blockInventory.getStack(chestInventorySlot).getCount();
-                                            int j = Math.min(unwantedItem.getCount(), i);
-                                            unwantedItem.decrement(j);
-                                            blockInventory.getStack(chestInventorySlot).increment(j);
+                                    for (ItemStack unwantedItem : entity.getUnwantedItems()) {
+                                        try (Transaction transaction = Transaction.openOuter()){
+                                            ItemVariant itemVariant = ItemVariant.of(unwantedItem);
+                                            long stackMoved = inventoryStorage.insert(itemVariant, unwantedItem.getCount(), transaction);
+                                            entityInv.extract(itemVariant, stackMoved, transaction);
                                         }
                                     }
-
                                     return true;
                                 }
+
                             }
+
                         }
                 )
         );

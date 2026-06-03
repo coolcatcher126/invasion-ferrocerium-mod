@@ -11,6 +11,7 @@ import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes
 import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Brain;
@@ -79,6 +80,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
     private List<ItemStack> unwantedItems = new ArrayList<>();
+    public final InventoryStorage inventoryWrapper = InventoryStorage.of(inventory, null);
     private List<Item> itemsToCraft = new ArrayList<>();
 
     public final AnimationState idleAnimationState = new AnimationState();
