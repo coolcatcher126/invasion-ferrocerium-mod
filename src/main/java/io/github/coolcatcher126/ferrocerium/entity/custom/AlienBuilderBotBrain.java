@@ -116,8 +116,9 @@ public class AlienBuilderBotBrain {
                 ModActivities.EXCHANGE,
                 ImmutableList.of(
                         Pair.of(1, makeGoToChestTask()),
-                        Pair.of(2, FindUnwantedItemsTask.create()),
-                        Pair.of(3, DepositUnwantedItemsTask.create())
+                        Pair.of(2, FindWantedItemsTask.create()),
+                        Pair.of(3, FindUnwantedItemsTask.create()),
+                        Pair.of(4, DepositUnwantedItemsTask.create())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)

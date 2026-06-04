@@ -13,6 +13,7 @@ import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.brain.Brain;
@@ -80,7 +81,8 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
-    private List<ItemStack> unwantedItems = new ArrayList<>();
+    private final List<ItemStack> unwantedItems = new ArrayList<>();
+    private final List<ItemVariant> wantedItems = new ArrayList<>();
     public final InventoryStorage inventoryWrapper = InventoryStorage.of(inventory, null);
     private List<Item> itemsToCraft = new ArrayList<>();
 
@@ -374,6 +376,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public List<ItemStack> getUnwantedItems(){
         return unwantedItems;
+    }
+
+    public List<ItemVariant> getWantedItems(){
+        return wantedItems;
     }
 
     @Override
