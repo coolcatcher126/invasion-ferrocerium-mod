@@ -4,13 +4,13 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class BaseSection {
@@ -22,6 +22,9 @@ public class BaseSection {
     private final boolean isCore;
     private ArrayList<BaseBlock> blocks;
     private final ArrayList<BlockPos> chestLocations = new ArrayList<>();
+
+    private final Pair<Integer, Integer> VERTICAL_BOUNDS = new Pair<>(0, 8);
+    private final Pair<Integer, Integer> HORIZONTAL_BOUNDS = new Pair<>(-5,5);
 
     public BaseSection(
             BaseSectionTemplate sectionTemplate,
@@ -94,13 +97,18 @@ public class BaseSection {
     /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
     public ArrayList<BlockPos> getChestLocations(){
         chestLocations.clear();
-        if (this.blocks == null) {
-            calculateBaseBlockData();
-        }
-        for (BaseBlock block : blocks) {
-            BlockState blockState = world.getBlockState(block.getBlockPos());
-            if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)){
-                chestLocations.add(block.getBlockPos());
+        BlockPos sectionOrigin = origin.toBlockPos().add(alienBase.getOrigin());
+        BlockPos blockPos;
+
+        for (int x = HORIZONTAL_BOUNDS.getLeft(); x <= HORIZONTAL_BOUNDS.getRight(); x++){
+            for (int y = VERTICAL_BOUNDS.getLeft(); y <= VERTICAL_BOUNDS.getRight(); y++){
+                for (int z = HORIZONTAL_BOUNDS.getLeft(); z <= HORIZONTAL_BOUNDS.getRight(); z++){
+                    blockPos = sectionOrigin.add(x, y, z);
+                    BlockState blockState = world.getBlockState(blockPos);
+                    if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)) {
+                        chestLocations.add(blockPos);
+                    }
+                }
             }
         }
         return chestLocations;
