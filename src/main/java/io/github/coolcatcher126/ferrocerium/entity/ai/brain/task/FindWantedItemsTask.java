@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.collection.DefaultedList;
 import org.apache.commons.lang3.mutable.MutableLong;
 
@@ -27,18 +28,11 @@ public class FindWantedItemsTask {
                 }
                 else {
                     boolean foundWanted = false;
-                    List<ItemVariant> wantedItems = entity.getWantedItems();
-                    Set<ItemVariant> pallete = entity.getSection().getBaseBlockPallete().stream().map(ItemVariant::of).collect(Collectors.toSet());
-                    Set<ItemVariant> itemsToKeep = new java.util.HashSet<>(Set.copyOf(pallete));
-                    for (ItemVariant i : pallete) {
-                        Map<Item, Integer> map = InvasionFerrocerium.RECIPES.getReqItemsToCraftRec(i.getItem());
-                        if (map != null) {
-                            Set<ItemVariant> itemSet = map.keySet().stream().map(ItemVariant::of).collect(Collectors.toSet());
 
-                            itemsToKeep.addAll(itemSet);
-                        }
-                    }
-                    wantedItems.addAll(itemsToKeep);
+                    Set<ItemVariant> pallete = entity.getSection().getBaseBlockPallete().stream().map(ItemVariant::of).collect(Collectors.toSet());
+                    List<ItemVariant> wantedItems = entity.getWantedItems();
+                    wantedItems.clear();
+                    wantedItems.addAll(pallete.stream().filter(i -> !i.isBlank()).toList());
 
                     timer.setValue(time + 180L);
                     return foundWanted;

@@ -33,7 +33,7 @@ public class FindUnwantedItemsTask {
                     Set<Item> itemsToKeep = entity.getWantedItems().stream().map(ItemVariant::getItem).collect(Collectors.toSet());
                     for (ItemStack itemStack : held) {
                         if (!(itemsToKeep.contains(itemStack.getItem()))) {
-                            if (!unwantedItems.contains(itemStack)) {
+                            if (!(unwantedItems.contains(itemStack) || itemStack.isEmpty())) {
                                 unwantedItems.add(itemStack);
                                 foundUnwanted = true;
                             }

@@ -118,7 +118,7 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, makeGoToChestTask()),
                         Pair.of(2, FindWantedItemsTask.create()),
                         Pair.of(3, FindUnwantedItemsTask.create()),
-                        Pair.of(4, DepositUnwantedItemsTask.create())
+                        Pair.of(4, ExchangeChestItemsTask.create())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)

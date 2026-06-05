@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.base.ai;
 
 
+import com.google.common.base.Stopwatch;
 import io.github.coolcatcher126.ferrocerium.base.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.util.BlockRotation;
@@ -19,7 +20,7 @@ import java.util.Optional;
 public class UpdateChestLocations implements AlienBaseTask {
     private final AlienBase alienBase;
     private final int SEARCH_TIME = 1200;
-    private int search_time_count = SEARCH_TIME;
+    private int search_time_count = 60;
 
     public UpdateChestLocations(AlienBase alienBase){
         this.alienBase = alienBase;

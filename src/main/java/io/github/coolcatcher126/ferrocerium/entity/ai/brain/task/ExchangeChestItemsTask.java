@@ -13,18 +13,14 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.entry.RegistryEntryList;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class DepositUnwantedItemsTask {
+public class ExchangeChestItemsTask {
     private static final double MAX_DISTANCE = 5;
 
     public static Task<AlienBuilderBotEntity> create() {
@@ -56,13 +52,22 @@ public class DepositUnwantedItemsTask {
                                     InventoryStorage inventoryStorage = InventoryStorage.of(blockInventory, null);
                                     InventoryStorage entityInv = entity.inventoryWrapper;
 
+                                    List<ItemVariant> wantedItems = entity.getWantedItems();
+                                    for (ItemVariant wantedItem : wantedItems) {
+                                        try (Transaction transaction = Transaction.openOuter()){
+                                            long stackMoved = inventoryStorage.extract(wantedItem, (64*9), transaction);
+                                            entityInv.insert(wantedItem, stackMoved, transaction);
+                                            transaction.commit();
+                                        }
+                                    }
+
                                     List<ItemStack> unwantedItems = entity.getUnwantedItems();
                                     for (int i = unwantedItems.size() - 1; i >= 0; i--) {
                                         ItemStack unwantedItem = unwantedItems.get(i);
                                         try (Transaction transaction = Transaction.openOuter()) {
                                             ItemVariant itemVariant = ItemVariant.of(unwantedItem);
-                                            long stackMoved = inventoryStorage.insert(itemVariant, unwantedItem.getCount(), transaction);
-                                            entityInv.extract(itemVariant, stackMoved, transaction);
+                                            long stackMoved = entityInv.extract(itemVariant, unwantedItem.getCount(), transaction);
+                                            inventoryStorage.insert(itemVariant, stackMoved, transaction);
                                             transaction.commit();
                                             unwantedItems.remove(i);
                                         }
