@@ -9,6 +9,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -24,7 +25,6 @@ public class AlienBase {
     World world;
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
     ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
-    ArrayList<BlockPos> chestLocations = new ArrayList<>();
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
@@ -161,16 +161,14 @@ public class AlienBase {
         return random;
     }
 
-    public void resetChestLocations(){
-        this.chestLocations.clear();
-    }
-
-    public void addChestLocation(BlockPos chestLocation){
-        this.chestLocations.add(chestLocation);
-    }
-
-    public ArrayList<BlockPos> getChestLocations(){
-        return new ArrayList<>(this.chestLocations);
+    @Nullable
+    public BaseSection getClosestSectionTo(BlockPos pos){
+        BlockPos posRelativeToBase = pos.subtract(getOrigin());
+        return getSections().stream()
+                .min((section1, section2) ->
+                        (int)(posRelativeToBase.getSquaredDistance(section1.getOrigin().toBlockPos()) -
+                            posRelativeToBase.getSquaredDistance(section2.getOrigin().toBlockPos()))
+                ).orElse(null);
     }
 
 }

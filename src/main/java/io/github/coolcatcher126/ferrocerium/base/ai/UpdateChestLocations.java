@@ -8,6 +8,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -19,8 +20,10 @@ import java.util.Optional;
  */
 public class UpdateChestLocations implements AlienBaseTask {
     private final AlienBase alienBase;
-    private final int SEARCH_TIME = 1200;
-    private int search_time_count = 60;
+    private final int SEARCH_TIME = 60;
+    private int search_time_count = SEARCH_TIME;
+
+    private int sectionToSearch = 0;
 
     public UpdateChestLocations(AlienBase alienBase){
         this.alienBase = alienBase;
@@ -33,9 +36,14 @@ public class UpdateChestLocations implements AlienBaseTask {
             search_time_count--;
         }
         else {
-            alienBase.resetChestLocations();
-            for (BaseSection section : alienBase.getSections()) {
-                section.getChestLocations().forEach(alienBase::addChestLocation);
+            List<BaseSection> sections = alienBase.getSections();
+            if (sectionToSearch < sections.size()) {
+                BaseSection section = sections.get(sectionToSearch);
+                section.updateChestLocations();
+                sectionToSearch++;
+            }
+            else {
+                sectionToSearch = 0;
             }
             search_time_count = SEARCH_TIME;
         }

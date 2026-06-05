@@ -6,7 +6,6 @@ import net.minecraft.item.Item;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
@@ -23,8 +22,14 @@ public class BaseSection {
     private ArrayList<BaseBlock> blocks;
     private final ArrayList<BlockPos> chestLocations = new ArrayList<>();
 
+    //Chest search variables
     private final Pair<Integer, Integer> VERTICAL_BOUNDS = new Pair<>(0, 8);
     private final Pair<Integer, Integer> HORIZONTAL_BOUNDS = new Pair<>(-5,5);
+    private int BLOCKS_CHECKED_PER_TICK = 5;
+    private int blocksToCheckLeft = BLOCKS_CHECKED_PER_TICK;
+    private int x = HORIZONTAL_BOUNDS.getLeft();
+    private int y = VERTICAL_BOUNDS.getLeft();
+    private int z = HORIZONTAL_BOUNDS.getLeft();
 
     public BaseSection(
             BaseSectionTemplate sectionTemplate,
@@ -95,22 +100,55 @@ public class BaseSection {
 
     /// Returns a list of all the chests held within the alien base.
     /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
-    public ArrayList<BlockPos> getChestLocations(){
-        chestLocations.clear();
+    public ArrayList<BlockPos> getChestLocations() {
+        return chestLocations;
+    }
+
+    ///Look through all the blocks within the area of the base section for chests.
+    /// <p>probably not very efficient</p>
+    public void updateChestLocations(){
         BlockPos sectionOrigin = origin.toBlockPos().add(alienBase.getOrigin());
         BlockPos blockPos;
 
-        for (int x = HORIZONTAL_BOUNDS.getLeft(); x <= HORIZONTAL_BOUNDS.getRight(); x++){
-            for (int y = VERTICAL_BOUNDS.getLeft(); y <= VERTICAL_BOUNDS.getRight(); y++){
-                for (int z = HORIZONTAL_BOUNDS.getLeft(); z <= HORIZONTAL_BOUNDS.getRight(); z++){
-                    blockPos = sectionOrigin.add(x, y, z);
-                    BlockState blockState = world.getBlockState(blockPos);
-                    if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)) {
-                        chestLocations.add(blockPos);
-                    }
+        outer:
+        {
+            while (true) {
+                if (x > HORIZONTAL_BOUNDS.getRight()) {
+                    x = HORIZONTAL_BOUNDS.getLeft();
+                    continue;
                 }
+                while (true) {
+                    if (y > VERTICAL_BOUNDS.getRight()) {
+                        y = VERTICAL_BOUNDS.getLeft();
+                        break;
+                    }
+                    while (true) {
+                        if (blocksToCheckLeft == 0) {
+                            blocksToCheckLeft = BLOCKS_CHECKED_PER_TICK;
+                            break outer;
+                        }
+
+                        if (z > HORIZONTAL_BOUNDS.getRight()) {
+                            z = HORIZONTAL_BOUNDS.getLeft();
+                            break;
+                        }
+
+                        blockPos = sectionOrigin.add(x, y, z);
+                        BlockState blockState = world.getBlockState(blockPos);
+                        if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)) {
+                            chestLocations.add(blockPos);
+                        }
+                        else {
+                            chestLocations.remove(blockPos);
+                        }
+                        blocksToCheckLeft--;
+                        z++;
+                    }
+                    y++;
+                }
+                x++;
             }
         }
-        return chestLocations;
+        int tmp = 0;
     }
 }
