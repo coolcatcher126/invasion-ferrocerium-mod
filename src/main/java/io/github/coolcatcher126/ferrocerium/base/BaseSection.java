@@ -25,7 +25,7 @@ public class BaseSection {
     //Chest search variables
     private final Pair<Integer, Integer> VERTICAL_BOUNDS = new Pair<>(0, 8);
     private final Pair<Integer, Integer> HORIZONTAL_BOUNDS = new Pair<>(-5,5);
-    private int BLOCKS_CHECKED_PER_TICK = 5;
+    private final int BLOCKS_CHECKED_PER_TICK = 5;
     private int blocksToCheckLeft = BLOCKS_CHECKED_PER_TICK;
     private int x = HORIZONTAL_BOUNDS.getLeft();
     private int y = VERTICAL_BOUNDS.getLeft();
@@ -106,49 +106,37 @@ public class BaseSection {
 
     ///Look through all the blocks within the area of the base section for chests.
     /// <p>probably not very efficient</p>
-    public void updateChestLocations(){
+    public void updateChestLocations() {
         BlockPos sectionOrigin = origin.toBlockPos().add(alienBase.getOrigin());
         BlockPos blockPos;
 
-        outer:
-        {
-            while (true) {
-                if (x > HORIZONTAL_BOUNDS.getRight()) {
-                    x = HORIZONTAL_BOUNDS.getLeft();
-                    continue;
-                }
-                while (true) {
-                    if (y > VERTICAL_BOUNDS.getRight()) {
-                        y = VERTICAL_BOUNDS.getLeft();
-                        break;
-                    }
-                    while (true) {
-                        if (blocksToCheckLeft == 0) {
-                            blocksToCheckLeft = BLOCKS_CHECKED_PER_TICK;
-                            break outer;
-                        }
 
-                        if (z > HORIZONTAL_BOUNDS.getRight()) {
-                            z = HORIZONTAL_BOUNDS.getLeft();
-                            break;
-                        }
-
-                        blockPos = sectionOrigin.add(x, y, z);
-                        BlockState blockState = world.getBlockState(blockPos);
-                        if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)) {
-                            chestLocations.add(blockPos);
-                        }
-                        else {
-                            chestLocations.remove(blockPos);
-                        }
-                        blocksToCheckLeft--;
-                        z++;
-                    }
-                    y++;
-                }
-                x++;
+        while (blocksToCheckLeft > 0) {
+            if (x > HORIZONTAL_BOUNDS.getRight()) {
+                x = HORIZONTAL_BOUNDS.getLeft();
+                y++;
+                //continue;
             }
+            if (y > VERTICAL_BOUNDS.getRight()) {
+                y = VERTICAL_BOUNDS.getLeft();
+                z++;
+                //continue;
+            }
+            if (z > HORIZONTAL_BOUNDS.getRight()) {
+                z = HORIZONTAL_BOUNDS.getLeft();
+                continue;
+            }
+
+            blockPos = sectionOrigin.add(x, y, z);
+            BlockState blockState = world.getBlockState(blockPos);
+            if (!blockState.isAir() && blockState.getBlock().equals(Blocks.CHEST)) {
+                chestLocations.add(blockPos);
+            } else {
+                chestLocations.remove(blockPos);
+            }
+            x++;
+            blocksToCheckLeft--;
         }
-        int tmp = 0;
+        blocksToCheckLeft = BLOCKS_CHECKED_PER_TICK;
     }
 }
