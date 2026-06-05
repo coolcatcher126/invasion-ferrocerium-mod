@@ -37,13 +37,15 @@ public class UpdateChestLocations implements AlienBaseTask {
         }
         else {
             List<BaseSection> sections = alienBase.getSections();
-            if (sectionToSearch < sections.size()) {
-                BaseSection section = sections.get(sectionToSearch);
-                section.updateChestLocations();
-                sectionToSearch++;
-            }
-            else {
-                sectionToSearch = 0;
+            for (int i = 0; i < 5; i++)
+            {
+                if (sectionToSearch < sections.size()) {
+                    BaseSection section = sections.get(sectionToSearch);
+                    section.updateChestLocations();
+                    sectionToSearch++;
+                } else {
+                    sectionToSearch = 0;
+                }
             }
             search_time_count = SEARCH_TIME;
         }
