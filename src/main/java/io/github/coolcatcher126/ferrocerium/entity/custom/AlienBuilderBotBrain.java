@@ -63,7 +63,8 @@ public class AlienBuilderBotBrain {
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
-                )
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.BUILDING)
         );
     }
 
@@ -75,7 +76,7 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, makeGoToResourceTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
                 ),
                 ImmutableSet.of(ModMemoryModuleTypes.MINING)
         );
@@ -90,7 +91,7 @@ public class AlienBuilderBotBrain {
                         Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
                 ),
                 ImmutableSet.of(
                         ModMemoryModuleTypes.GATHERING
@@ -114,15 +115,14 @@ public class AlienBuilderBotBrain {
     private static void addExchangeActivities(Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
                 ModActivities.EXCHANGE,
+                0,
                 ImmutableList.of(
-                        Pair.of(1, makeGoToChestTask()),
-                        Pair.of(2, FindWantedItemsTask.create()),
-                        Pair.of(3, FindUnwantedItemsTask.create()),
-                        Pair.of(4, ExchangeChestItemsTask.create())
+                        FindWantedItemsTask.create(),
+                        FindUnwantedItemsTask.create(),
+                        makeGoToChestTask(),
+                        ExchangeChestItemsTask.create()
                 ),
-                ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)
-                )
+                ModMemoryModuleTypes.CHEST_LOCATION
         );
     }
 

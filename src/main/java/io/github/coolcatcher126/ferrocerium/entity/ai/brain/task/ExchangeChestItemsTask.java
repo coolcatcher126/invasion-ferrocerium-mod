@@ -31,7 +31,7 @@ public class ExchangeChestItemsTask {
                 ).apply(
                         context,
                         (chestLocation) ->  (world, entity, time) -> {
-                            if (null == entity.getSection() || entity.getUnwantedItems().isEmpty()) {
+                            if (null == entity.getSection() || (entity.getWantedItems().isEmpty() && entity.getUnwantedItems().isEmpty())) {
                                 return false;
                             }
                             else if (time < timer.getValue()) {
@@ -52,12 +52,23 @@ public class ExchangeChestItemsTask {
                                     InventoryStorage inventoryStorage = InventoryStorage.of(blockInventory, null);
                                     InventoryStorage entityInv = entity.inventoryWrapper;
 
+                                    int failedOrZeroTransactions = 0;
+                                    int totalTransactions = 0;
+
                                     List<ItemVariant> wantedItems = entity.getWantedItems();
                                     for (ItemVariant wantedItem : wantedItems) {
                                         try (Transaction transaction = Transaction.openOuter()){
                                             long stackMoved = inventoryStorage.extract(wantedItem, (64*9), transaction);
                                             entityInv.insert(wantedItem, stackMoved, transaction);
                                             transaction.commit();
+                                            if (stackMoved == 0){
+                                                failedOrZeroTransactions++;
+                                            }
+                                        } catch (Exception e) {
+                                            failedOrZeroTransactions++;
+                                        }
+                                        finally {
+                                            totalTransactions++;
                                         }
                                     }
 
@@ -70,10 +81,19 @@ public class ExchangeChestItemsTask {
                                             inventoryStorage.insert(itemVariant, stackMoved, transaction);
                                             transaction.commit();
                                             unwantedItems.remove(i);
+                                            if (stackMoved == 0){
+                                                failedOrZeroTransactions++;
+                                            }
+                                        }
+                                        catch (Exception e){
+                                            failedOrZeroTransactions++;
+                                        }
+                                        finally {
+                                            totalTransactions++;
                                         }
                                     }
                                     timer.setValue(time + 60L);
-                                    return true;
+                                    return totalTransactions > failedOrZeroTransactions;
                                 }
 
                             }

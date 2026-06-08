@@ -24,7 +24,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
     int blockIndex;
-    final int MAX_TICKS_TO_TIMEOUT = 600;
+    final int MAX_TICKS_TO_TIMEOUT = 60;
     long timeout = MAX_TICKS_TO_TIMEOUT;
 
     public PlaceBaseBlocksTask() {

@@ -114,16 +114,16 @@ public class BaseSection {
         while (blocksToCheckLeft > 0) {
             if (x > HORIZONTAL_BOUNDS.getRight()) {
                 x = HORIZONTAL_BOUNDS.getLeft();
-                y++;
-                //continue;
-            }
-            if (y > VERTICAL_BOUNDS.getRight()) {
-                y = VERTICAL_BOUNDS.getLeft();
                 z++;
                 //continue;
             }
             if (z > HORIZONTAL_BOUNDS.getRight()) {
                 z = HORIZONTAL_BOUNDS.getLeft();
+                y++;
+                //continue;
+            }
+            if (y > VERTICAL_BOUNDS.getRight()) {
+                y = VERTICAL_BOUNDS.getLeft();
                 continue;
             }
 

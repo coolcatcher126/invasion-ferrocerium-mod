@@ -33,9 +33,11 @@ public class BaseGrower implements AlienBaseTask {
         this.baseGrowTime = 10;
         InvasionFerroceriumRegistries.BASE_SECTION.iterator().forEachRemaining(sectionTemplateList::add);
 
-        //Create the core of the base
-        addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
-        baseSectGetAvailablePos();
+        if (alienBase.getSections().isEmpty()) {
+            //Create the core of the base
+            addBaseSection(BaseSectionTemplates.BASE_CORE, true, new BaseSectPos(0, 0, 0), BlockRotation.NONE);
+            baseSectGetAvailablePos();
+        }
     }
 
     @Override
@@ -45,16 +47,10 @@ public class BaseGrower implements AlienBaseTask {
             baseGrowTime--;
         }
         else {
-            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity();
-            if (bot.isPresent()) {
-                for (BaseSection section : alienBase.getSections()) {
-                    if (!section.isBuilt()) {
-                        growBase();
-                        break;
-                    }
-                }
-                baseGrowTime = alienBase.getRandom().nextBetween(3000, 12000);
+            if (alienBase.getSections().stream().allMatch(BaseSection::isBuilt)) {
+                growBase();
             }
+            baseGrowTime = alienBase.getRandom().nextBetween(3000, 12000);
         }
     }
 

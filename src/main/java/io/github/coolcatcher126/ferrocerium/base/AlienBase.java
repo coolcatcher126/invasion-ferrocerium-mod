@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
@@ -75,10 +76,15 @@ public class AlienBase {
         this.scheduler.add(new BuilderCommander(this));
     }
 
-    /// Returns the first alien builder bot to not be building.
+    /// Returns the first alien builder bot to not be doing anything.
     public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
+        return getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isBuilding() || builder.isGathering() || builder.isMining()));
+    }
+
+    /// Returns the first alien builder bot to match the filter.
+    public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(Predicate<AlienBuilderBotEntity> filter){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding() || builder.isGathering() || builder.isMining())) {
+            if (filter.test(builder)) {
                 return Optional.of(builder);
             }
         }
