@@ -68,10 +68,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             MemoryModuleType.NEAREST_ATTACKABLE,
             ModMemoryModuleTypes.BASE_SECTION_LOCATION,
             ModMemoryModuleTypes.RESOURCE_LOCATION,
-            ModMemoryModuleTypes.BUILDING,
-            ModMemoryModuleTypes.CRAFTING,
-            ModMemoryModuleTypes.GATHERING,
-            ModMemoryModuleTypes.MINING
+            ModMemoryModuleTypes.BUILDING_TICKS,
+            ModMemoryModuleTypes.EXCHANGING_TICKS,
+            ModMemoryModuleTypes.GATHERING_TICKS,
+            ModMemoryModuleTypes.MINING_TICKS
     );
 
     @Nullable
@@ -271,32 +271,32 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING_TICKS, building ? 200:null);
     }
 
     public boolean isBuilding()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING_TICKS).orElse(0) > 0;
     }
 
     public void setGathering(boolean gathering)
     {
-        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING_TICKS, gathering ? 200 : null);
     }
 
     public boolean isGathering()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING_TICKS).orElse(0) > 0;
     }
 
     public void setMining(boolean mining)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.MINING_TICKS, 200);
     }
 
     public boolean isMining()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING_TICKS).orElse(0) > 0;
     }
 
     public void setSection(BaseSection sectionToBuild){
@@ -352,22 +352,14 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         for (int i = 0; i < count; i++) {
             this.itemsToCraft.add(requestedItem);
         }
-        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
     }
 
     public void addCraftingRequest(Item requestedItem){
         this.itemsToCraft.add(requestedItem);
-        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
     }
 
     public void setItemsToCraft(List<Item> items){
         this.itemsToCraft = items;
-        if (items != null && !items.isEmpty()) {
-            brain.remember(ModMemoryModuleTypes.CRAFTING, true);
-        }
-        else{
-            brain.forget(ModMemoryModuleTypes.CRAFTING);
-        }
     }
 
     public List<Item> getItemsToCraft(){

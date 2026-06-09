@@ -17,10 +17,7 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     int craftItemIndex;
 
     public CraftTask() {
-        super(Map.of(
-                ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT
-                )
-        );
+        super(Map.of());
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -38,7 +35,6 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (itemsToCraft.isEmpty()) {
-            alienBuilderBotEntity.getBrain().forget(ModMemoryModuleTypes.CRAFTING);
             alienBuilderBotEntity.setItemsToCraft(null);
         }
         else {

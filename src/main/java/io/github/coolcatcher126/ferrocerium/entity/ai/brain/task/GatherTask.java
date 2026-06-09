@@ -15,7 +15,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.RaycastContext;
 
 import java.util.Map;
 import java.util.Optional;
@@ -144,7 +143,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
             entity.getBase().addVeinFirst(vein);
             //entity.setVein(null);
         }
-        entity.getBrain().forget(ModMemoryModuleTypes.GATHERING);
-        entity.getBrain().forget(ModMemoryModuleTypes.MINING);
+        entity.getBrain().forget(ModMemoryModuleTypes.GATHERING_TICKS);
+        entity.getBrain().forget(ModMemoryModuleTypes.MINING_TICKS);
     }
 }
