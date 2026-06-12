@@ -39,7 +39,11 @@ public class AlienBuilderBotBrain {
                 ImmutableList.of(
                         new StayAboveWaterTask(1.0F),
                         new LookAroundTask(45, 90),
-                        new MoveToTargetTask()
+                        new MoveToTargetTask(),
+                        WorkTimerTask.create(ModMemoryModuleTypes.BUILDING_TICKS),
+                        WorkTimerTask.create(ModMemoryModuleTypes.MINING_TICKS),
+                        WorkTimerTask.create(ModMemoryModuleTypes.GATHERING_TICKS),
+                        WorkTimerTask.create(ModMemoryModuleTypes.EXCHANGING_TICKS)
                 )
         );
     }
@@ -58,8 +62,8 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToBaseSectionTask()),
-                        Pair.of(1, new PlaceBaseBlocksTask())
+                        Pair.of(0, new PlaceBaseBlocksTask()),
+                        Pair.of(1, makeGoToBaseSectionTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING_TICKS, MemoryModuleState.VALUE_PRESENT)
@@ -114,8 +118,8 @@ public class AlienBuilderBotBrain {
                 ImmutableList.of(
                     Pair.of(0, FindWantedItemsTask.create()),
                     Pair.of(1, FindUnwantedItemsTask.create()),
-                    Pair.of(2, makeGoToChestTask()),
-                    Pair.of(3, ExchangeChestItemsTask.create())
+                    Pair.of(2, ExchangeChestItemsTask.create()),
+                    Pair.of(3, makeGoToChestTask())
                 ),
                 ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.EXCHANGING_TICKS, MemoryModuleState.VALUE_PRESENT)),
                 ImmutableSet.of(ModMemoryModuleTypes.EXCHANGING_TICKS)
