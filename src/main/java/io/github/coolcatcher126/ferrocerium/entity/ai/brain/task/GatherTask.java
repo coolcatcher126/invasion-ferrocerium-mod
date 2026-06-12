@@ -42,7 +42,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         }
         resourcePos = optional.get().pos();
 
-        if (alienBuilderBotEntity.getVein().size() == 0){
+        if (null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
@@ -58,7 +58,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Check to see if there is a vein to be collected or the task has timed out
-        if (alienBuilderBotEntity.getVein().size() == 0){
+        if (null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
