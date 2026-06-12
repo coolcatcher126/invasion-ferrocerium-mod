@@ -52,8 +52,12 @@ public class BuilderCommander implements AlienBaseTask {
                         AlienBuilderBotEntity x = bot.get();
                         Vein vein = alienBase.removeClosestVein(x.getBlockPos());
                         x.setVein(vein);
-                        x.setMining(vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE));
-                        x.setGathering(vein.getCategories().contains(ResourceCategory.WOOD));
+                        if (vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE)) {
+                            x.setMining(true);
+                        }
+                        else if (vein.getCategories().contains(ResourceCategory.WOOD)) {
+                            x.setGathering(true);
+                        }
                     }
                 }
             }

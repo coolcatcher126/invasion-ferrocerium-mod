@@ -271,7 +271,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING_TICKS, building ? 200:null);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING_TICKS, building ? 1200:null);
     }
 
     public boolean isBuilding()
@@ -281,7 +281,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setGathering(boolean gathering)
     {
-        this.brain.remember(ModMemoryModuleTypes.GATHERING_TICKS, gathering ? 200 : null);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING_TICKS, gathering ? 1200 : null);
     }
 
     public boolean isGathering()
@@ -291,7 +291,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setMining(boolean mining)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING_TICKS, 200);
+        this.brain.remember(ModMemoryModuleTypes.MINING_TICKS, mining ? 1200 : null);
     }
 
     public boolean isMining()
