@@ -28,7 +28,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     long timeout = MAX_TICKS_TO_TIMEOUT;
 
     public PlaceBaseBlocksTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING_TICKS, MemoryModuleState.VALUE_PRESENT), 24000);
+        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -120,6 +120,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING_TICKS);
+        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING);
     }
 }

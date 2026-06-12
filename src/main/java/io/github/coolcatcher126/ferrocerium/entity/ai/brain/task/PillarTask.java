@@ -14,7 +14,7 @@ public class PillarTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     public PillarTask() {
         super(Map.of(
-                ModMemoryModuleTypes.GATHERING_TICKS, MemoryModuleState.VALUE_PRESENT
+                ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT
                 )
         );
     }

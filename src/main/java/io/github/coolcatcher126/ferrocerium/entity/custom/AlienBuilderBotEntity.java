@@ -68,10 +68,11 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             MemoryModuleType.NEAREST_ATTACKABLE,
             ModMemoryModuleTypes.BASE_SECTION_LOCATION,
             ModMemoryModuleTypes.RESOURCE_LOCATION,
-            ModMemoryModuleTypes.BUILDING_TICKS,
-            ModMemoryModuleTypes.EXCHANGING_TICKS,
-            ModMemoryModuleTypes.GATHERING_TICKS,
-            ModMemoryModuleTypes.MINING_TICKS
+            ModMemoryModuleTypes.BUILDING,
+            ModMemoryModuleTypes.EXCHANGING,
+            ModMemoryModuleTypes.GATHERING,
+            ModMemoryModuleTypes.MINING,
+            ModMemoryModuleTypes.ACTIVITY_TICKS
     );
 
     @Nullable
@@ -271,32 +272,35 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING_TICKS, building ? 1200:null);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
     }
 
     public boolean isBuilding()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING_TICKS).orElse(0) > 0;
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElse(false);
     }
 
     public void setGathering(boolean gathering)
     {
-        this.brain.remember(ModMemoryModuleTypes.GATHERING_TICKS, gathering ? 1200 : null);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
     }
 
     public boolean isGathering()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING_TICKS).orElse(0) > 0;
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElse(false);
     }
 
     public void setMining(boolean mining)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING_TICKS, mining ? 1200 : null);
+        this.brain.remember(ModMemoryModuleTypes.MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
     }
 
     public boolean isMining()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING_TICKS).orElse(0) > 0;
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElse(false);
     }
 
     public void setSection(BaseSection sectionToBuild){

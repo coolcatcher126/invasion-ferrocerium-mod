@@ -40,10 +40,7 @@ public class AlienBuilderBotBrain {
                         new StayAboveWaterTask(1.0F),
                         new LookAroundTask(45, 90),
                         new MoveToTargetTask(),
-                        WorkTimerTask.create(ModMemoryModuleTypes.BUILDING_TICKS),
-                        WorkTimerTask.create(ModMemoryModuleTypes.MINING_TICKS),
-                        WorkTimerTask.create(ModMemoryModuleTypes.GATHERING_TICKS),
-                        WorkTimerTask.create(ModMemoryModuleTypes.EXCHANGING_TICKS)
+                        WorkTimerTask.create()
                 )
         );
     }
@@ -66,9 +63,11 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, makeGoToBaseSectionTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING_TICKS, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
                 ),
-                ImmutableSet.of(ModMemoryModuleTypes.BUILDING_TICKS)
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.BUILDING)
         );
     }
 
@@ -80,9 +79,11 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, makeGoToResourceTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.MINING_TICKS, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
                 ),
-                ImmutableSet.of(ModMemoryModuleTypes.MINING_TICKS)
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.MINING)
         );
     }
 
@@ -95,10 +96,12 @@ public class AlienBuilderBotBrain {
                         Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.GATHERING_TICKS, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
                 ),
                 ImmutableSet.of(
-                        ModMemoryModuleTypes.GATHERING_TICKS
+                        ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.GATHERING
                 )
         );
     }
@@ -121,8 +124,11 @@ public class AlienBuilderBotBrain {
                     Pair.of(2, ExchangeChestItemsTask.create()),
                     Pair.of(3, makeGoToChestTask())
                 ),
-                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.EXCHANGING_TICKS, MemoryModuleState.VALUE_PRESENT)),
-                ImmutableSet.of(ModMemoryModuleTypes.EXCHANGING_TICKS)
+                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.EXCHANGING)
         );
     }
 

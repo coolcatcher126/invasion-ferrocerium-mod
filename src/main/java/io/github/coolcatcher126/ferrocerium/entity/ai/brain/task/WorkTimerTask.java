@@ -1,14 +1,15 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 
 public class WorkTimerTask {
-    public static Task<LivingEntity> create(MemoryModuleType<Integer> memory) {
+    public static Task<LivingEntity> create() {
         return TaskTriggerer.task(
-                context -> context.group(context.queryMemoryValue(memory))
+                context -> context.group(context.queryMemoryValue(ModMemoryModuleTypes.ACTIVITY_TICKS))
                         .apply(context, (timer) -> (world, entity, time) -> {
                             int i = context.<Integer>getValue(timer);
                             if (i <= 0) {

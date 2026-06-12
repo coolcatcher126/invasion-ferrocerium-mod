@@ -14,10 +14,11 @@ public class ModMemoryModuleTypes {
     public static final MemoryModuleType<GlobalPos> BASE_SECTION_LOCATION = register("base_section_location");
     public static final MemoryModuleType<GlobalPos> RESOURCE_LOCATION = register("resource_location");
     public static final MemoryModuleType<GlobalPos> CHEST_LOCATION = register("chest_location");
-    public static final MemoryModuleType<Integer> BUILDING_TICKS = register("building_ticks");
-    public static final MemoryModuleType<Integer> GATHERING_TICKS = register("gathering_ticks");
-    public static final MemoryModuleType<Integer> MINING_TICKS = register("mining_ticks");
-    public static final MemoryModuleType<Integer> EXCHANGING_TICKS = register("exchanging_ticks");
+    public static final MemoryModuleType<Boolean> BUILDING = register("building");
+    public static final MemoryModuleType<Boolean> GATHERING = register("gathering");
+    public static final MemoryModuleType<Boolean> MINING = register("mining");
+    public static final MemoryModuleType<Boolean> EXCHANGING = register("exchanging");
+    public static final MemoryModuleType<Integer> ACTIVITY_TICKS = register("activity_ticks");
 
     private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
         return Registry.register(Registries.MEMORY_MODULE_TYPE, Identifier.ofVanilla(id), new MemoryModuleType<>(Optional.of(codec)));
