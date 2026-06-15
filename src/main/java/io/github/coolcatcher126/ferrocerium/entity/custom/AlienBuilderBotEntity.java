@@ -287,6 +287,17 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
     }
 
+    public boolean isExchanging()
+    {
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).orElse(false);
+    }
+
+    public void setExchanging(boolean exchanging)
+    {
+        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 600 : null);
+    }
+
     public boolean isGathering()
     {
         return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElse(false);

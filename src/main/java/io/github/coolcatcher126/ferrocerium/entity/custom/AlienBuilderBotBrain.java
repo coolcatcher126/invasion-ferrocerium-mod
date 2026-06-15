@@ -65,7 +65,8 @@ public class AlienBuilderBotBrain {
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
-                        Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
+                        Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.REGISTERED)
                 ),
                 ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.BUILDING)
         );

@@ -32,7 +32,7 @@ public class BuilderCommander implements AlienBaseTask {
         else {
             Optional<AlienBuilderBotEntity> bot;
             if (build) {
-                bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isBuilding() || builder.isGathering() || builder.isMining()));
+                bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !builder.isBuilding());
                 if (bot.isPresent()) {
                     for (BaseSection section : alienBase.getSections()) {
                         if (!section.isBuilt()) {

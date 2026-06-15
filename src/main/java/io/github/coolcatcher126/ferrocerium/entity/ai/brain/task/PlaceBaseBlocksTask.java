@@ -5,6 +5,7 @@ import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.item.Item;
@@ -120,6 +121,9 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING);
+        Brain<AlienBuilderBotEntity> brain = entity.getBrain();
+        brain.forget(ModMemoryModuleTypes.BUILDING);
+        entity.getBrain().resetPossibleActivities();
+        entity.setExchanging(true);
     }
 }

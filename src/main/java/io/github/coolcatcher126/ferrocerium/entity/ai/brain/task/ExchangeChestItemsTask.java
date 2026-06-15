@@ -93,7 +93,13 @@ public class ExchangeChestItemsTask {
                                         }
                                     }
                                     timer.setValue(time + 60L);
-                                    return totalTransactions > failedOrZeroTransactions;
+
+                                    boolean b = totalTransactions > failedOrZeroTransactions;
+                                    if (!b){
+                                        entity.getBrain().forget(ModMemoryModuleTypes.EXCHANGING);
+                                        entity.getBrain().resetPossibleActivities();
+                                    }
+                                    return b;
                                 }
 
                             }
