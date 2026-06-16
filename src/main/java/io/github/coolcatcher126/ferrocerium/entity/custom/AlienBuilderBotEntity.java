@@ -7,6 +7,7 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModSensorType;
 import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
@@ -274,6 +275,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
     }
 
     public boolean isBuilding()
@@ -285,6 +287,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD));
     }
 
     public boolean isExchanging()
@@ -296,6 +299,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 600 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()
@@ -307,6 +311,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.MINING, mining);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE));
     }
 
     public boolean isMining()

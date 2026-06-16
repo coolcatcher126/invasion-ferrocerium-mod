@@ -30,10 +30,9 @@ public class BuilderCommander implements AlienBaseTask {
             ticksToCommand--;
         }
         else {
-            Optional<AlienBuilderBotEntity> bot;
-            if (build) {
-                bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !builder.isBuilding());
-                if (bot.isPresent()) {
+            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering() || builder.isMining()));
+            if (bot.isPresent()) {
+                if (build) {
                     for (BaseSection section : alienBase.getSections()) {
                         if (!section.isBuilt()) {
                             AlienBuilderBotEntity bot1 = bot.get();
@@ -44,10 +43,7 @@ public class BuilderCommander implements AlienBaseTask {
                         }
                     }
                 }
-            }
-            else {
-                bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isGathering() || builder.isMining()));
-                if (bot.isPresent()) {
+                else {
                     if (!alienBase.getResources().isEmpty()) {
                         AlienBuilderBotEntity x = bot.get();
                         Vein vein = alienBase.removeClosestVein(x.getBlockPos());

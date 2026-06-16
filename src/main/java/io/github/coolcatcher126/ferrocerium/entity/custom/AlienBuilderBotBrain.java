@@ -150,7 +150,7 @@ public class AlienBuilderBotBrain {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
         Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity == null || activity == Activity.FIGHT || activity == Activity.IDLE) {
-            brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+            brain.resetPossibleActivities(ImmutableList.of(/*ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, */Activity.FIGHT, Activity.IDLE));
         }
     }
 
