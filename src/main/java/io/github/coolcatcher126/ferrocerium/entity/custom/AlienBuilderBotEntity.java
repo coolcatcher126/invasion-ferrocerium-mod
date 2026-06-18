@@ -298,9 +298,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setExchanging(boolean exchanging)
     {
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
         this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
-        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 600 : null);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()

@@ -27,6 +27,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     final int MAX_TICKS_TO_TIMEOUT = 60;
     long timeout = MAX_TICKS_TO_TIMEOUT;
 
+    boolean willExchange = false;
+
     public PlaceBaseBlocksTask() {
         super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
     }
@@ -44,6 +46,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
                 block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            alienBuilderBotEntity.getBrain().resetPossibleActivities();
+            alienBuilderBotEntity.setExchanging(true);
             return false;
         }
 
@@ -59,7 +63,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
             block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
-            alienBuilderBotEntity.setExchanging(true);
+            willExchange = true;
             return false;
         }
 
@@ -71,6 +75,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
         blockIndex = 0;
         timeout = l + MAX_TICKS_TO_TIMEOUT;
+        willExchange = false;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -117,5 +122,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         entity.getBrain().resetPossibleActivities();
+        if (willExchange) {
+            entity.setExchanging(true);
+        }
     }
 }
