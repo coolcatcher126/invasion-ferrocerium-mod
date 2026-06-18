@@ -17,6 +17,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -297,9 +298,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setExchanging(boolean exchanging)
     {
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
         this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()

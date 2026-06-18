@@ -59,6 +59,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
             block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            alienBuilderBotEntity.setExchanging(true);
             return false;
         }
 
@@ -75,10 +76,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Place down the required blocks one block at a time
 
-        if (l % 5 != 0) {
-            return;
-        }
-
         if (blocks.size() < blockIndex){
             blockIndex = 0;
         }
@@ -93,6 +90,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (block.isWantedBlock(serverWorld)) {
             blockIndex++;
+            return;
+        }
+
+        if (l % 5 != 0) {
             return;
         }
 
@@ -115,6 +116,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.setExchanging(true);
+        entity.getBrain().resetPossibleActivities();
     }
 }
