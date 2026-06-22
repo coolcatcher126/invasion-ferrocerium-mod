@@ -5,11 +5,9 @@ import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class PillarTask extends MultiTickTask<AlienBuilderBotEntity> {
 

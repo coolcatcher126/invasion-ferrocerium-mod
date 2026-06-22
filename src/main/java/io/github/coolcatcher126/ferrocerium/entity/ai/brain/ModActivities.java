@@ -10,6 +10,7 @@ public class ModActivities {
     public static final Activity MINE = register("mine");
     public static final Activity CHOP_WOOD = register("chop_wood");
     public static final Activity CRAFT = register("craft");
+    public static final Activity EXCHANGE = register("exchange");
 
     private static Activity register(String id) {
         return Registry.register(Registries.ACTIVITY, id, new Activity(id));

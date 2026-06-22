@@ -9,10 +9,12 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.NotImplementedException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 /// A single base.
 /// Each base owns one or more Alien Builder Bots.
@@ -69,14 +71,20 @@ public class AlienBase {
         this.scheduler.add(new ExpandWorkforce(this));
         this.scheduler.add(new CreateMineshaft(this));
         this.scheduler.add(new ScanForResources(this));
+        this.scheduler.add(new UpdateChestLocations(this));
         this.scheduler.add(new BaseGrower(this));
         this.scheduler.add(new BuilderCommander(this));
     }
 
-    /// Returns the first alien builder bot to not be building.
+    /// Returns the first alien builder bot to not be doing anything.
     public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
+        return getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isBuilding() || builder.isGathering() || builder.isMining()));
+    }
+
+    /// Returns the first alien builder bot to match the filter.
+    public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(Predicate<AlienBuilderBotEntity> filter){
         for (AlienBuilderBotEntity builder : builders) {
-            if (!(builder.isBuilding() || builder.isGathering() || builder.isMining())) {
+            if (filter.test(builder)) {
                 return Optional.of(builder);
             }
         }
@@ -116,14 +124,6 @@ public class AlienBase {
     public UUID getUuid(){
         return this.uuid;
     }
-
-    /// Returns a list of all the chests held within the alien base.
-    /// <p>Used to allow alien builder bots to deposit and/or pick up collected items.</p>
-    public ArrayList<BlockPos> getChestLocations(){
-        throw new NotImplementedException();
-    }
-
-
 
     public ArrayList<BaseBlock> getBaseBlocks(){
         return this.baseBlocks;
@@ -165,6 +165,16 @@ public class AlienBase {
 
     public Random getRandom(){
         return random;
+    }
+
+    @Nullable
+    public BaseSection getClosestSectionTo(BlockPos pos){
+        BlockPos posRelativeToBase = pos.subtract(getOrigin());
+        return getSections().stream()
+                .min((section1, section2) ->
+                        (int)(posRelativeToBase.getSquaredDistance(section1.getOrigin().toBlockPos()) -
+                            posRelativeToBase.getSquaredDistance(section2.getOrigin().toBlockPos()))
+                ).orElse(null);
     }
 
 }

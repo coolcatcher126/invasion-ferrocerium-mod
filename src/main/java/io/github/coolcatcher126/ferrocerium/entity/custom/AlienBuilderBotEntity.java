@@ -7,12 +7,17 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModSensorType;
+import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import io.github.coolcatcher126.ferrocerium.sound.ModSounds;
-import io.github.coolcatcher126.ferrocerium.entity.ai.pathing.MinerNavigation;
+import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -47,7 +52,7 @@ import java.util.UUID;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
-            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY
+            ModSensorType.NEAREST_CHEST, SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_PLAYERS, SensorType.HURT_BY
     );
 
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
@@ -66,9 +71,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.BASE_SECTION_LOCATION,
             ModMemoryModuleTypes.RESOURCE_LOCATION,
             ModMemoryModuleTypes.BUILDING,
-            ModMemoryModuleTypes.CRAFTING,
+            ModMemoryModuleTypes.EXCHANGING,
             ModMemoryModuleTypes.GATHERING,
-            ModMemoryModuleTypes.MINING
+            ModMemoryModuleTypes.MINING,
+            ModMemoryModuleTypes.ACTIVITY_TICKS
     );
 
     @Nullable
@@ -78,7 +84,10 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     @Nullable
     private AlienBase alienBase;
     private final SimpleInventory inventory = new SimpleInventory(9);
-    private List<Item> itemsToCraft;
+    private final List<ItemStack> unwantedItems = new ArrayList<>();
+    private final List<ItemVariant> wantedItems = new ArrayList<>();
+    public final InventoryStorage inventoryWrapper = InventoryStorage.of(inventory, null);
+    private List<Item> itemsToCraft = new ArrayList<>();
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -90,7 +99,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public AlienBuilderBotEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.setCanPickUpLoot(true);
-        this.itemsToCraft = new ArrayList<>();
     }
 
     /// Base helper spawn.
@@ -99,7 +107,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         super(ModEntities.ALIEN_BUILDER_BOT, world);
         this.setCanPickUpLoot(true);
         this.alienBase = base;
-        this.itemsToCraft = new ArrayList<>();
     }
 
     public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
@@ -268,31 +275,49 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public void setBuilding(boolean building)
     {
         this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
     }
 
     public boolean isBuilding()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElse(false);
     }
 
     public void setGathering(boolean gathering)
     {
         this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD));
+    }
+
+    public boolean isExchanging()
+    {
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).orElse(false);
+    }
+
+    public void setExchanging(boolean exchanging)
+    {
+        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElse(false);
     }
 
     public void setMining(boolean mining)
     {
         this.brain.remember(ModMemoryModuleTypes.MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE));
     }
 
     public boolean isMining()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElseGet(() -> false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElse(false);
     }
 
     public void setSection(BaseSection sectionToBuild){
@@ -348,26 +373,26 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         for (int i = 0; i < count; i++) {
             this.itemsToCraft.add(requestedItem);
         }
-        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
     }
 
     public void addCraftingRequest(Item requestedItem){
         this.itemsToCraft.add(requestedItem);
-        brain.remember(ModMemoryModuleTypes.CRAFTING, true);
     }
 
     public void setItemsToCraft(List<Item> items){
         this.itemsToCraft = items;
-        if (items != null && !items.isEmpty()) {
-            brain.remember(ModMemoryModuleTypes.CRAFTING, true);
-        }
-        else{
-            brain.forget(ModMemoryModuleTypes.CRAFTING);
-        }
     }
 
     public List<Item> getItemsToCraft(){
         return this.itemsToCraft;
+    }
+
+    public List<ItemStack> getUnwantedItems(){
+        return unwantedItems;
+    }
+
+    public List<ItemVariant> getWantedItems(){
+        return wantedItems;
     }
 
     @Override

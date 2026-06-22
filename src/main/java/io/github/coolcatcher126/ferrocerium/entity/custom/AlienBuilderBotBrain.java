@@ -24,6 +24,7 @@ public class AlienBuilderBotBrain {
         addMineActivities(brain);
         addChopWoodActivities(brain);
         addCraftActivities(brain);
+        addExchangeActivities(brain);
         addFightActivities(bot, brain);
         brain.setCoreActivities(ImmutableSet.of(ModActivities.CRAFT, Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
@@ -38,7 +39,8 @@ public class AlienBuilderBotBrain {
                 ImmutableList.of(
                         new StayAboveWaterTask(1.0F),
                         new LookAroundTask(45, 90),
-                        new MoveToTargetTask()
+                        new MoveToTargetTask(),
+                        WorkTimerTask.create()
                 )
         );
     }
@@ -57,12 +59,16 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-                        Pair.of(0, makeGoToBaseSectionTask()),
-                        Pair.of(1, new PlaceBaseBlocksTask())
+                        Pair.of(0, new PlaceBaseBlocksTask()),
+                        Pair.of(1, makeGoToBaseSectionTask())
                 ),
                 ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT), Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT)
-                )
+                        Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.REGISTERED)
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.BUILDING)
         );
     }
 
@@ -74,9 +80,11 @@ public class AlienBuilderBotBrain {
                         Pair.of(1, makeGoToResourceTask())
                 ),
                 ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
                 ),
-                ImmutableSet.of(ModMemoryModuleTypes.MINING)
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.MINING)
         );
     }
 
@@ -89,10 +97,12 @@ public class AlienBuilderBotBrain {
                         Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(
+                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
                 ),
                 ImmutableSet.of(
-                        ModMemoryModuleTypes.GATHERING
+                        ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.GATHERING
                 )
         );
     }
@@ -102,11 +112,24 @@ public class AlienBuilderBotBrain {
                 ModActivities.CRAFT,
                 ImmutableList.of(
                     Pair.of(10, new CraftTask())
-
-                ),
-                ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.CRAFTING, MemoryModuleState.VALUE_PRESENT)
                 )
+        );
+    }
+
+    private static void addExchangeActivities(Brain<AlienBuilderBotEntity> brain) {
+        brain.setTaskList(
+                ModActivities.EXCHANGE,
+                ImmutableList.of(
+                    Pair.of(0, FindWantedItemsTask.create()),
+                    Pair.of(1, FindUnwantedItemsTask.create()),
+                    Pair.of(2, ExchangeChestItemsTask.create()),
+                    Pair.of(3, makeGoToChestTask())
+                ),
+                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.REGISTERED),
+                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.VALUE_PRESENT)
+                ),
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.EXCHANGING)
         );
     }
 
@@ -125,7 +148,10 @@ public class AlienBuilderBotBrain {
 
     public static void updateActivities(AlienBuilderBotEntity bot) {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+        Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
+        if (activity == null || activity == Activity.FIGHT || activity == Activity.IDLE) {
+            brain.resetPossibleActivities(ImmutableList.of(/*ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, */Activity.FIGHT, Activity.IDLE));
+        }
     }
 
     private static boolean isInvasionStarted(AlienBuilderBotEntity bot) {
@@ -158,5 +184,9 @@ public class AlienBuilderBotBrain {
 
     private static Task<PathAwareEntity> makeGoToResourceTask() {
         return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.RESOURCE_LOCATION, 1.0F, 1, 50, 5);
+    }
+
+    private static Task<PathAwareEntity> makeGoToChestTask() {
+        return GoToNearbyPositionUntilSeenTask.create(ModMemoryModuleTypes.CHEST_LOCATION, 1.0F, 1, 50, 5);
     }
 }

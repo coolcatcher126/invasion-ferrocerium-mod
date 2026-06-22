@@ -24,8 +24,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     BlockPos basePos;
     private LinkedList<BaseBlock> blocks;
     int blockIndex;
-    final int MAX_TICKS_TO_TIMEOUT = 600;
+    final int MAX_TICKS_TO_TIMEOUT = 60;
     long timeout = MAX_TICKS_TO_TIMEOUT;
+
+    boolean willExchange = false;
 
     public PlaceBaseBlocksTask() {
         super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
@@ -44,6 +46,8 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
                 block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            alienBuilderBotEntity.getBrain().resetPossibleActivities();
+            alienBuilderBotEntity.setExchanging(true);
             return false;
         }
 
@@ -59,6 +63,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
             block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
+            willExchange = true;
             return false;
         }
 
@@ -70,14 +75,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
         blockIndex = 0;
         timeout = l + MAX_TICKS_TO_TIMEOUT;
+        willExchange = false;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Place down the required blocks one block at a time
-
-        if (l % 5 != 0) {
-            return;
-        }
 
         if (blocks.size() < blockIndex){
             blockIndex = 0;
@@ -93,6 +95,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (block.isWantedBlock(serverWorld)) {
             blockIndex++;
+            return;
+        }
+
+        if (l % 5 != 0) {
             return;
         }
 
@@ -113,13 +119,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blockIndex++;
     }
 
-//    @Override
-//    protected boolean isTimeLimitExceeded(long time) {
-//        return false;
-//    }
-
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.getBrain().forget(ModMemoryModuleTypes.BUILDING);
+        entity.getBrain().resetPossibleActivities();
+        if (willExchange) {
+            entity.setExchanging(true);
+        }
     }
 }
