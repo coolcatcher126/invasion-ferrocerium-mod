@@ -4,7 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
+import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
@@ -49,6 +51,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
@@ -130,6 +135,35 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public static boolean canSpawnIgnoreLightLevel(EntityType<? extends HostileEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         return world.getDifficulty() != Difficulty.PEACEFUL && canMobSpawn(type, world, spawnReason, pos, random);
+    }
+
+    @Override
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData){
+        //Add starting materials
+        BaseSectionTemplates.BASE_CORE.getRelativeBlockData(world.toServerWorld())
+                .stream()
+                .collect(Collectors.groupingBy(BaseBlock::getBlockState, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .flatMap(entry -> {
+                    Item blockItem = entry.getKey().getBlock().asItem();
+                    int MAX_CHUNK = blockItem.getMaxCount();
+                    int itemCount = entry.getValue().intValue();
+                    int totalChunks = (itemCount + MAX_CHUNK - 1) / MAX_CHUNK;
+
+                    return IntStream.range(0, totalChunks)
+                            .mapToObj(chunkIndex -> {
+                                // The last chunk gets the remainder, others get MAX_CHUNK (64)
+                                int chunkCount = (chunkIndex == totalChunks - 1)
+                                        ? (itemCount % MAX_CHUNK == 0 ? MAX_CHUNK : itemCount % MAX_CHUNK)
+                                        : MAX_CHUNK;
+
+                                return new ItemStack(blockItem, chunkCount);
+                            });
+                })
+                .forEach(this::addItem);
+
+        return super.initialize(world, difficulty, spawnReason, entityData);
     }
 
     @Override
