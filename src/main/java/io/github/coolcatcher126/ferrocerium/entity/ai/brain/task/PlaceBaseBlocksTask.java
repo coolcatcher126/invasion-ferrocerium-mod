@@ -72,7 +72,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        blocks = new LinkedList<>(alienBuilderBotEntity.getSection().getOrCalculateBaseBlockData());
+        blocks = (LinkedList<BaseBlock>) alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
         blockIndex = 0;
         timeout = l + MAX_TICKS_TO_TIMEOUT;
         willExchange = false;

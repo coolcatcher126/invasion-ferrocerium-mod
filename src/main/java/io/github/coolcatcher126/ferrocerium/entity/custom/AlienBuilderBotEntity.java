@@ -41,6 +41,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.random.Random;
@@ -48,9 +49,7 @@ import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -308,50 +307,50 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, (null != sectionToBuild && building) ? new LinkedList<>(sectionToBuild.getOrCalculateBaseBlockData()) : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
     }
 
     public boolean isBuilding()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).isPresent();
     }
 
     public void setGathering(boolean gathering)
     {
-        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD));
     }
 
     public boolean isExchanging()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).isPresent();
     }
 
     public void setExchanging(boolean exchanging)
     {
-        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
+        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).isPresent();
     }
 
     public void setMining(boolean mining)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.MINING, mining ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE));
     }
 
     public boolean isMining()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).isPresent();
     }
 
     public void setSection(BaseSection sectionToBuild){
