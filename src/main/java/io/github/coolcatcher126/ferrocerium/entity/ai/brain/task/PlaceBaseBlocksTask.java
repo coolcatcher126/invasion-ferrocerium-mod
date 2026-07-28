@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
@@ -15,6 +16,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.event.GameEvent;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,10 +24,12 @@ import java.util.stream.Collectors;
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
-    private LinkedList<BaseBlock> blocks;
+    private List<BaseBlock> blocks;
     int blockIndex;
     final int MAX_TICKS_TO_TIMEOUT = 60;
     long timeout = MAX_TICKS_TO_TIMEOUT;
+
+    Vein obstructions;
 
     boolean willExchange = false;
 
@@ -72,10 +76,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        blocks = (LinkedList<BaseBlock>) alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
+        blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
         blockIndex = 0;
         timeout = l + MAX_TICKS_TO_TIMEOUT;
         willExchange = false;
+        obstructions = new Vein(true);
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -98,6 +103,11 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return;
         }
 
+        if (!serverWorld.getBlockState(blockPos).isAir()) {
+            obstructions.add(blockPos);
+            return;
+        }
+
         if (l % 5 != 0) {
             return;
         }
@@ -111,16 +121,22 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         timeout = l + MAX_TICKS_TO_TIMEOUT;
 
+
         alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
 
         serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
         serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
         alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
+
         blockIndex++;
     }
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
+        if (obstructions.size() > 0) {
+            entity.setVein(obstructions);
+            entity.setMining(true);
+        }
         entity.getBrain().resetPossibleActivities();
         if (willExchange) {
             entity.setExchanging(true);

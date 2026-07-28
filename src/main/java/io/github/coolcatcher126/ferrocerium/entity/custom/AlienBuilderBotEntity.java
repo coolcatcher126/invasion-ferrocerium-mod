@@ -307,7 +307,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING, (null != sectionToBuild && building) ? new LinkedList<>(sectionToBuild.getOrCalculateBaseBlockData()) : null);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, (null != sectionToBuild && building) ? List.copyOf(sectionToBuild.getOrCalculateBaseBlockData()) : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
     }
