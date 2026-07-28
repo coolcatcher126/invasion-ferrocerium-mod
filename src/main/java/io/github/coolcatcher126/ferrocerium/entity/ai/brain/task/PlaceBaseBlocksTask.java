@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,10 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
@@ -86,27 +84,34 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Place down the required blocks one block at a time
 
-        if (blocks.size() < blockIndex){
-            blockIndex = 0;
-        }
+        BaseBlock block;
+        BlockPos blockPos;
+        do {
+            if (blocks.size() < blockIndex){
+                blockIndex = 0;
+            }
 
-        BaseBlock block = blocks.get(blockIndex);
-        if (block == null) {
-            blockIndex++;
-            return;
-        }
+            block = blocks.get(blockIndex);
+            if (block == null) {
+                blockIndex++;
+                continue;
+            }
 
-        BlockPos blockPos = block.getBlockPos();
+            if (block.isWantedBlock(serverWorld)) {
+                blockIndex++;
+                continue;
+            }
 
-        if (block.isWantedBlock(serverWorld)) {
-            blockIndex++;
-            return;
-        }
+            blockPos = block.getBlockPos();
 
-        if (!serverWorld.getBlockState(blockPos).isAir()) {
-            obstructions.add(blockPos);
-            return;
+            if (!serverWorld.getBlockState(blockPos).isAir()) {
+                obstructions.add(blockPos);
+                blockIndex++;
+                continue;
+            }
+            break;
         }
+        while (true);
 
         if (l % 5 != 0) {
             return;
