@@ -142,6 +142,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         if (obstructions.size() > 0) {
             entity.setVein(obstructions);
+            entity.getBase().addVeinFirst(obstructions);
             entity.setMining(true);
         }
 
