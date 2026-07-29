@@ -138,11 +138,13 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
+        entity.getBrain().resetPossibleActivities();
+
         if (obstructions.size() > 0) {
             entity.setVein(obstructions);
             entity.setMining(true);
         }
-        entity.getBrain().resetPossibleActivities();
+
         if (willExchange) {
             entity.setExchanging(true);
         }
