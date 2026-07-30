@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
+import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
@@ -24,15 +25,17 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     BlockPos basePos;
     private List<BaseBlock> blocks;
     int blockIndex;
-    final int MAX_TICKS_TO_TIMEOUT = 60;
-    long timeout = MAX_TICKS_TO_TIMEOUT;
+//    final int MAX_TICKS_TO_TIMEOUT = 60;
+//    long timeout = MAX_TICKS_TO_TIMEOUT;
 
     Vein obstructions;
 
     boolean willExchange = false;
 
     public PlaceBaseBlocksTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT, ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT), 24000);
+        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT,
+                ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT,
+                ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -58,8 +61,9 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
+        Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if the building is built or if the task has timed out
-        if (timeout <= l || alienBuilderBotEntity.getSection().isBuilt()){
+        if (optional.isEmpty() /*|| timeout <= l*/ || alienBuilderBotEntity.getSection().isBuilt()){
             return false;
         }
 
@@ -76,7 +80,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
         blockIndex = 0;
-        timeout = l + MAX_TICKS_TO_TIMEOUT;
+//        timeout = l + MAX_TICKS_TO_TIMEOUT;
         willExchange = false;
         obstructions = new Vein(true);
     }
@@ -86,6 +90,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         BaseBlock block;
         BlockPos blockPos;
+        int i = 0;
         do {
             if (blocks.size() < blockIndex){
                 blockIndex = 0;
@@ -124,7 +129,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return;
         }
 
-        timeout = l + MAX_TICKS_TO_TIMEOUT;
+//        timeout = l + MAX_TICKS_TO_TIMEOUT;
 
 
         alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
@@ -137,17 +142,21 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     @Override
-    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.getBrain().resetPossibleActivities();
+    protected boolean isTimeLimitExceeded(long time) {
+        return false;
+    }
 
+    @Override
+    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (obstructions.size() > 0) {
             entity.setVein(obstructions);
             entity.getBase().addVeinFirst(obstructions);
             entity.setMining(true);
+            //entity.getBrain().doExclusively(ModActivities.MINE);
         }
-
-        if (willExchange) {
+        else if (willExchange) {
             entity.setExchanging(true);
+            //entity.getBrain().doExclusively(ModActivities.EXCHANGE);
         }
     }
 }

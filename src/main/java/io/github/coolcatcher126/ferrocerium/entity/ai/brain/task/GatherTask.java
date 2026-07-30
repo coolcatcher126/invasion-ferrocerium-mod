@@ -32,8 +32,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     public GatherTask() {
         super(Map.of(
                 ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT,
-                        MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED),
-                24000);
+                        MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
+                        ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -58,8 +58,9 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
+        Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if there is a vein to be collected or the task has timed out
-        if (null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
+        if (optional.isEmpty() || null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
@@ -132,8 +133,13 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     @Override
+    protected boolean isTimeLimitExceeded(long time) {
+        return false;
+    }
+
+    @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        entity.getBrain().resetPossibleActivities();
+        //entity.getBrain().resetPossibleActivities();
         if (vein != null && vein.size() > 0) {
             entity.getBase().addVeinFirst(vein);
         }
