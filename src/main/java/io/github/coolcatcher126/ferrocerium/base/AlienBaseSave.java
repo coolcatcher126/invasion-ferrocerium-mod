@@ -1,9 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
-import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;

@@ -2,10 +2,8 @@ package io.github.coolcatcher126.ferrocerium.entity.client;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 public class AntScoutBotRenderer extends MobEntityRenderer<AntScoutBotEntity, AntScoutBotModel<AntScoutBotEntity>> {

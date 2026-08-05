@@ -8,7 +8,6 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
 
 public class AntScoutBotModel<T extends AntScoutBotEntity> extends SinglePartEntityModel<T> {
     public static final EntityModelLayer ANT_SCOUT_BOT = new EntityModelLayer(Identifier.of(InvasionFerrocerium.MOD_ID, "ant_scout_bot"), "main");

@@ -4,10 +4,8 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.RaycastContext;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 public class GoToNearbyPositionUntilSeenTask {

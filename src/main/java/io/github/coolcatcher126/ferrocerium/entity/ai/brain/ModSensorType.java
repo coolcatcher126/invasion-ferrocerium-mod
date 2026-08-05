@@ -1,9 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain;
 
-import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.sensor.NearestChestSensor;
-import net.minecraft.entity.ai.brain.Activity;
-import net.minecraft.entity.ai.brain.sensor.DummySensor;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.registry.Registries;

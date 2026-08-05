@@ -4,8 +4,6 @@ import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.ZombieEntityModel;
 import net.minecraft.util.Identifier;
 
 public class AlienBuilderBotRenderer extends BipedEntityRenderer<AlienBuilderBotEntity, AlienBuilderBotModel<AlienBuilderBotEntity>> {

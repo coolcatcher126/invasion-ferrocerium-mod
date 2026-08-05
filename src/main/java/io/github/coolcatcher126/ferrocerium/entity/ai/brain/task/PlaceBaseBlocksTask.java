@@ -1,10 +1,8 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
-import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

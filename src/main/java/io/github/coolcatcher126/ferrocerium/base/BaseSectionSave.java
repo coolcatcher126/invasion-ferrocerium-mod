@@ -1,7 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.math.BlockPos;
 
 public class BaseSectionSave{
     public String name;
