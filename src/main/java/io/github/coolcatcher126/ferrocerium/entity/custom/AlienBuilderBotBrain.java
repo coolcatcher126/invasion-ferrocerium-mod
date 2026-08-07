@@ -59,13 +59,15 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-                        Pair.of(0, new PlaceBaseBlocksTask()),
-                        Pair.of(1, makeGoToBaseSectionTask())
+                        Pair.of(0, new InspectBuildAreaTask()),
+                        Pair.of(1, new PlaceBaseBlocksTask()),
+                        Pair.of(2, makeGoToBaseSectionTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.BUILD_SITE_CLEAR, MemoryModuleState.REGISTERED),
                         Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.REGISTERED)
                 ),
                 ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.BUILDING)

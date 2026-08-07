@@ -21,6 +21,7 @@ public class ModMemoryModuleTypes {
     public static final MemoryModuleType<Unit> GATHERING = register("gathering", Unit.CODEC);
     public static final MemoryModuleType<Unit> MINING = register("mining", Unit.CODEC);
     public static final MemoryModuleType<Unit> EXCHANGING = register("exchanging", Unit.CODEC);
+    public static final MemoryModuleType<Unit> BUILD_SITE_CLEAR = register("build_site_clear", Unit.CODEC);
     public static final MemoryModuleType<Integer> ACTIVITY_TICKS = register("activity_ticks");
 
     private static <U> MemoryModuleType<U> register(String id, Codec<U> codec) {
