@@ -90,7 +90,10 @@ public class Vein {
     }
 
     public int getClosestIndex(BlockPos pos) {
-        return points.indexOf(points.stream().min(Comparator.comparingInt(x -> (int) pos.getSquaredDistance(x))).orElse(null));
+        int y = pos.getY();
+        BlockPos top = this.getTop();
+        BlockPos bottom = this.getBottom();
+        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? 0 : this.size()-1;
     }
 
     public void append(Vein other){
