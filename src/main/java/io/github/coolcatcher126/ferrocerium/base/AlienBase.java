@@ -137,14 +137,19 @@ public class AlienBase {
     }
 
     public void addVein(Vein vein){
-        resources.add(vein);
+        if (vein.size() > 0) {
+            resources.add(vein);
+        }
     }
 
     public void addVeinFirst(Vein vein){
-        resources.addFirst(vein);
+        if (vein.size() > 0) {
+            resources.addFirst(vein);
+        }
     }
 
     public Vein removeClosestVein(BlockPos targetPos){
+        resources.removeIf(v -> 0 == v.size());
         int vein = 0;
         for (Vein resource : resources) {
             if (resources.get(vein).getClosest(targetPos).getSquaredDistance(targetPos) > resource.getClosest(targetPos).getSquaredDistance(targetPos)) {

@@ -24,8 +24,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private List<BaseBlock> blocks;
     int blockIndex;
 
-    Vein obstructions;
-
     boolean willExchange = false;
 
     public PlaceBaseBlocksTask() {
@@ -78,7 +76,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
         blockIndex = 0;
         willExchange = false;
-        obstructions = new Vein(true);
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -106,7 +103,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             blockPos = block.getBlockPos();
 
             if (!serverWorld.getBlockState(blockPos).isAir()) {
-                obstructions.add(blockPos);
                 blockIndex++;
                 continue;
             }

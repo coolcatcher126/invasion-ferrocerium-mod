@@ -76,6 +76,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.EXCHANGING,
             ModMemoryModuleTypes.GATHERING,
             ModMemoryModuleTypes.MINING,
+            ModMemoryModuleTypes.BUILD_SITE_CLEAR,
             ModMemoryModuleTypes.ACTIVITY_TICKS
     );
 

@@ -90,6 +90,9 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
             }
         }
         alienBuilderBotEntity.getBrain().remember(ModMemoryModuleTypes.BUILD_SITE_CLEAR, clear ? Unit.INSTANCE : null);
+        if (!clear){
+            alienBuilderBotEntity.getBrain().remember(ModMemoryModuleTypes.ACTIVITY_TICKS, 0);
+        }
     }
 
     @Override
