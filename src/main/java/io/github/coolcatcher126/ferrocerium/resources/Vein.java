@@ -1,120 +1,115 @@
 package io.github.coolcatcher126.ferrocerium.resources;
 
-import net.minecraft.nbt.InvalidNbtException;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import net.minecraft.nbt.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumSet;
 
 public class Vein {
-    ArrayList<BlockPos> points;
+    LongArrayList points;
     EnumSet<ResourceCategory> category;
     boolean shouldMineAnyways;
 
-    public Vein(ArrayList<BlockPos> points, EnumSet<ResourceCategory> category, boolean shouldMineAnyways){
+    public Vein(LongArrayList points, EnumSet<ResourceCategory> category, boolean shouldMineAnyways){
         this.points = points;
         this.category = category;
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
         this.shouldMineAnyways = shouldMineAnyways;
     }
 
     public Vein(boolean shouldMineAnyways){
-        this.points = new ArrayList<>();
+        this.points = new LongArrayList();
         this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = shouldMineAnyways;
     }
 
-    public Vein(ArrayList<BlockPos> points){
+    public Vein(LongArrayList points){
         this.points = points;
         this.category = EnumSet.allOf(ResourceCategory.class);
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
         this.shouldMineAnyways = false;
     }
 
     public Vein(){
-        this.points = new ArrayList<>();
+        this.points = new LongArrayList();
         this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = false;
     }
 
     public BlockPos get(int index){
-        return this.points.get(index);
+        return BlockPos.fromLong(this.points.getLong(index));
     }
 
     public void add(BlockPos e){
-        this.points.add(e);
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
+        this.points.add(e.asLong());
     }
 
     public BlockPos remove(int index){
-        BlockPos removed = this.points.remove(index);
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
-        return removed;
-    }
-
-    public boolean remove(BlockPos blockPos){
-        boolean removed = this.points.remove(blockPos);
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
+        BlockPos removed = BlockPos.fromLong(this.points.removeLong(index));
         return removed;
     }
 
     public boolean contains(BlockPos pos){
-        return this.points.contains(pos);
+        return this.points.contains(pos.asLong());
     }
 
     public int size(){ return this.points.size();}
 
-
-    public BlockPos getFirst() {
-        return this.points.getFirst();
-    }
-    public BlockPos getBottom() {
-        return this.getFirst();
-    }
-    public BlockPos getLast(){
-        return this.points.getLast();
-    }
-    public BlockPos getTop(){
-        return this.getLast();
-    }
     public BlockPos getClosest(BlockPos pos) {
-        int y = pos.getY();
-        BlockPos top = this.getTop();
-        BlockPos bottom = this.getBottom();
-        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? bottom : top;
+        int closestSqrDist = Integer.MAX_VALUE;
+        long closestPoint = 0;
+
+        for (Long point : this.points) {
+            int distX = pos.getX() - BlockPos.unpackLongX(point);
+            int distY = pos.getY() - BlockPos.unpackLongY(point);
+            int distZ = pos.getZ() - BlockPos.unpackLongZ(point);
+
+            int distSqr = (distX * distX) + (distY * distY) + (distZ * distZ);
+
+            if (closestSqrDist > distSqr){
+                closestSqrDist = distSqr;
+                closestPoint = point;
+            }
+        }
+
+        return BlockPos.fromLong(closestPoint);
     }
 
     public int getClosestIndex(BlockPos pos) {
-        int y = pos.getY();
-        BlockPos top = this.getTop();
-        BlockPos bottom = this.getBottom();
-        return Math.abs(bottom.getY() - y) < Math.abs(top.getY() - y) ? 0 : this.size()-1;
+        int closestSqrDist = Integer.MAX_VALUE;
+        long closestPoint = 0;
+
+        for (Long point : this.points) {
+            int distX = pos.getX() - BlockPos.unpackLongX(point);
+            int distY = pos.getY() - BlockPos.unpackLongY(point);
+            int distZ = pos.getZ() - BlockPos.unpackLongZ(point);
+
+            int distSqr = (distX * distX) + (distY * distY) + (distZ * distZ);
+
+            if (closestSqrDist > distSqr){
+                closestSqrDist = distSqr;
+                closestPoint = point;
+            }
+        }
+
+        return points.indexOf(closestPoint);
     }
 
     public void append(Vein other){
         this.points.addAll(other.points);
-        this.points.sort(Comparator.comparingInt(Vec3i::getY));
     }
 
     public boolean isShouldMineAnyways(){
         return this.shouldMineAnyways;
     }
 
-    public boolean isAboveVein(BlockPos pos){
-        return getTop().getY() < pos.getY();
-    }
-
-    public boolean isBelowVein(BlockPos pos){
-        return getBottom().getY() > pos.getY();
-    }
-
     public EnumSet<ResourceCategory> getCategories(){
         return this.category;
+    }
+
+    LongArrayList getPoints() {
+        return this.points;
     }
 
     public static NbtCompound writeToNbt(Vein vein){
@@ -129,41 +124,16 @@ public class Vein {
         }
         nbtCompound.put("resource_category", nbtList);
 
-        nbtList = new NbtList();
-        BlockPos blockPos;
-        int i = 0;
-        while (vein.size() > i){
-            blockPos = vein.get(i);
-            nbtCompound1 = new NbtCompound();
-            nbtCompound1.putInt("vein_block_z", blockPos.getZ());
-            nbtCompound1.putInt("vein_block_y", blockPos.getY());
-            nbtCompound1.putInt("vein_block_x", blockPos.getX());
-            nbtList.add(nbtCompound1);
-            i++;
-        }
-        nbtCompound.put("vein", nbtList);
+        nbtCompound.put("vein", new NbtLongArray(vein.getPoints()));
         return nbtCompound;
     }
 
-    public static Vein readfromNbt(NbtCompound nbtCompound){
-        ArrayList<BlockPos> blocks = new ArrayList<>();
-        NbtList nbtList = nbtCompound.getList("vein", NbtElement.COMPOUND_TYPE);
-        for (NbtElement nbtElement : nbtList){
-            if (nbtElement instanceof NbtCompound){
-                blocks.add(
-                        new BlockPos(
-                                ((NbtCompound) nbtElement).getInt("vein_block_x"),
-                                ((NbtCompound) nbtElement).getInt("vein_block_y"),
-                                ((NbtCompound) nbtElement).getInt("vein_block_z")
-                        )
-                );
-            }
-            else{
-                throw new InvalidNbtException("Vein data does not exist");
-            }
-        }
+    public static Vein readFromNbt(NbtCompound nbtCompound){
+        LongArrayList blocks = new LongArrayList();
+        NbtLongArray nbtLongArray = new NbtLongArray(nbtCompound.getLongArray("vein"));
+        nbtLongArray.forEach(nbtLong -> {blocks.add(nbtLong.longValue());});
         EnumSet<ResourceCategory> resources = EnumSet.noneOf(ResourceCategory.class);
-        nbtList = nbtCompound.getList("resource_category", NbtElement.COMPOUND_TYPE);
+        NbtList nbtList = nbtCompound.getList("resource_category", NbtElement.COMPOUND_TYPE);
         String resName;
         for (NbtElement nbtElement : nbtList){
             if (nbtElement instanceof NbtCompound){

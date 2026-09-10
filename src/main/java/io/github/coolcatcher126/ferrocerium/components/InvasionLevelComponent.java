@@ -206,7 +206,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         ArrayList<Vein> veins = new ArrayList<>();
         for (NbtElement nbtElement : nbtList) {
             if (nbtElement instanceof NbtCompound){
-                veins.add(Vein.readfromNbt((NbtCompound) nbtElement));
+                veins.add(Vein.readFromNbt((NbtCompound) nbtElement));
             }
             else{
                 throw new InvalidNbtException("Vein data does not exist");

@@ -5,12 +5,10 @@ import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -60,28 +58,28 @@ public class ScanForResources implements AlienBaseTask  {
                     //+x+z
                     searchedBlock.set(alienBase.getOrigin().add(x, y, z));
                     if (alienBase.getResources().stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        LongArrayList vein = LongArrayList.of(searchedBlock.get().asLong());
                         findAdjacentResourcesToCollect(searchedBlock.get(), vein);
                         alienBase.addVein(new Vein(vein));
                     }
                     //-x+z
                     searchedBlock.set(alienBase.getOrigin().add(-x, y, z));
                     if (alienBase.getResources().stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        LongArrayList vein = LongArrayList.of(searchedBlock.get().asLong());
                         findAdjacentResourcesToCollect(searchedBlock.get(), vein);
                         alienBase.addVein(new Vein(vein));
                     }
                     //+x-z
                     searchedBlock.set(alienBase.getOrigin().add(x, y, -z));
                     if (alienBase.getResources().stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        LongArrayList vein = LongArrayList.of(searchedBlock.get().asLong());
                         findAdjacentResourcesToCollect(searchedBlock.get(), vein);
                         alienBase.addVein(new Vein(vein));
                     }
                     //-x-z
                     searchedBlock.set(alienBase.getOrigin().add(-x, y, -z));
                     if (alienBase.getResources().stream().noneMatch(vein -> vein.contains(searchedBlock.get())) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock.get(), EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-                        ArrayList<BlockPos> vein = new ArrayList<>(Arrays.asList(searchedBlock.get()));
+                        LongArrayList vein = LongArrayList.of(searchedBlock.get().asLong());
                         findAdjacentResourcesToCollect(searchedBlock.get(), vein);
                         alienBase.addVein(new Vein(vein));
                     }
@@ -91,42 +89,42 @@ public class ScanForResources implements AlienBaseTask  {
     }
 
     /// Searches in the area around the given block pos recursively to find resources to collect.
-    void findAdjacentResourcesToCollect(BlockPos blockPos, List<BlockPos> resources){
+    void findAdjacentResourcesToCollect(BlockPos blockPos, LongArrayList resources){
         BlockPos searchedBlock;
         //Check +x
         searchedBlock = blockPos.add(1, 0, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
         //Check -x
         searchedBlock = blockPos.add(-1, 0, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
         //Check +y
         searchedBlock = blockPos.add(0, 1, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
         //Check -y
         searchedBlock = blockPos.add(0, -1, 0);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
         //Check +z
         searchedBlock = blockPos.add(0, 0, 1);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
         //Check -z
         searchedBlock = blockPos.add(0, 0, -1);
-        if (!resources.contains(searchedBlock) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
-            resources.add(searchedBlock);
+        if (!resources.contains(searchedBlock.asLong()) && InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(alienBase.getWorld(), searchedBlock, EnumSet.of(ResourceCategory.WOOD, ResourceCategory.ORES))){
+            resources.add(searchedBlock.asLong());
             findAdjacentResourcesToCollect(searchedBlock, resources);
         }
     }

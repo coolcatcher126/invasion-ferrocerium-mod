@@ -28,9 +28,6 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     final int MAX_BREAK_TICKS = 60;//The maximum time in ticks it takes to break a block
     int countTicksToBreak = 0;
 
-    final int MAX_OBSTRUCTED_TICKS = 30;
-    long giveUpMiningTime = 0;
-
     public GatherTask() {
         super(Map.of(
                 ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT,
@@ -62,7 +59,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if there is a vein to be collected or the task has timed out
-        if (optional.isEmpty() || null == vein || vein.size() == 0){
+        if (optional.isEmpty() || null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
@@ -75,56 +72,31 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-        countTicksToBreak = MAX_BREAK_TICKS;
-        giveUpMiningTime = l + MAX_OBSTRUCTED_TICKS;
+         countTicksToBreak = MAX_BREAK_TICKS;
         alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
     }
 
-    /// Mine the required blocks one block at a time.
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
+        //Mine the required blocks one block at a time
         blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-        resourcePos = vein.get(blockToCollect);
 
+        resourcePos = vein.get(blockToCollect);
         while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
             vein.remove(blockToCollect);
-            blockToCollect++; //= vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-            if (0 == vein.size()){
-                return;
-            }
-            else if (blockToCollect >= vein.size()){
-                blockToCollect = 0;
-            }
+            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
             resourcePos = vein.get(blockToCollect);
             alienBuilderBotEntity.setVein(vein);
         }
 
-
-        //Check for obstructions in the line of sight.
         alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
+
         if (alienBuilderBotEntity.raycast(
                 MAX_DISTANCE,
                 0,
                 false
         ).getPos().squaredDistanceTo(resourcePos.toCenterPos()) < 1) {
-            giveUpMiningTime = l + MAX_OBSTRUCTED_TICKS;
             breakingInfoTick(serverWorld, alienBuilderBotEntity, l);
             mineBlocks(serverWorld, alienBuilderBotEntity, l);
-        }
-        else if (giveUpMiningTime <= l) {
-            giveUpMiningTime = l + MAX_OBSTRUCTED_TICKS;
-            do {
-                vein.remove(blockToCollect);
-                blockToCollect++;
-                if (0 == vein.size()){
-                    return;
-                }
-                else if (blockToCollect >= vein.size()) {
-                    blockToCollect = 0;
-                }
-                resourcePos = vein.get(blockToCollect);
-                alienBuilderBotEntity.setVein(vein);
-            }
-            while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos)));
         }
     }
 

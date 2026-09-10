@@ -227,7 +227,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         }
 
         if (nbt.contains("vein")) {
-            setVein(Vein.readfromNbt(nbt.getCompound("vein")));
+            setVein(Vein.readFromNbt(nbt.getCompound("vein")));
         }
 
         this.readInventory(nbt, this.getRegistryManager());
