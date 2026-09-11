@@ -124,10 +124,11 @@ public class AlienBuilderBotBrain {
                 ImmutableList.of(
                     Pair.of(0, FindWantedItemsTask.create()),
                     Pair.of(1, FindUnwantedItemsTask.create()),
+                    Pair.of(1, ForgetTask.create(AlienBuilderBotBrain::chestInMemory, ModMemoryModuleTypes.EXCHANGING)),
                     Pair.of(2, ExchangeChestItemsTask.create()),
                     Pair.of(3, makeGoToChestTask())
                 ),
-                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.REGISTERED),
+                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.VALUE_PRESENT)
                 ),
@@ -178,6 +179,10 @@ public class AlienBuilderBotBrain {
         }
 
         return Optional.empty();
+    }
+
+    private static boolean chestInMemory(AlienBuilderBotEntity alienBuilderBot){
+        return alienBuilderBot.getBrain().hasMemoryModule(ModMemoryModuleTypes.CHEST_LOCATION);
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {

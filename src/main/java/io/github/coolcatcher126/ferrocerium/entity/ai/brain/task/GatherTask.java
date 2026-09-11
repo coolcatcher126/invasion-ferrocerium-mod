@@ -71,14 +71,14 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
-        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
          countTicksToBreak = MAX_BREAK_TICKS;
         alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
-        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
 
         resourcePos = vein.get(blockToCollect);
         while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
@@ -87,7 +87,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
                 alienBuilderBotEntity.setVein(null);
                 return;
             }
-            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
             resourcePos = vein.get(blockToCollect);
             alienBuilderBotEntity.setVein(vein);
         }
