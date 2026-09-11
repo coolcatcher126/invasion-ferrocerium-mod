@@ -371,7 +371,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     }
 
     public void setVein(@Nullable Vein vein){
-        if (vein.size() == 0){
+        if (vein != null && vein.size() == 0){
             vein = null;
         }
         this.vein = vein;

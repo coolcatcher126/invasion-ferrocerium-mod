@@ -31,7 +31,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
     public InspectBuildAreaTask() {
         super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT,
                 ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT,
-                ModMemoryModuleTypes.BUILD_SITE_CLEAR, MemoryModuleState.REGISTERED,
+                ModMemoryModuleTypes.BUILD_SITE_CLEAR, MemoryModuleState.VALUE_ABSENT,
                 ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT));
     }
 

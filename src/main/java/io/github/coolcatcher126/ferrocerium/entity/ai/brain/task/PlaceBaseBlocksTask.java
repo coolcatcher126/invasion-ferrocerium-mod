@@ -79,11 +79,13 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        //Place down the required blocks one block at a time
+        if (l % 5 != 0) {
+            return;
+        }
 
+        //Place down the required blocks one block at a time
         BaseBlock block;
         BlockPos blockPos;
-        int i = 0;
         do {
             if (blocks.size() < blockIndex){
                 blockIndex = 0;
@@ -109,10 +111,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             break;
         }
         while (true);
-
-        if (l % 5 != 0) {
-            return;
-        }
 
         BlockState blockState = block.getBlockState();
         Item blockItem = blockState.getBlock().asItem();

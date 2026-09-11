@@ -83,6 +83,10 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
         resourcePos = vein.get(blockToCollect);
         while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
             vein.remove(blockToCollect);
+            if (alienBuilderBotEntity.getVein().size() == 0) {
+                alienBuilderBotEntity.setVein(null);
+                return;
+            }
             blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
             resourcePos = vein.get(blockToCollect);
             alienBuilderBotEntity.setVein(vein);
