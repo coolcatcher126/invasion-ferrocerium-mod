@@ -217,7 +217,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 .orElse(null);
             if (alienBase != null) {
                 //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
-                alienBase.hireBuilder(this);
                 if (nbt.contains("section_to_build")){
                     setSection(alienBase.getSections().get(nbt.getInt("section_to_build")));
                 }

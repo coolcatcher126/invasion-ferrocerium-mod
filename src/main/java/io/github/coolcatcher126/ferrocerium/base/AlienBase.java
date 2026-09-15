@@ -3,7 +3,9 @@ package io.github.coolcatcher126.ferrocerium.base;
 import io.github.coolcatcher126.ferrocerium.base.ai.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -20,7 +22,7 @@ import java.util.function.Predicate;
 public class AlienBase {
     BlockPos origin;
     ArrayList<BaseSection> sections;
-    ArrayList<AlienBuilderBotEntity> builders;
+    ArrayList<UUID> builderUUIDs;
     AlienBaseTaskScheduler scheduler;
     World world;
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
@@ -30,7 +32,7 @@ public class AlienBase {
     UUID uuid = MathHelper.randomUuid(this.random);
 
     //Recreate alien base
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<AlienBuilderBotEntity> builders, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<UUID> builderUUIDs, UUID uuid){
         this.world = world;
         this.origin = origin;
 
@@ -38,7 +40,7 @@ public class AlienBase {
 
         this.sections = sections;
         this.baseBlocks = baseBlocks;
-        this.builders = builders;
+        this.builderUUIDs = builderUUIDs;
         this.uuid = uuid;
 
         this.resources = resources;
@@ -56,9 +58,9 @@ public class AlienBase {
         this.origin = origin;
 
         this.sections = new ArrayList<>();
-        this.builders = new ArrayList<>();
+        this.builderUUIDs = new ArrayList<>();
 
-        this.builders.add(initialBuilder);
+        this.builderUUIDs.add(initialBuilder.getUuid());
 
         this.scheduler = new AlienBaseTaskScheduler();
         if (world != null && !world.isClient) {
@@ -82,8 +84,9 @@ public class AlienBase {
 
     /// Returns the first alien builder bot to match the filter.
     public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(Predicate<AlienBuilderBotEntity> filter){
-        for (AlienBuilderBotEntity builder : builders) {
-            if (filter.test(builder)) {
+        for (UUID builderUUID : builderUUIDs) {
+            AlienBuilderBotEntity builder = (AlienBuilderBotEntity) ((ServerWorld) world).getEntity(builderUUID);
+            if (builder != null && filter.test(builder)) {
                 return Optional.of(builder);
             }
         }
@@ -111,13 +114,13 @@ public class AlienBase {
         this.sections.add(section);
     }
 
-    public ArrayList<AlienBuilderBotEntity> getBuilders(){
-        return this.builders;
+    public ArrayList<UUID> getBuilderUUIDs(){
+        return this.builderUUIDs;
     }
 
     /// Adds a preexisting builder to the builders
     public void hireBuilder(AlienBuilderBotEntity builder){
-        builders.add(builder);
+        builderUUIDs.add(builder.getUuid());
     }
 
     public UUID getUuid(){
