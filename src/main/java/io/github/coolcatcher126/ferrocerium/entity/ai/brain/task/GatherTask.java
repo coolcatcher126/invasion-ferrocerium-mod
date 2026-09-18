@@ -143,7 +143,7 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         //entity.getBrain().resetPossibleActivities();
-        if (vein != null && vein.size() > 0) {
+        if (vein != null && vein.size() > 0 && !vein.isDoNotSave()) {
             entity.getBase().addVeinFirst(vein);
         }
     }

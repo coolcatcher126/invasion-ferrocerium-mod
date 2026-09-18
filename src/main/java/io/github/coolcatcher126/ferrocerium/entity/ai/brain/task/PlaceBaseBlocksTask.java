@@ -138,5 +138,6 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         if (willExchange) {
             entity.setExchanging(true);
         }
+        entity.getBrain().forget(ModMemoryModuleTypes.BUILD_SITE_CLEAR);
     }
 }

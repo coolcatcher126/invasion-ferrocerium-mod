@@ -4,22 +4,16 @@ import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
-import net.minecraft.item.Item;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.event.GameEvent;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
@@ -63,7 +57,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
-        obstructions = new Vein(true);
+        obstructions = new Vein(true, true);
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -74,11 +68,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
         //Scan the required blocks one block at a time.
         boolean clear = true;
         for (BaseBlock block : blocks) {
-            if (block == null) {
-                continue;
-            }
-
-            if (block.isWantedBlock(serverWorld)) {
+            if (block == null || block.isWantedBlock(serverWorld)) {
                 continue;
             }
 
@@ -104,7 +94,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
         if (obstructions.size() > 0) {
             entity.setVein(obstructions);
-            entity.getBase().addVeinFirst(obstructions);
+//            entity.getBase().addVeinFirst(obstructions);
             entity.setMining(true);
         }
     }

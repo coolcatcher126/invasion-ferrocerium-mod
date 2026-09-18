@@ -12,29 +12,34 @@ public class Vein {
     LongArrayList points;
     EnumSet<ResourceCategory> category;
     boolean shouldMineAnyways;
+    boolean doNotSave;
 
     public Vein(LongArrayList points, EnumSet<ResourceCategory> category, boolean shouldMineAnyways){
         this.points = points;
         this.category = category;
         this.shouldMineAnyways = shouldMineAnyways;
+        this.doNotSave = false;
     }
 
-    public Vein(boolean shouldMineAnyways){
+    public Vein(boolean shouldMineAnyways, boolean doNotSave){
         this.points = new LongArrayList();
         this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = shouldMineAnyways;
+        this.doNotSave = doNotSave;
     }
 
     public Vein(LongArrayList points){
         this.points = points;
         this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = false;
+        this.doNotSave = false;
     }
 
     public Vein(){
         this.points = new LongArrayList();
         this.category = EnumSet.allOf(ResourceCategory.class);
         this.shouldMineAnyways = false;
+        this.doNotSave = false;
     }
 
     public BlockPos get(int index){
@@ -102,6 +107,10 @@ public class Vein {
 
     public boolean isShouldMineAnyways(){
         return this.shouldMineAnyways;
+    }
+
+    public boolean isDoNotSave() {
+        return this.doNotSave;
     }
 
     public EnumSet<ResourceCategory> getCategories(){
