@@ -1,6 +1,5 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
-import com.google.common.collect.ImmutableList;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
@@ -32,8 +31,8 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     public GatherTask() {
         super(Map.of(
                 ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT,
-                        MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED),
-                24000);
+                        MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED,
+                        ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT));
     }
 
     protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
@@ -58,8 +57,9 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
+        Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if there is a vein to be collected or the task has timed out
-        if (null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
+        if (optional.isEmpty() || null == alienBuilderBotEntity.getVein() || alienBuilderBotEntity.getVein().size() == 0){
             return false;
         }
 
@@ -71,19 +71,23 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         vein = alienBuilderBotEntity.getVein();
-        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
-        countTicksToBreak = MAX_BREAK_TICKS;
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
+         countTicksToBreak = MAX_BREAK_TICKS;
         alienBuilderBotEntity.getBrain().remember(MemoryModuleType.LOOK_TARGET, new BlockPosLookTarget(resourcePos));
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         //Mine the required blocks one block at a time
-        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+        blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
 
         resourcePos = vein.get(blockToCollect);
         while (serverWorld.isAir(resourcePos) || !(vein.isShouldMineAnyways() || InvasionFerrocerium.COLLECTIBLE_RESOURCES.blockIsCollectible(serverWorld, resourcePos))) {
             vein.remove(blockToCollect);
-            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos());
+            if (alienBuilderBotEntity.getVein().size() == 0) {
+                alienBuilderBotEntity.setVein(null);
+                return;
+            }
+            blockToCollect = vein.getClosestIndex(alienBuilderBotEntity.getBlockPos().up());
             resourcePos = vein.get(blockToCollect);
             alienBuilderBotEntity.setVein(vein);
         }
@@ -132,10 +136,15 @@ public class GatherTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     @Override
+    protected boolean isTimeLimitExceeded(long time) {
+        return false;
+    }
+
+    @Override
     protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        if (vein != null && vein.size() > 0) {
+        //entity.getBrain().resetPossibleActivities();
+        if (vein != null && vein.size() > 0 && !vein.isDoNotSave()) {
             entity.getBase().addVeinFirst(vein);
         }
-        entity.getBrain().resetPossibleActivities();
     }
 }

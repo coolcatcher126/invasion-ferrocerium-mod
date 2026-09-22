@@ -4,6 +4,7 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -49,60 +50,60 @@ public class CreateMineshaft implements AlienBaseTask {
     /// Creates a mineshaft starting at the middle of the base going down using a spiral staircase.
     /// <p>Uses a strip mining from y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
     private void createMineshaft(){
-        ArrayList<BlockPos> mineshaft = new ArrayList<>();
+        LongArrayList mineshaft = new LongArrayList();
         for (int y = alienBase.getOrigin().getY(), i = 0; y >= -53; y--, i++){
             int step = i%8;
             if (step != 7) {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, -1));
+                mineshaft.add(alienBase.getOrigin().add(-1, -i, -1).asLong());
             }
             if (step != 6) {
-                mineshaft.add(alienBase.getOrigin().add(0, -i, -1));
+                mineshaft.add(alienBase.getOrigin().add(0, -i, -1).asLong());
             }
             if (step != 5) {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, -1));
+                mineshaft.add(alienBase.getOrigin().add(1, -i, -1).asLong());
             }
             if (step != 4) {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 0));
+                mineshaft.add(alienBase.getOrigin().add(1, -i, 0).asLong());
             }
             if (step != 3) {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 1));
+                mineshaft.add(alienBase.getOrigin().add(1, -i, 1).asLong());
             }
             if (step != 2) {
-                mineshaft.add(alienBase.getOrigin().add(0, -i, 1));
+                mineshaft.add(alienBase.getOrigin().add(0, -i, 1).asLong());
             }
             if (step != 1) {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 1));
+                mineshaft.add(alienBase.getOrigin().add(-1, -i, 1).asLong());
             }
             if (step != 0) {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 0));
+                mineshaft.add(alienBase.getOrigin().add(-1, -i, 0).asLong());
             }
 
             if (STRIP_MINE_LEVELS.contains(y)) {
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,-2));
-                mineshaft.add(alienBase.getOrigin().add(-1,-i,-2));
-                mineshaft.add(alienBase.getOrigin().add(0,-i,-2));
-                mineshaft.add(alienBase.getOrigin().add(1,-i,-2));
-                mineshaft.add(alienBase.getOrigin().add(2,-i,-2));
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,-2).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,-1));
-                mineshaft.add(alienBase.getOrigin().add(2,-i,-1));
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,-1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,-1).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,0));
-                mineshaft.add(alienBase.getOrigin().add(2,-i,0));
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,0).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,0).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,1));
-                mineshaft.add(alienBase.getOrigin().add(2,-i,1));
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,1).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,2));
-                mineshaft.add(alienBase.getOrigin().add(-1,-i,2));
-                mineshaft.add(alienBase.getOrigin().add(0,-i,2));
-                mineshaft.add(alienBase.getOrigin().add(1,-i,2));
-                mineshaft.add(alienBase.getOrigin().add(2,-i,2));
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,2).asLong());
 
                 if (i%2 == 0){
                     //Split the mineshaft staircase into sections
                     alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
-                    mineshaft = new ArrayList<>();
+                    mineshaft = new LongArrayList();
                 }
             }
         }
@@ -155,7 +156,7 @@ public class CreateMineshaft implements AlienBaseTask {
     }
 
     private void extendStripMine(BlockPos mineFront, Direction direction, int length) {
-        ArrayList<BlockPos> mineshaft = new ArrayList<>();
+        LongArrayList mineshaft = new LongArrayList();
 
         //Start the side branches outside the stairwell
         mineFront = mineFront.offset(direction, 2);
@@ -165,8 +166,8 @@ public class CreateMineshaft implements AlienBaseTask {
 
         //Add the blocks to mine
         for (int i = 0; i < length; i++) {
-            mineshaft.add(mineFront);
-            mineshaft.add(mineFront.add(0, 1, 0));
+            mineshaft.add(mineFront.asLong());
+            mineshaft.add(mineFront.add(0, 1, 0).asLong());
             mineFront = mineFront.offset(direction);
         }
         alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));

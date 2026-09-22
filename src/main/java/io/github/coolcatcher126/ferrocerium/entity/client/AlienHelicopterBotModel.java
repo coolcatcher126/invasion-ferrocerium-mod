@@ -2,7 +2,6 @@ package io.github.coolcatcher126.ferrocerium.entity.client;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienHelicopterBotEntity;
-import io.github.coolcatcher126.ferrocerium.entity.custom.AntScoutBotEntity;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.client.model.*;
 import net.minecraft.client.render.VertexConsumer;

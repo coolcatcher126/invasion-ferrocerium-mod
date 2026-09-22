@@ -59,13 +59,15 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-                        Pair.of(0, new PlaceBaseBlocksTask()),
-                        Pair.of(1, makeGoToBaseSectionTask())
+                        Pair.of(0, new InspectBuildAreaTask()),
+                        Pair.of(1, new PlaceBaseBlocksTask()),
+                        Pair.of(2, makeGoToBaseSectionTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT),
+                        Pair.of(ModMemoryModuleTypes.BUILD_SITE_CLEAR, MemoryModuleState.REGISTERED),
                         Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.REGISTERED)
                 ),
                 ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.BUILDING)
@@ -122,10 +124,11 @@ public class AlienBuilderBotBrain {
                 ImmutableList.of(
                     Pair.of(0, FindWantedItemsTask.create()),
                     Pair.of(1, FindUnwantedItemsTask.create()),
+                    Pair.of(1, ForgetTask.create(AlienBuilderBotBrain::chestInMemory, ModMemoryModuleTypes.EXCHANGING)),
                     Pair.of(2, ExchangeChestItemsTask.create()),
                     Pair.of(3, makeGoToChestTask())
                 ),
-                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.REGISTERED),
+                ImmutableSet.of(Pair.of(ModMemoryModuleTypes.CHEST_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.EXCHANGING, MemoryModuleState.VALUE_PRESENT)
                 ),
@@ -150,7 +153,7 @@ public class AlienBuilderBotBrain {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
         Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity == null || activity == Activity.FIGHT || activity == Activity.IDLE) {
-            brain.resetPossibleActivities(ImmutableList.of(/*ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, */Activity.FIGHT, Activity.IDLE));
+            brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
         }
     }
 
@@ -176,6 +179,10 @@ public class AlienBuilderBotBrain {
         }
 
         return Optional.empty();
+    }
+
+    private static boolean chestInMemory(AlienBuilderBotEntity alienBuilderBot){
+        return alienBuilderBot.getBrain().hasMemoryModule(ModMemoryModuleTypes.CHEST_LOCATION);
     }
 
     private static Task<PathAwareEntity> makeGoToBaseSectionTask() {

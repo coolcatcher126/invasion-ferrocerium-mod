@@ -1,13 +1,6 @@
 package io.github.coolcatcher126.ferrocerium.base.sections;
 
-import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplate;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-
-import java.util.ArrayList;
 
 public class BaseCoreTemplate extends BaseSectionTemplate {
     public final static String name = "base_core";

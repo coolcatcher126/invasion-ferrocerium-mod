@@ -4,7 +4,6 @@ import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.NotImplementedException;
 import org.ladysnake.cca.api.v3.component.ComponentKey;
 import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.world.WorldComponentFactoryRegistry;

@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -41,6 +40,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.random.Random;
@@ -48,12 +48,9 @@ import net.minecraft.world.*;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotEntity, InventoryOwner {
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AlienBuilderBotEntity>>> SENSORS = ImmutableList.of(
@@ -79,6 +76,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.EXCHANGING,
             ModMemoryModuleTypes.GATHERING,
             ModMemoryModuleTypes.MINING,
+            ModMemoryModuleTypes.BUILD_SITE_CLEAR,
             ModMemoryModuleTypes.ACTIVITY_TICKS
     );
 
@@ -219,7 +217,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 .orElse(null);
             if (alienBase != null) {
                 //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
-                alienBase.hireBuilder(this);
                 if (nbt.contains("section_to_build")){
                     setSection(alienBase.getSections().get(nbt.getInt("section_to_build")));
                 }
@@ -229,7 +226,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         }
 
         if (nbt.contains("vein")) {
-            setVein(Vein.readfromNbt(nbt.getCompound("vein")));
+            setVein(Vein.readFromNbt(nbt.getCompound("vein")));
         }
 
         this.readInventory(nbt, this.getRegistryManager());
@@ -308,50 +305,50 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING, building);
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, (null != sectionToBuild && building) ? List.copyOf(sectionToBuild.getOrCalculateBaseBlockData()) : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
     }
 
     public boolean isBuilding()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.BUILDING).isPresent();
     }
 
     public void setGathering(boolean gathering)
     {
-        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering);
+        this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD));
     }
 
     public boolean isExchanging()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.EXCHANGING).isPresent();
     }
 
     public void setExchanging(boolean exchanging)
     {
-        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging);
+        this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
     }
 
     public boolean isGathering()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).isPresent();
     }
 
     public void setMining(boolean mining)
     {
-        this.brain.remember(ModMemoryModuleTypes.MINING, mining);
+        this.brain.remember(ModMemoryModuleTypes.MINING, mining ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE));
     }
 
     public boolean isMining()
     {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).orElse(false);
+        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).isPresent();
     }
 
     public void setSection(BaseSection sectionToBuild){
@@ -373,7 +370,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     }
 
     public void setVein(@Nullable Vein vein){
-        if (vein.size() == 0){
+        if (vein != null && vein.size() == 0){
             vein = null;
         }
         this.vein = vein;
