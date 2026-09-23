@@ -50,7 +50,11 @@ public class AlienBuilderBotBrain {
                 Activity.IDLE,
                 ImmutableList.of(
                         Pair.of(0, UpdateAttackTargetTask.create(AlienBuilderBotBrain::isInvasionStarted, AlienBuilderBotBrain::getPreferredTarget)),
-                        Pair.of(1, new RandomTask<>(ImmutableList.of(Pair.of(new WaitTask(20, 100), 1), Pair.of(StrollTask.create(0.6F), 2))))
+                        Pair.of(1, new RandomTask<>(ImmutableList.of(
+                                Pair.of(makeGoToBaseSectionTask(), 1),
+                                Pair.of(new WaitTask(20, 100), 2),
+                                Pair.of(StrollTask.create(0.6F), 3)
+                        )))
                 )
         );
     }
