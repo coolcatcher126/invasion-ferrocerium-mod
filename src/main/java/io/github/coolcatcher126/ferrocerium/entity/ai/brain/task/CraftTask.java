@@ -2,16 +2,19 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
+import io.github.coolcatcher126.ferrocerium.resources.BuilderBotConversions;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
-    List<Item> itemsToCraft;
+    List<ItemVariant> itemsToCraft;
     int craftItemIndex;
 
     public CraftTask() {
@@ -33,7 +36,7 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (itemsToCraft.isEmpty()) {
-            alienBuilderBotEntity.setItemsToCraft(null);
+            alienBuilderBotEntity.setItemsToCraft(new ArrayList<>());
         }
         else {
              alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
@@ -42,33 +45,7 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (craftItemIndex >= 0) {
-            Map<Item, Integer> itemsRequired;
-            if (InvasionFerrocerium.RECIPES.canCraft(itemsToCraft.get(craftItemIndex), alienBuilderBotEntity.getInventory())) {
-                itemsRequired = InvasionFerrocerium.RECIPES.getRequiredItemsToCraft(itemsToCraft.get(craftItemIndex));
-                for (Map.Entry<Item, Integer> ingredientType : itemsRequired.entrySet()) {
-                    int count = ingredientType.getValue();
-                    //Look through the inventory for the items needed to craft
-                    for (int invSlot = 0; invSlot < alienBuilderBotEntity.getInventory().size(); invSlot++) {
-                        ItemStack stack = alienBuilderBotEntity.getInventory().getStack(invSlot);
-
-                        if (stack.getItem() == ingredientType.getKey()) {
-                            if (stack.getCount() <= count) {
-                                count -= stack.getCount();
-                                alienBuilderBotEntity.getInventory().setStack(invSlot, ItemStack.EMPTY);
-                            } else {
-                                stack.setCount(stack.getCount() - count);
-                                count = 0;
-                            }
-                            if (count == 0) {
-                                break;
-                            }
-                        }
-                    }
-                }
-                //The item has been crafted, put it in the inventory.
-                alienBuilderBotEntity.getInventory().addStack(itemsToCraft.remove(craftItemIndex).getDefaultStack());
-//                alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
-            }
+            InvasionFerrocerium.RECIPES.tryCraftItem(itemsToCraft.remove(craftItemIndex), alienBuilderBotEntity.inventoryWrapper);
 
             //Next item
             craftItemIndex--;

@@ -6,6 +6,7 @@ import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 
 import java.util.Optional;
 
@@ -38,7 +39,7 @@ public class BuilderCommander implements AlienBaseTask {
                             AlienBuilderBotEntity bot1 = bot.get();
                             bot1.setSection(section);
                             bot1.setBuilding(true);
-                            InvasionFerrocerium.RECIPES.craftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> block.getBlockState().getBlock().asItem()).toList());
+                            InvasionFerrocerium.RECIPES.craftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
                             break;
                         }
                     }
