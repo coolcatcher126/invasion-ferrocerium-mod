@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
-    List<ItemVariant> itemsToCraft;
     int craftItemIndex;
 
     public CraftTask() {
@@ -26,35 +25,24 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
     }
 
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        return !(itemsToCraft.isEmpty() || alienBuilderBotEntity.getInventory().isEmpty());
+        return !(alienBuilderBotEntity.getItemsToCraft().isEmpty() || alienBuilderBotEntity.getInventory().isEmpty());
     }
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        itemsToCraft = alienBuilderBotEntity.getItemsToCraft();
-        craftItemIndex = itemsToCraft.size() - 1;
-    }
-
-    protected void finishRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        if (itemsToCraft.isEmpty()) {
-            alienBuilderBotEntity.setItemsToCraft(new ArrayList<>());
-        }
-        else {
-             alienBuilderBotEntity.setItemsToCraft(itemsToCraft);
-        }
+        craftItemIndex = alienBuilderBotEntity.getItemsToCraft().size() - 1;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (craftItemIndex >= 0) {
-            if (InvasionFerrocerium.RECIPES.tryCraftItem(itemsToCraft.get(craftItemIndex), alienBuilderBotEntity.inventoryWrapper)){
-                itemsToCraft.remove(craftItemIndex);
+            if (InvasionFerrocerium.RECIPES.tryCraftItem(alienBuilderBotEntity.getItemsToCraft().get(craftItemIndex), alienBuilderBotEntity.inventoryWrapper)){
+                alienBuilderBotEntity.getItemsToCraft().remove(craftItemIndex);
             }
-
             //Next item
             craftItemIndex--;
         }
         else {
             //Go back to the first item
-            craftItemIndex = itemsToCraft.size() - 1;
+            craftItemIndex = alienBuilderBotEntity.getItemsToCraft().size() - 1;
         }
 
     }
