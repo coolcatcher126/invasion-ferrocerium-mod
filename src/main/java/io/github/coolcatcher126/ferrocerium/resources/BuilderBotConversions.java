@@ -1,12 +1,10 @@
 package io.github.coolcatcher126.ferrocerium.resources;
 
-import com.google.common.collect.Maps;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
-import net.minecraft.inventory.Inventory;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -51,29 +49,6 @@ public class BuilderBotConversions {
         return items;
     }
 
-    /// Returns the items the AlienBuilderBot needs to craft an item recursively
-    public Map<ItemVariant, Integer> getReqItemsToCraftRec(ItemVariant item){
-        Map<ItemVariant, Integer> ingredients = getRequiredItemsToCraft(item);
-        if (ingredients != null) {
-            for (Map.Entry<ItemVariant, Integer> ingredientType : ingredients.entrySet()) {
-                Map<ItemVariant, Integer> subIngredients = getReqItemsToCraftRec(ingredientType.getKey());
-                if (subIngredients == null){
-                    break;
-                }
-                subIngredients = Maps.newHashMap(subIngredients);
-                subIngredients.replaceAll((ingredient, count) -> count * ingredientType.getValue());
-                ingredients = Stream.of(ingredients, subIngredients)
-                        .flatMap(map -> map.entrySet().stream())
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                Integer::sum
-                        ));
-            }
-        }
-        return ingredients;
-    }
-
 
     public Map<ItemVariant, Integer> getRequiredItemsToCraft(ItemVariant item){
         if (this.recipes.containsKey(item)) {
@@ -82,20 +57,7 @@ public class BuilderBotConversions {
         return null;
     }
 
-    public boolean canCraft(ItemVariant item, Inventory sourceInventory){
-        Map<ItemVariant, Integer> ingredients = getRequiredItemsToCraft(item);
-        if (ingredients == null){
-            return false;
-        }
-        for (Map.Entry<ItemVariant, Integer> ingredientType : ingredients.entrySet()){
-            if (ingredientType.getValue() > sourceInventory.count(ingredientType.getKey().getItem())){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public void craftRequiredResources(AlienBuilderBotEntity bot, List<ItemVariant> requiredResources){
+    public void requestCraftRequiredResources(AlienBuilderBotEntity bot, List<ItemVariant> requiredResources){
         Map<ItemVariant, Long> resMap = requiredResources.stream().collect(Collectors.groupingBy(itemVariant -> itemVariant, Collectors.counting()));
         for (Map.Entry<ItemVariant, Long> resEntry : resMap.entrySet()) {
             Map<ItemVariant, Integer> craftingSteps = InvasionFerrocerium.RECIPES.getCraftingStepsForItem(resEntry.getKey(), Optional.of(Math.toIntExact(resEntry.getValue())));
@@ -107,7 +69,8 @@ public class BuilderBotConversions {
         }
     }
 
-    public void tryCraftItem(ItemVariant itemToCraft, InventoryStorage inventoryStorage){
+    public boolean tryCraftItem(ItemVariant itemToCraft, InventoryStorage inventoryStorage){
+        boolean success = false;
         Map<ItemVariant, Integer> requiredItemsToCraft = getRequiredItemsToCraft(itemToCraft);
         try (Transaction t1 = Transaction.openOuter()) {
             requiredItemsToCraft.forEach((item, count) -> {
@@ -115,7 +78,9 @@ public class BuilderBotConversions {
             });
             inventoryStorage.insert(itemToCraft, 1, t1);
             t1.commit();
+            success = true;
         }
+        return success;
     }
 }
 

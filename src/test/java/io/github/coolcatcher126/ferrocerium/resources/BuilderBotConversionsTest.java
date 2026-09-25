@@ -39,15 +39,6 @@ public class BuilderBotConversionsTest {
     }
 
     @Test
-    void testGetReqItemsToCraftRec() {
-        Assertions.assertEquals(RECIPES.getReqItemsToCraftRec(ItemVariant.of(Items.STONE_BRICKS)), Map.of(ItemVariant.of(Items.STONE), 1));
-        Assertions.assertEquals(RECIPES.getReqItemsToCraftRec(ItemVariant.of(Items.CHEST)), Map.of(ItemVariant.of(Items.OAK_WOOD), 2));
-        Assertions.assertEquals(RECIPES.getReqItemsToCraftRec(ItemVariant.of(Items.IRON_BARS)), Map.of(ItemVariant.of(Items.IRON_ORE), 1));
-        Assertions.assertEquals(RECIPES.getReqItemsToCraftRec(ItemVariant.of(Items.STONE_BRICK_STAIRS)), Map.of(ItemVariant.of(Items.STONE), 1, ItemVariant.of(Items.STONE_BRICKS), 1));
-        Assertions.assertNull(RECIPES.getReqItemsToCraftRec(ItemVariant.of(Items.ACACIA_FENCE)));
-    }
-
-    @Test
     void testGetCraftingStepsForItem(){
         Assertions.assertEquals(RECIPES.getCraftingStepsForItem(ItemVariant.of(Items.STONE_BRICKS), Optional.empty()), Map.of(ItemVariant.of(Items.STONE_BRICKS), 1));
         Assertions.assertEquals(RECIPES.getCraftingStepsForItem(ItemVariant.of(Items.STONE_BRICKS), Optional.of(5)), Map.of(ItemVariant.of(Items.STONE_BRICKS), 5));
@@ -55,11 +46,5 @@ public class BuilderBotConversionsTest {
         Assertions.assertEquals(RECIPES.getCraftingStepsForItem(ItemVariant.of(Items.IRON_BARS), Optional.empty()), Map.of(ItemVariant.of(Items.IRON_BARS), 1));
         Assertions.assertEquals(RECIPES.getCraftingStepsForItem(ItemVariant.of(Items.STONE_BRICK_STAIRS), Optional.empty()), Map.of(ItemVariant.of(Items.STONE_BRICK_STAIRS), 1, ItemVariant.of(Items.STONE_BRICKS), 1));
         Assertions.assertNull(RECIPES.getCraftingStepsForItem(ItemVariant.of(Items.ACACIA_FENCE), Optional.empty()));
-    }
-
-    @Test
-    void testCanCraft(){
-        Assertions.assertTrue(RECIPES.canCraft(ItemVariant.of(Items.STONE_BRICKS), INVENTORY));
-        Assertions.assertFalse(RECIPES.canCraft(ItemVariant.of(Items.CHEST), INVENTORY));
     }
 }

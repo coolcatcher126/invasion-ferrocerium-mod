@@ -39,7 +39,7 @@ public class BuilderCommander implements AlienBaseTask {
                             AlienBuilderBotEntity bot1 = bot.get();
                             bot1.setSection(section);
                             bot1.setBuilding(true);
-                            InvasionFerrocerium.RECIPES.craftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
+                            InvasionFerrocerium.RECIPES.requestCraftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
                             break;
                         }
                     }

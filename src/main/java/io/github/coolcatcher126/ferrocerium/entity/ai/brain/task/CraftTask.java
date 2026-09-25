@@ -45,7 +45,9 @@ public class CraftTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         if (craftItemIndex >= 0) {
-            InvasionFerrocerium.RECIPES.tryCraftItem(itemsToCraft.remove(craftItemIndex), alienBuilderBotEntity.inventoryWrapper);
+            if (InvasionFerrocerium.RECIPES.tryCraftItem(itemsToCraft.get(craftItemIndex), alienBuilderBotEntity.inventoryWrapper)){
+                itemsToCraft.remove(craftItemIndex);
+            }
 
             //Next item
             craftItemIndex--;
