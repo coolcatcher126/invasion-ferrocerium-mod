@@ -88,6 +88,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         //Place down the required blocks one block at a time
         BaseBlock block;
         BlockPos blockPos;
+        BlockState blockState;
         do {
             if (blocks.size() < blockIndex){
                 blockIndex = 0;
@@ -95,6 +96,12 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
             block = blocks.get(blockIndex);
             if (block == null) {
+                blockIndex++;
+                continue;
+            }
+
+            blockState = block.getBlockState();
+            if (blockState.isAir()){
                 blockIndex++;
                 continue;
             }
@@ -110,15 +117,10 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
                 blockIndex++;
                 continue;
             }
+
             break;
         }
         while (true);
-
-        BlockState blockState = block.getBlockState();
-        if (blockState.isAir()){
-            blockIndex++;
-            return;
-        }
 
         try (Transaction t1 = Transaction.openOuter()) {
             if (alienBuilderBotEntity.inventoryWrapper.extract(ItemVariant.of(blockState.getBlock().asItem()), 1, t1) == 1 && serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE)) {
