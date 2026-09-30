@@ -3,19 +3,21 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
-import net.minecraft.item.Item;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
@@ -86,6 +88,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         //Place down the required blocks one block at a time
         BaseBlock block;
         BlockPos blockPos;
+        BlockState blockState;
         do {
             if (blocks.size() < blockIndex){
                 blockIndex = 0;
@@ -93,6 +96,12 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
             block = blocks.get(blockIndex);
             if (block == null) {
+                blockIndex++;
+                continue;
+            }
+
+            blockState = block.getBlockState();
+            if (blockState.isAir()){
                 blockIndex++;
                 continue;
             }
@@ -108,23 +117,21 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
                 blockIndex++;
                 continue;
             }
+
             break;
         }
         while (true);
 
-        BlockState blockState = block.getBlockState();
-        Item blockItem = blockState.getBlock().asItem();
-        if (!alienBuilderBotEntity.getInventory().containsAny(x -> x.getItem() == blockItem)) {
-            blockIndex++;
-            return;
+        try (Transaction t1 = Transaction.openOuter()) {
+            if (alienBuilderBotEntity.inventoryWrapper.extract(ItemVariant.of(blockState.getBlock().asItem()), 1, t1) == 1 && serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE)) {
+                serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
+                alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
+                t1.commit();
+            }
+            else {
+                t1.abort();
+            }
         }
-
-        alienBuilderBotEntity.swingHand(Hand.MAIN_HAND);
-
-        serverWorld.setBlockState(blockPos, blockState, Block.NOTIFY_ALL | Block.FORCE_STATE);
-        serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(alienBuilderBotEntity, blockState));
-        alienBuilderBotEntity.getInventory().removeItem(blockItem, 1);
-
         blockIndex++;
     }
 

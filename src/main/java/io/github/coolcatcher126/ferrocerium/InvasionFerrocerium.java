@@ -24,6 +24,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.item.Items;
 import net.minecraft.server.command.ServerCommandSource;
@@ -66,10 +67,10 @@ public class InvasionFerrocerium implements ModInitializer {
 
         BaseSectionTemplates.registerBaseSections();
 
-        RECIPES.addRecipe(Items.STONE_BRICKS, Map.of(Items.STONE, 1));
-        RECIPES.addRecipe(Items.CHEST, Map.of(Items.OAK_WOOD, 2));
-        RECIPES.addRecipe(Items.IRON_BARS, Map.of(Items.IRON_ORE, 1));
-        RECIPES.addRecipe(Items.STONE_BRICK_STAIRS, Map.of(Items.STONE_BRICKS, 1));
+        RECIPES.addRecipe(ItemVariant.of(Items.STONE_BRICKS), Map.of(ItemVariant.of(Items.STONE), 1));
+        RECIPES.addRecipe(ItemVariant.of(Items.CHEST), Map.of(ItemVariant.of(Items.OAK_WOOD), 2));
+        RECIPES.addRecipe(ItemVariant.of(Items.IRON_BARS), Map.of(ItemVariant.of(Items.IRON_ORE), 1));
+        RECIPES.addRecipe(ItemVariant.of(Items.STONE_BRICK_STAIRS), Map.of(ItemVariant.of(Items.STONE_BRICKS), 1));
 
         //Make invasion automatically start after x amount of time.
         ServerTickEvents.END_WORLD_TICK.register((world) ->

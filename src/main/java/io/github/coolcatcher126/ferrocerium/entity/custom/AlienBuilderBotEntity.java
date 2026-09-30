@@ -90,7 +90,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     private final List<ItemStack> unwantedItems = new ArrayList<>();
     private final List<ItemVariant> wantedItems = new ArrayList<>();
     public final InventoryStorage inventoryWrapper = InventoryStorage.of(inventory, null);
-    private List<Item> itemsToCraft = new ArrayList<>();
+    private List<ItemVariant> itemsToCraft = new ArrayList<>();
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -175,9 +175,9 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         if (itemsToCraft != null && !itemsToCraft.isEmpty()){
             NbtCompound nbtCompound;
             NbtList nbtList = new NbtList();
-            for (Item item : itemsToCraft) {
+            for (ItemVariant item : itemsToCraft) {
                 nbtCompound = new NbtCompound();
-                nbtCompound.putInt("item", Item.getRawId(item));
+                nbtCompound.putInt("item", Item.getRawId(item.getItem()));
                 nbtList.add(nbtCompound);
             }
             nbt.put("crafting_list", nbtList);
@@ -202,7 +202,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         for (NbtElement nbtElement : nbtList){
             if (nbtElement instanceof NbtCompound){
                 item = ((NbtCompound) nbtElement).getInt("item");
-                addCraftingRequest(Item.byRawId(item));
+                addCraftingRequest(ItemVariant.of(Item.byRawId(item)));
             }
             else{
                 throw new InvalidNbtException("item data does not exist");
@@ -400,21 +400,21 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.inventory;
     }
 
-    public void addCraftingRequest(Item requestedItem, int count){
+    public void addCraftingRequest(ItemVariant requestedItem, int count){
         for (int i = 0; i < count; i++) {
             this.itemsToCraft.add(requestedItem);
         }
     }
 
-    public void addCraftingRequest(Item requestedItem){
+    public void addCraftingRequest(ItemVariant requestedItem){
         this.itemsToCraft.add(requestedItem);
     }
 
-    public void setItemsToCraft(List<Item> items){
+    public void setItemsToCraft(List<ItemVariant> items){
         this.itemsToCraft = items;
     }
 
-    public List<Item> getItemsToCraft(){
+    public List<ItemVariant> getItemsToCraft(){
         return this.itemsToCraft;
     }
 
