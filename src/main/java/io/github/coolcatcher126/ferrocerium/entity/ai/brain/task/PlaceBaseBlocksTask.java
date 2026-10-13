@@ -90,7 +90,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         BlockPos blockPos;
         BlockState blockState;
         do {
-            if (blocks.size() < blockIndex){
+            if (blocks.size() <= blockIndex){
                 blockIndex = 0;
             }
 
