@@ -19,6 +19,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -305,9 +306,22 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        this.brain.remember(ModMemoryModuleTypes.BUILDING, (null != sectionToBuild && building) ? List.copyOf(sectionToBuild.getOrCalculateBaseBlockData()) : null);
+        if (building) {
+            if (null != alienBase.getBaseBlocks()) {
+                this.brain.remember(ModMemoryModuleTypes.BUILDING, List.copyOf(alienBase.getBaseBlocks()));
+            }
+            else if (null != sectionToBuild) {
+                this.brain.remember(ModMemoryModuleTypes.BUILDING, List.copyOf(sectionToBuild.getOrCalculateBaseBlockData()));
+            }
+            else {
+                this.brain.forget(ModMemoryModuleTypes.BUILDING);
+            }
+        }
+        else {
+            this.brain.forget(ModMemoryModuleTypes.BUILDING);
+        }
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, Activity.FIGHT, Activity.IDLE));
     }
 
     public boolean isBuilding()
@@ -319,7 +333,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
     }
 
     public boolean isExchanging()
@@ -331,7 +345,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE, Activity.FIGHT, Activity.IDLE));
     }
 
     public boolean isGathering()
@@ -343,7 +357,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.MINING, mining ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE, Activity.FIGHT, Activity.IDLE));
     }
 
     public boolean isMining()
