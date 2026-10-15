@@ -116,28 +116,28 @@ public class CreateMineshaft implements AlienBaseTask {
         for (int y = 0, i = 0; y >= -53; y--, i++) {
             int step = i % 8;
             if (step != 7) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(-1, -i, -1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, -1), bs));
             }
             if (step != 6) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(0, -i, -1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, -1), bs));
             }
             if (step != 5) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(1, -i, -1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, -1), bs));
             }
             if (step != 4) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(1, -i, 0), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 0), bs));
             }
             if (step != 3) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(1, -i, 1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 1), bs));
             }
             if (step != 2) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(0, -i, 1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, 1), bs));
             }
             if (step != 1) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(-1, -i, 1), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 1), bs));
             }
             if (step != 0) {
-                alienBase.addBaseBlock(new BaseBlock(new BlockPos(-1, -i, 0), bs));
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 0), bs));
             }
         }
     }
