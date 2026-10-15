@@ -51,31 +51,56 @@ public class CreateMineshaft implements AlienBaseTask {
     /// <p>Uses a strip mining from y-levels 48 (for aluminium and copper), 16 (for iron) and -53 (for diamonds) </p>
     private void createMineshaft(){
         LongArrayList mineshaft = new LongArrayList();
+        BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
         for (int y = alienBase.getOrigin().getY(), i = 0; y >= -53; y--, i++){
             int step = i%8;
             if (step != 7) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, -1).asLong());
             }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, -1), bs));
+            }
             if (step != 6) {
                 mineshaft.add(alienBase.getOrigin().add(0, -i, -1).asLong());
+            }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, -1), bs));
             }
             if (step != 5) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, -1).asLong());
             }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, -1), bs));
+            }
             if (step != 4) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, 0).asLong());
+            }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 0), bs));
             }
             if (step != 3) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, 1).asLong());
             }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 1), bs));
+            }
             if (step != 2) {
                 mineshaft.add(alienBase.getOrigin().add(0, -i, 1).asLong());
+            }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, 1), bs));
             }
             if (step != 1) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, 1).asLong());
             }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 1), bs));
+            }
             if (step != 0) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, 0).asLong());
+            }
+            else{
+                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 0), bs));
             }
 
             if (STRIP_MINE_LEVELS.contains(y)) {
@@ -105,39 +130,6 @@ public class CreateMineshaft implements AlienBaseTask {
                     alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
                     mineshaft = new LongArrayList();
                 }
-            }
-        }
-
-        createStairwell();
-    }
-
-    void createStairwell() {
-        BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
-        for (int y = 0, i = 0; y >= -53; y--, i++) {
-            int step = i % 8;
-            if (step != 7) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, -1), bs));
-            }
-            if (step != 6) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, -1), bs));
-            }
-            if (step != 5) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, -1), bs));
-            }
-            if (step != 4) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 0), bs));
-            }
-            if (step != 3) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(1, -i, 1), bs));
-            }
-            if (step != 2) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(0, -i, 1), bs));
-            }
-            if (step != 1) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 1), bs));
-            }
-            if (step != 0) {
-                alienBase.addBaseBlock(new BaseBlock(alienBase.getOrigin().add(-1, -i, 0), bs));
             }
         }
     }
