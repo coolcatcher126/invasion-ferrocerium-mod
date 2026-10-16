@@ -53,7 +53,7 @@ public class CreateMineshaft implements AlienBaseTask {
         LongArrayList mineshaft = new LongArrayList();
         ArrayList<BaseBlock> baseBlocks = new ArrayList<>();
         BlockState bs = Blocks.STONE_BRICKS.getDefaultState();
-        for (int y = alienBase.getOrigin().getY(), i = 0; y >= -53; y--, i++){
+        for (int y = alienBase.getOrigin().getY(), i = 1; y >= -53; y--, i++){
             int step = i%8;
             if (step != 7) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, -1).asLong());
@@ -167,14 +167,14 @@ public class CreateMineshaft implements AlienBaseTask {
                 mineshaft.add(alienBase.getOrigin().add(1,-i,3).asLong());
                 mineshaft.add(alienBase.getOrigin().add(2,-i,3).asLong());
                 mineshaft.add(alienBase.getOrigin().add(3,-i,3).asLong());
+            }
 
-                if (i%2 == 0){
-                    //Split the mineshaft staircase into sections
-                    alienBase.addBaseBlocks(baseBlocks);
-                    baseBlocks = new ArrayList<>();
-                    alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
-                    mineshaft = new LongArrayList();
-                }
+            if (i%10 == 1){
+                //Split the mineshaft staircase into sections
+                alienBase.addBaseBlocks(baseBlocks);
+                baseBlocks = new ArrayList<>();
+                alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+                mineshaft = new LongArrayList();
             }
         }
     }
@@ -196,7 +196,7 @@ public class CreateMineshaft implements AlienBaseTask {
         LongArrayList mineshaft = new LongArrayList();
 
         //Start the side branches outside the stairwell
-        mineFront = mineFront.offset(direction, 2);
+        mineFront = mineFront.offset(direction, 3);
         while (alienBase.getWorld().getBlockState(mineFront).isAir()) {
             mineFront = mineFront.offset(direction);
         }

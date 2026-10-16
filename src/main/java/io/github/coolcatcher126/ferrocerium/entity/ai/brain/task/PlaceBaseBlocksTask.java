@@ -25,6 +25,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     BlockPos basePos;
     private List<BaseBlock> blocks;
     int blockIndex;
+    boolean finished;
 
     boolean willExchange = false;
 
@@ -60,7 +61,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if the building is built.
-        if (optional.isEmpty() || alienBuilderBotEntity.getSection().isBuilt()){
+        if (optional.isEmpty() || finished || alienBuilderBotEntity.getSection().isBuilt()){
             return false;
         }
 
@@ -78,6 +79,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
         blockIndex = 0;
         willExchange = false;
+        finished = false;
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -89,9 +91,15 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         BaseBlock block;
         BlockPos blockPos;
         BlockState blockState;
+        int alreadyBuiltCount = 0;
         do {
             if (blocks.size() <= blockIndex){
                 blockIndex = 0;
+                if (blocks.size() == alreadyBuiltCount){
+                    finished = true;
+                    return;
+                }
+                alreadyBuiltCount = 0;
             }
 
             block = blocks.get(blockIndex);
@@ -108,6 +116,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
 
             if (block.isWantedBlock(serverWorld)) {
                 blockIndex++;
+                alreadyBuiltCount++;
                 continue;
             }
 

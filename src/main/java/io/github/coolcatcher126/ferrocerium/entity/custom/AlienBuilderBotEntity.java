@@ -308,7 +308,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         if (building) {
             if (!alienBase.getBaseBlocks().isEmpty()) {
-                this.brain.remember(ModMemoryModuleTypes.BUILDING, alienBase.getBaseBlocks().getFirst());
+                this.brain.remember(ModMemoryModuleTypes.BUILDING, alienBase.getBaseBlocks().removeFirst());
             }
             else if (null != sectionToBuild) {
                 this.brain.remember(ModMemoryModuleTypes.BUILDING, List.copyOf(sectionToBuild.getOrCalculateBaseBlockData()));
