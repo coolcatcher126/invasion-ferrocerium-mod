@@ -12,14 +12,12 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class BaseSection {
+public class BaseSection extends BaseBlocks {
     private AlienBase alienBase;
     private final BaseSectionTemplate section;
-    private final World world;
     private final BaseSectPos origin;
     private final BlockRotation rotation;
     private final boolean isCore;
-    private ArrayList<BaseBlock> blocks;
     private final ArrayList<BlockPos> chestLocations = new ArrayList<>();
 
     //Chest search variables
@@ -38,8 +36,8 @@ public class BaseSection {
             BlockRotation rotation,
             boolean isCore
     ) {
+        super(world);
         this.section = sectionTemplate;
-        this.world = world;
         this.origin = originPos;
         this.rotation = rotation;
         this.isCore = isCore;
