@@ -3,7 +3,6 @@ package io.github.coolcatcher126.ferrocerium.base;
 import io.github.coolcatcher126.ferrocerium.base.ai.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
-import net.minecraft.entity.Entity;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -26,13 +25,13 @@ public class AlienBase {
     AlienBaseTaskScheduler scheduler;
     World world;
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
-    ArrayList<BaseBlock> baseBlocks = new ArrayList<>();//Things to build that are not base sections
+    ArrayList<ArrayList<BaseBlock>> baseBlocks = new ArrayList<>();//Things to build that are not base sections
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
     //Recreate alien base
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlock> baseBlocks, ArrayList<Vein> resources, ArrayList<UUID> builderUUIDs, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<ArrayList<BaseBlock>> baseBlocks, ArrayList<Vein> resources, ArrayList<UUID> builderUUIDs, UUID uuid){
         this.world = world;
         this.origin = origin;
 
@@ -127,12 +126,12 @@ public class AlienBase {
         return this.uuid;
     }
 
-    public ArrayList<BaseBlock> getBaseBlocks(){
+    public ArrayList<ArrayList<BaseBlock>> getBaseBlocks(){
         return this.baseBlocks;
     }
 
-    public void addBaseBlock(BaseBlock block){
-        this.baseBlocks.add(block);
+    public void addBaseBlocks(ArrayList<BaseBlock> blocks){
+        this.baseBlocks.add(blocks);
     }
 
     public ArrayList<Vein> getResources(){

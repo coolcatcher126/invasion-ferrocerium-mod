@@ -136,8 +136,13 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         nbtCompound.put("alien_base_builders", nbtList);
 
         nbtList = new NbtList();
-        for (BaseBlock block : alienBase.baseBlocks) {
-            nbtList.add(writeToNbtBaseBlock(block));
+        NbtList baseBlocksList;
+        for (ArrayList<BaseBlock> blocks : alienBase.baseBlocks) {
+            baseBlocksList = new NbtList();
+            for (BaseBlock block : blocks){
+                baseBlocksList.add(writeToNbtBaseBlock(block));
+            }
+            nbtList.add(baseBlocksList);
         }
         nbtCompound.put("alien_base_base_blocks", nbtList);
 
@@ -223,14 +228,19 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         }
         //Get base blocks
         nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
-        ArrayList<BaseBlock> baseBlocks = new ArrayList<>();
+        ArrayList<ArrayList<BaseBlock>> baseBlocksList = new ArrayList<>();
+        ArrayList<BaseBlock> baseBlocks;
         for (NbtElement nbtElement : nbtList) {
-            if (nbtElement instanceof NbtCompound){
-                baseBlocks.add(readfromNbtBaseBlock((NbtCompound) nbtElement));
+            baseBlocks = new ArrayList<>();
+            if (nbtElement instanceof NbtList){
+                for (NbtElement nbtElement1 : (NbtList) nbtElement){
+                    baseBlocks.add(readfromNbtBaseBlock((NbtCompound) nbtElement1));
+                }
             }
             else{
                 throw new InvalidNbtException("Base block data does not exist");
             }
+            baseBlocksList.add(baseBlocks);
         }
         //Get builders
         nbtList = nbtCompound.getList("alien_base_builders", NbtElement.COMPOUND_TYPE);
@@ -259,7 +269,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
                 nbtCompound.getInt("alien_base_x"),
                 nbtCompound.getInt("alien_base_y"),
                 nbtCompound.getInt("alien_base_z"));
-        return new AlienBaseSave(origin, savedSections, builders, baseBlocks, veins, uuid);
+        return new AlienBaseSave(origin, savedSections, builders, baseBlocksList, veins, uuid);
     }
 
     private BaseBlock readfromNbtBaseBlock(NbtCompound nbtCompound){
