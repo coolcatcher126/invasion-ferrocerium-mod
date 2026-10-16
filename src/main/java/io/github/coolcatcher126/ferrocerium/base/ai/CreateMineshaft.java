@@ -57,74 +57,116 @@ public class CreateMineshaft implements AlienBaseTask {
             int step = i%8;
             if (step != 7) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, -1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2, -i, -1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2, -i, -2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1, -i, -2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, -1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, -1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, -2), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, -2), bs));
             }
             if (step != 6) {
                 mineshaft.add(alienBase.getOrigin().add(0, -i, -1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0, -i, -2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, -1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, -2), bs));
             }
             if (step != 5) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, -1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2, -i, -1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2, -i, -2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1, -i, -2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, -1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, -1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, -2), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, -2), bs));
             }
             if (step != 4) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, 0).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2, -i, 0).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 0), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 0), bs));
             }
             if (step != 3) {
                 mineshaft.add(alienBase.getOrigin().add(1, -i, 1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2, -i, 1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2, -i, 2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1, -i, 2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 2), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 2), bs));
             }
             if (step != 2) {
                 mineshaft.add(alienBase.getOrigin().add(0, -i, 1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0, -i, 2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, 1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, 2), bs));
             }
             if (step != 1) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, 1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2, -i, 1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2, -i, 2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1, -i, 2).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 1), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 2), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 2), bs));
             }
             if (step != 0) {
                 mineshaft.add(alienBase.getOrigin().add(-1, -i, 0).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2, -i, 0).asLong());
             }
             else{
                 baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 0), bs));
+                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 0), bs));
             }
 
             if (STRIP_MINE_LEVELS.contains(y)) {
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,-2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1,-i,-2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0,-i,-2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1,-i,-2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,-3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,-3).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,-1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2,-i,-1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,-2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,-2).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,0).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2,-i,0).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,-1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,-1).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2,-i,1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,0).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,0).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-2,-i,2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1,-i,2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0,-i,2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1,-i,2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,1).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,1).asLong());
+
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,2).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,2).asLong());
+
+                mineshaft.add(alienBase.getOrigin().add(-3,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-2,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(-1,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(0,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(1,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(2,-i,3).asLong());
+                mineshaft.add(alienBase.getOrigin().add(3,-i,3).asLong());
 
                 if (i%2 == 0){
                     //Split the mineshaft staircase into sections
