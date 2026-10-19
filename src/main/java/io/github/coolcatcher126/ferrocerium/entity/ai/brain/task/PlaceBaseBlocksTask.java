@@ -16,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.event.GameEvent;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,7 +43,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         }
         basePos = optional.get().pos();
 
-        if (alienBuilderBotEntity.getSection().isBuilt()){
+        if (alienBuilderBotEntity.getToBuild().isBuilt()){
             return false;
         }
 
@@ -62,7 +61,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if the building is built.
-        if (optional.isEmpty() || finished || alienBuilderBotEntity.getSection().isBuilt()){
+        if (optional.isEmpty() || finished || alienBuilderBotEntity.getToBuild().isBuilt()){
             return false;
         }
 

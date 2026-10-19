@@ -31,7 +31,7 @@ public class ExchangeChestItemsTask {
                 ).apply(
                         context,
                         (chestLocation) ->  (world, entity, time) -> {
-                            if (null == entity.getSection() || (entity.getWantedItems().isEmpty() && entity.getUnwantedItems().isEmpty())) {
+                            if (null == entity.getToBuild() || (entity.getWantedItems().isEmpty() && entity.getUnwantedItems().isEmpty())) {
                                 return false;
                             }
                             else if (time < timer.getValue()) {

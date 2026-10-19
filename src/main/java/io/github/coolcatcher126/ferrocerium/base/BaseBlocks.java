@@ -1,8 +1,11 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BaseBlocks {
     protected final World world;
@@ -29,5 +32,13 @@ public class BaseBlocks {
 
     public ArrayList<BaseBlock> getBlocks(){
         return this.blocks;
+    }
+
+    public Set<Item> getBaseBlockPallete(){
+        return blocks.stream().map(x-> x.getBlockState().getBlock().asItem()).collect(Collectors.toSet());
+    }
+
+    public BaseSectPos getOrigin(){
+        return new BaseSectPos(0,0,0);
     }
 }

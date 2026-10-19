@@ -18,7 +18,7 @@ public class FindUnwantedItemsTask {
         MutableLong timer = new MutableLong(0L);
         return TaskTriggerer.task(
             context -> context.point((world, entity, time) -> {
-                if (null == entity.getSection() || entity.getInventory().isEmpty()) {
+                if (null == entity.getToBuild() || entity.getInventory().isEmpty()) {
                     return false;
                 } else if (time < timer.getValue()) {
                     return true;

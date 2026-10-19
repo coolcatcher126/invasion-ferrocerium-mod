@@ -15,7 +15,7 @@ public class FindWantedItemsTask {
         MutableLong timer = new MutableLong(0L);
         return TaskTriggerer.task(
             context -> context.point((world, entity, time) -> {
-                if (null == entity.getSection() || entity.getInventory().isEmpty()) {
+                if (null == entity.getToBuild() || entity.getInventory().isEmpty()) {
                     return false;
                 } else if (time < timer.getValue()) {
                     return true;
@@ -23,7 +23,7 @@ public class FindWantedItemsTask {
                 else {
                     boolean foundWanted = false;
 
-                    Set<ItemVariant> pallete = entity.getSection().getBaseBlockPallete().stream().map(ItemVariant::of).collect(Collectors.toSet());
+                    Set<ItemVariant> pallete = entity.getToBuild().getBaseBlockPallete().stream().map(ItemVariant::of).collect(Collectors.toSet());
                     List<ItemVariant> wantedItems = entity.getWantedItems();
                     wantedItems.clear();
                     wantedItems.addAll(pallete.stream().filter(i -> !i.isBlank()).toList());

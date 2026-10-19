@@ -70,13 +70,19 @@ public class BaseSection extends BaseBlocks {
         }
     }
 
-    public ArrayList<BaseBlock> getOrCalculateBaseBlockData(){
+    private ArrayList<BaseBlock> getOrCalculateBaseBlockData(){
         if (this.blocks == null) {
             calculateBaseBlockData();
         }
         return this.blocks;
     }
 
+    @Override
+    public ArrayList<BaseBlock> getBlocks(){
+        return getOrCalculateBaseBlockData();
+    }
+
+    @Override
     public Set<Item> getBaseBlockPallete(){
         return section.getBlockPallete(world);
     }
@@ -85,6 +91,7 @@ public class BaseSection extends BaseBlocks {
         return section.name;
     }
 
+    @Override
     public BaseSectPos getOrigin(){
         return this.origin;
     }

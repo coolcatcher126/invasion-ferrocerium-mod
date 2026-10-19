@@ -12,7 +12,6 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -37,7 +36,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
         }
         basePos = optional.get().pos();
 
-        if (alienBuilderBotEntity.getSection().isBuilt()){
+        if (alienBuilderBotEntity.getToBuild().isBuilt()){
             return false;
         }
 
@@ -48,7 +47,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
     protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
         //Check to see if the building is built.
-        if (optional.isEmpty() || alienBuilderBotEntity.getSection().isBuilt()){
+        if (optional.isEmpty() || alienBuilderBotEntity.getToBuild().isBuilt()){
             return false;
         }
 

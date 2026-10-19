@@ -3,10 +3,7 @@ package io.github.coolcatcher126.ferrocerium.entity.custom;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
-import io.github.coolcatcher126.ferrocerium.base.AlienBase;
-import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
-import io.github.coolcatcher126.ferrocerium.base.BaseSection;
-import io.github.coolcatcher126.ferrocerium.base.BaseSectionTemplates;
+import io.github.coolcatcher126.ferrocerium.base.*;
 import io.github.coolcatcher126.ferrocerium.components.InvasionFerroceriumComponents;
 import io.github.coolcatcher126.ferrocerium.entity.ModEntities;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModActivities;
@@ -82,7 +79,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     );
 
     @Nullable
-    private BaseSection sectionToBuild;
+    private BaseBlocks toBuild;
     @Nullable
     private Vein vein;
     @Nullable
@@ -186,8 +183,15 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
         if (alienBase != null) {
             nbt.putUuid("alien_base", alienBase.getUuid());
-            if (sectionToBuild != null) {
-                nbt.putInt("section_to_build", alienBase.getSections().indexOf(sectionToBuild));
+            if (toBuild != null) {
+                boolean isBaseSection = toBuild instanceof BaseSection;
+                nbt.putBoolean("to_build_is_BaseSection", isBaseSection);
+                if (isBaseSection){
+                    nbt.putInt("to_build", alienBase.getSections().indexOf((BaseSection) toBuild));
+                }
+                else {
+                    nbt.putInt("to_build", alienBase.getBaseBlocks().indexOf(toBuild));
+                }
             }
         }
 
@@ -218,8 +222,16 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
                 .orElse(null);
             if (alienBase != null) {
                 //InvasionFerrocerium.LOGGER.info("Found a base associated with the UUID %s".formatted(alienBaseUuid.toString()));
-                if (nbt.contains("section_to_build")){
-                    setSection(alienBase.getSections().get(nbt.getInt("section_to_build")));
+                if (nbt.contains("to_build_is_BaseSection")) {
+                    if (nbt.contains("to_build")){
+                        boolean isBaseSection = nbt.getBoolean("to_build_is_BaseSection");
+                        if (isBaseSection) {
+                            setToBuild(alienBase.getSections().get(nbt.getInt("to_build")));
+                        }
+                        else {
+                            setToBuild(alienBase.getBaseBlocks().get(nbt.getInt("to_build")));
+                        }
+                    }
                 }
             } else {
                 InvasionFerrocerium.LOGGER.info("No base is associated with the UUID %s".formatted(alienBaseUuid.toString()));
@@ -306,20 +318,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
 
     public void setBuilding(boolean building)
     {
-        if (building) {
-            if (!alienBase.getBaseBlocks().isEmpty()) {
-                this.brain.remember(ModMemoryModuleTypes.BUILDING, alienBase.getBaseBlocks().removeFirst());
-            }
-            else if (null != sectionToBuild) {
-                this.brain.remember(ModMemoryModuleTypes.BUILDING, sectionToBuild);
-            }
-            else {
-                this.brain.forget(ModMemoryModuleTypes.BUILDING);
-            }
-        }
-        else {
-            this.brain.forget(ModMemoryModuleTypes.BUILDING);
-        }
+        this.brain.remember(ModMemoryModuleTypes.BUILDING, toBuild);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
         this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, Activity.FIGHT, Activity.IDLE));
     }
@@ -365,22 +364,22 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
         return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).isPresent();
     }
 
-    public void setSection(BaseSection sectionToBuild){
-        setSection(sectionToBuild, this.alienBase);
+    public void setToBuild(BaseBlocks toBuild){
+        setToBuild(toBuild, this.alienBase);
     }
 
-    public void setSection(BaseSection sectionToBuild, AlienBase alienBase){
-        this.sectionToBuild = sectionToBuild;
-        if (alienBase != null && sectionToBuild != null) {
-            this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, new GlobalPos(alienBase.getDimension(), sectionToBuild.getOrigin().toBlockPos().add(alienBase.getOrigin())));
+    public void setToBuild(BaseBlocks toBuild, AlienBase alienBase){
+        this.toBuild = toBuild;
+        if (alienBase != null && this.toBuild != null) {
+            this.brain.remember(ModMemoryModuleTypes.BASE_SECTION_LOCATION, new GlobalPos(alienBase.getDimension(), this.toBuild.getOrigin().toBlockPos().add(alienBase.getOrigin())));
         }
         else {
             this.brain.forget(ModMemoryModuleTypes.BASE_SECTION_LOCATION);
         }
     }
 
-    public BaseSection getSection(){
-        return this.sectionToBuild;
+    public BaseBlocks getToBuild(){
+        return this.toBuild;
     }
 
     public void setVein(@Nullable Vein vein){

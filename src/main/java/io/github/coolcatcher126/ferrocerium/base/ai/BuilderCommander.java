@@ -2,12 +2,15 @@ package io.github.coolcatcher126.ferrocerium.base.ai;
 
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -34,12 +37,15 @@ public class BuilderCommander implements AlienBaseTask {
             Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering() || builder.isMining()));
             if (bot.isPresent()) {
                 if (build) {
-                    for (BaseSection section : alienBase.getSections()) {
-                        if (!section.isBuilt()) {
+                    List<BaseBlocks> thingsToBuild = new ArrayList<>();
+                    thingsToBuild.addAll(alienBase.getBaseBlocks());
+                    thingsToBuild.addAll(alienBase.getSections());
+                    for (BaseBlocks blocks : thingsToBuild) {
+                        if (!blocks.isBuilt()) {
                             AlienBuilderBotEntity bot1 = bot.get();
-                            bot1.setSection(section);
+                            bot1.setToBuild(blocks);
                             bot1.setBuilding(true);
-                            InvasionFerrocerium.RECIPES.requestCraftRequiredResources(bot1, section.getOrCalculateBaseBlockData().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
+                            InvasionFerrocerium.RECIPES.requestCraftRequiredResources(bot1, blocks.getBlocks().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
                             break;
                         }
                     }
