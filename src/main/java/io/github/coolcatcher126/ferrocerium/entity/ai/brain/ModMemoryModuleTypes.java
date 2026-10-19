@@ -3,6 +3,7 @@ package io.github.coolcatcher126.ferrocerium.entity.ai.brain;
 import com.mojang.serialization.Codec;
 import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -17,7 +18,7 @@ public class ModMemoryModuleTypes {
     public static final MemoryModuleType<GlobalPos> BASE_SECTION_LOCATION = register("base_section_location");
     public static final MemoryModuleType<GlobalPos> RESOURCE_LOCATION = register("resource_location");
     public static final MemoryModuleType<GlobalPos> CHEST_LOCATION = register("chest_location");
-    public static final MemoryModuleType<List<BaseBlock>> BUILDING = register("building");
+    public static final MemoryModuleType<BaseBlocks> BUILDING = register("building");
     public static final MemoryModuleType<Unit> GATHERING = register("gathering", Unit.CODEC);
     public static final MemoryModuleType<Unit> MINING = register("mining", Unit.CODEC);
     public static final MemoryModuleType<Unit> EXCHANGING = register("exchanging", Unit.CODEC);

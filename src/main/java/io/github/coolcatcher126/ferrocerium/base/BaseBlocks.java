@@ -26,4 +26,8 @@ public class BaseBlocks {
         }
         return true;
     }
+
+    public ArrayList<BaseBlock> getBlocks(){
+        return this.blocks;
+    }
 }

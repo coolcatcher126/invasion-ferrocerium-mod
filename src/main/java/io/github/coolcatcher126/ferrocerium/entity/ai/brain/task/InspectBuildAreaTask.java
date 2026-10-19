@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
-    private List<BaseBlock> blocks;
+    private BaseBlocks blocks;
 
     Vein obstructions;
 
@@ -67,7 +68,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
 
         //Scan the required blocks one block at a time.
         boolean clear = true;
-        for (BaseBlock block : blocks) {
+        for (BaseBlock block : blocks.getBlocks()) {
             if (block == null || block.isWantedBlock(serverWorld)) {
                 continue;
             }

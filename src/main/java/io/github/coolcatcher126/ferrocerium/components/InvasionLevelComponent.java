@@ -137,9 +137,9 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
 
         nbtList = new NbtList();
         NbtList baseBlocksList;
-        for (ArrayList<BaseBlock> blocks : alienBase.baseBlocks) {
+        for (BaseBlocks blocks : alienBase.baseBlocks) {
             baseBlocksList = new NbtList();
-            for (BaseBlock block : blocks){
+            for (BaseBlock block : blocks.getBlocks()){
                 baseBlocksList.add(writeToNbtBaseBlock(block));
             }
             nbtList.add(baseBlocksList);
@@ -228,7 +228,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         }
         //Get base blocks
         nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
-        ArrayList<ArrayList<BaseBlock>> baseBlocksList = new ArrayList<>();
+        ArrayList<BaseBlocks> baseBlocksList = new ArrayList<>();
         ArrayList<BaseBlock> baseBlocks;
         for (NbtElement nbtElement : nbtList) {
             baseBlocks = new ArrayList<>();
@@ -240,7 +240,7 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
             else{
                 throw new InvalidNbtException("Base block data does not exist");
             }
-            baseBlocksList.add(baseBlocks);
+            baseBlocksList.add(new BaseBlocks(world, baseBlocks));
         }
         //Get builders
         nbtList = nbtCompound.getList("alien_base_builders", NbtElement.COMPOUND_TYPE);

@@ -25,13 +25,13 @@ public class AlienBase {
     AlienBaseTaskScheduler scheduler;
     World world;
     ArrayList<Vein> resources = new ArrayList<>();//Things to mine
-    ArrayList<ArrayList<BaseBlock>> baseBlocks = new ArrayList<>();//Things to build that are not base sections
+    ArrayList<BaseBlocks> baseBlocks = new ArrayList<>();//Things to build that are not base sections
 
     protected final Random random = Random.create();
     UUID uuid = MathHelper.randomUuid(this.random);
 
     //Recreate alien base
-    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<ArrayList<BaseBlock>> baseBlocks, ArrayList<Vein> resources, ArrayList<UUID> builderUUIDs, UUID uuid){
+    public AlienBase(World world, BlockPos origin, ArrayList<BaseSection> sections, ArrayList<BaseBlocks> baseBlocks, ArrayList<Vein> resources, ArrayList<UUID> builderUUIDs, UUID uuid){
         this.world = world;
         this.origin = origin;
 
@@ -126,11 +126,11 @@ public class AlienBase {
         return this.uuid;
     }
 
-    public ArrayList<ArrayList<BaseBlock>> getBaseBlocks(){
+    public ArrayList<BaseBlocks> getBaseBlocks(){
         return this.baseBlocks;
     }
 
-    public void addBaseBlocks(ArrayList<BaseBlock> blocks){
+    public void addBaseBlocks(BaseBlocks blocks){
         this.baseBlocks.add(blocks);
     }
 

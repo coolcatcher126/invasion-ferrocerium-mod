@@ -1,6 +1,7 @@
 package io.github.coolcatcher126.ferrocerium.entity.ai.brain.task;
 
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
     private static final double MAX_DISTANCE = 5;
     BlockPos basePos;
-    private List<BaseBlock> blocks;
+    private BaseBlocks blocks;
     int blockIndex;
     boolean finished;
 
@@ -47,7 +48,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
-        if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+        if (blocks != null && !alienBuilderBotEntity.getInventory().containsAny((blocks.getBlocks().stream().map(block ->
                 block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
             alienBuilderBotEntity.getBrain().resetPossibleActivities();
             alienBuilderBotEntity.setExchanging(true);
@@ -65,7 +66,7 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
             return false;
         }
 
-        if (!alienBuilderBotEntity.getInventory().containsAny((blocks.stream().map(block ->
+        if (!alienBuilderBotEntity.getInventory().containsAny((blocks.getBlocks().stream().map(block ->
             block.getBlockState().getBlock().asItem())).collect(Collectors.toSet()))) {
             willExchange = true;
             return false;
@@ -93,16 +94,16 @@ public class PlaceBaseBlocksTask extends MultiTickTask<AlienBuilderBotEntity> {
         BlockState blockState;
         int alreadyBuiltCount = 0;
         do {
-            if (blocks.size() <= blockIndex){
+            if (blocks.getBlocks().size() <= blockIndex){
                 blockIndex = 0;
-                if (blocks.size() == alreadyBuiltCount){
+                if (blocks.getBlocks().size() == alreadyBuiltCount){
                     finished = true;
                     return;
                 }
                 alreadyBuiltCount = 0;
             }
 
-            block = blocks.get(blockIndex);
+            block = blocks.getBlocks().get(blockIndex);
             if (block == null) {
                 blockIndex++;
                 continue;

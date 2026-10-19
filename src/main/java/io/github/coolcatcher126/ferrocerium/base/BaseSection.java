@@ -48,6 +48,7 @@ public class BaseSection extends BaseBlocks {
     }
 
     /// Returns true when the blocks in the location of the base section matches the base section's template
+    @Override
     public boolean isBuilt(){
         for (BaseBlock block : getOrCalculateBaseBlockData()) {
             if (!(block.getBlockState().isAir() || block.isWantedBlock(world))){

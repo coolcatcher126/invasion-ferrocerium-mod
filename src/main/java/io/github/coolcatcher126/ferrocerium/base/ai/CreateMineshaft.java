@@ -2,6 +2,7 @@ package io.github.coolcatcher126.ferrocerium.base.ai;
 
 import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
+import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -155,7 +156,7 @@ public class CreateMineshaft implements AlienBaseTask {
 
             if (i%10 == 1){
                 //Split the mineshaft staircase into sections
-                alienBase.addBaseBlocks(baseBlocks);
+                alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), baseBlocks));
                 baseBlocks = new ArrayList<>();
                 alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
                 mineshaft = new LongArrayList();
