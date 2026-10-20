@@ -15,7 +15,6 @@ import java.util.Set;
 public class BaseSection extends BaseBlocks {
     private AlienBase alienBase;
     private final BaseSectionTemplate section;
-    private final BaseSectPos origin;
     private final BlockRotation rotation;
     private final boolean isCore;
     private final ArrayList<BlockPos> chestLocations = new ArrayList<>();
@@ -36,9 +35,8 @@ public class BaseSection extends BaseBlocks {
             BlockRotation rotation,
             boolean isCore
     ) {
-        super(world);
+        super(world, originPos);
         this.section = sectionTemplate;
-        this.origin = originPos;
         this.rotation = rotation;
         this.isCore = isCore;
     }
@@ -89,11 +87,6 @@ public class BaseSection extends BaseBlocks {
 
     public String getTemplateName(){
         return section.name;
-    }
-
-    @Override
-    public BaseSectPos getOrigin(){
-        return this.origin;
     }
 
     public BlockRotation getRotation(){

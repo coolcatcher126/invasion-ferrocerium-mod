@@ -1,8 +1,10 @@
 package io.github.coolcatcher126.ferrocerium.base;
 
+import io.github.coolcatcher126.ferrocerium.InvasionFerrocerium;
 import io.github.coolcatcher126.ferrocerium.base.ai.*;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -12,6 +14,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -150,6 +153,20 @@ public class AlienBase {
         }
     }
 
+    public BaseBlocks getClosestThingToBuild(BlockPos targetPos){
+        BaseSectPos targetRelativeBaseSectPos = new BaseSectPos(origin.subtract(targetPos));
+        List<BaseBlocks> thingsToBuild = new ArrayList<>();
+        thingsToBuild.addAll(baseBlocks);
+        thingsToBuild.addAll(sections);
+        int structure = 0;
+        for (BaseBlocks blocks : thingsToBuild) {
+            if (!blocks.isBuilt() && thingsToBuild.get(structure).origin.getManhattanDistance(targetRelativeBaseSectPos) > blocks.origin.getManhattanDistance(targetRelativeBaseSectPos)) {
+                structure = thingsToBuild.indexOf(blocks);
+            }
+        }
+        return thingsToBuild.get(structure);
+    }
+
     public Vein removeClosestVein(BlockPos targetPos){
         resources.removeIf(v -> 0 == v.size());
         int vein = 0;
@@ -178,8 +195,8 @@ public class AlienBase {
         BlockPos posRelativeToBase = pos.subtract(getOrigin());
         return getSections().stream()
                 .min((section1, section2) ->
-                        (int)(posRelativeToBase.getSquaredDistance(section1.getOrigin().toBlockPos()) -
-                            posRelativeToBase.getSquaredDistance(section2.getOrigin().toBlockPos()))
+                        (int)(posRelativeToBase.getManhattanDistance(section1.getOrigin().toBlockPos()) -
+                            posRelativeToBase.getManhattanDistance(section2.getOrigin().toBlockPos()))
                 ).orElse(null);
     }
 

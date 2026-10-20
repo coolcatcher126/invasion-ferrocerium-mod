@@ -5,97 +5,74 @@ import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.entity.ai.brain.ModMemoryModuleTypes;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.task.MultiTickTask;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.ai.brain.task.Task;
+import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.GlobalPos;
 
-import java.util.Map;
 import java.util.Optional;
 
-public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
+public class InspectBuildAreaTask {
     private static final double MAX_DISTANCE = 5;
-    BlockPos basePos;
-    private BaseBlocks blocks;
 
-    Vein obstructions;
+    public static Task<AlienBuilderBotEntity> create() {
+        return TaskTriggerer.task(
+                context -> context.group(
+                    context.queryMemoryValue(ModMemoryModuleTypes.BASE_SECTION_LOCATION),
+                    context.queryMemoryValue(ModMemoryModuleTypes.BUILDING),
+                    context.queryMemoryOptional(ModMemoryModuleTypes.BUILD_SITE_CLEAR),
+                    context.queryMemoryValue(ModMemoryModuleTypes.ACTIVITY_TICKS)
+                ).apply(
+                        context,
+                        (baseSectionLocation,
+                         building,
+                         buildSiteClear,
+                         activityTicks) ->  (serverWorld, alienBuilderBotEntity, time) -> {
+                            BlockPos basePos = context.getValue(baseSectionLocation).pos();
+                            BaseBlocks blocks;
+                            Vein obstructions;
 
-    public InspectBuildAreaTask() {
-        super(Map.of(ModMemoryModuleTypes.BASE_SECTION_LOCATION, MemoryModuleState.VALUE_PRESENT,
-                ModMemoryModuleTypes.BUILDING, MemoryModuleState.VALUE_PRESENT,
-                ModMemoryModuleTypes.BUILD_SITE_CLEAR, MemoryModuleState.VALUE_ABSENT,
-                ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT));
-    }
+                            if (alienBuilderBotEntity.getToBuild().isBuilt()){
+                                activityTicks.remember(0);
+                                return false;
+                            }
 
-    protected boolean shouldRun(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity) {
-        Optional<GlobalPos> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.BASE_SECTION_LOCATION);
-        if (optional.isEmpty()) {
-            return false;
-        }
-        basePos = optional.get().pos();
+                            boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
+                            if (!withinDistance){
+                                activityTicks.remember(0);
+                                return false;
+                            }
 
-        if (alienBuilderBotEntity.getToBuild().isBuilt()){
-            return false;
-        }
+                            blocks = context.getValue(building);
+                            obstructions = new Vein(true, true);
 
-        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        return withinDistance;
-    }
 
-    protected boolean shouldKeepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        Optional<Integer> optional = alienBuilderBotEntity.getBrain().getOptionalRegisteredMemory(ModMemoryModuleTypes.ACTIVITY_TICKS);
-        //Check to see if the building is built.
-        if (optional.isEmpty() || alienBuilderBotEntity.getToBuild().isBuilt()){
-            return false;
-        }
+                            //Scan the required blocks one block at a time.
+                            boolean clear = true;
+                            for (BaseBlock block : blocks.getBlocks()) {
+                                if (block == null || block.isWantedBlock(serverWorld)) {
+                                    continue;
+                                }
 
-        boolean withinDistance = alienBuilderBotEntity.getBase().getDimension() == serverWorld.getRegistryKey() && basePos.isWithinDistance(alienBuilderBotEntity.getPos(), MAX_DISTANCE);
-        return withinDistance;
-    }
+                                BlockPos blockPos = block.getBlockPos();
 
-    protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
-        obstructions = new Vein(true, true);
-    }
-
-    protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
-        if (l % 5 != 0) {
-            return;
-        }
-
-        //Scan the required blocks one block at a time.
-        boolean clear = true;
-        for (BaseBlock block : blocks.getBlocks()) {
-            if (block == null || block.isWantedBlock(serverWorld)) {
-                continue;
-            }
-
-            BlockPos blockPos = block.getBlockPos();
-
-            if (!serverWorld.getBlockState(blockPos).isAir()) {
-                obstructions.add(blockPos);
-                clear = false;
-            }
-        }
-        alienBuilderBotEntity.getBrain().remember(ModMemoryModuleTypes.BUILD_SITE_CLEAR, clear ? Unit.INSTANCE : null);
-        if (!clear){
-            alienBuilderBotEntity.getBrain().remember(ModMemoryModuleTypes.ACTIVITY_TICKS, 0);
-        }
-    }
-
-    @Override
-    protected boolean isTimeLimitExceeded(long time) {
-        return false;
-    }
-
-    @Override
-    protected void finishRunning(ServerWorld world, AlienBuilderBotEntity entity, long time) {
-        if (obstructions.size() > 0) {
-            entity.setVein(obstructions);
-//            entity.getBase().addVeinFirst(obstructions);
-            entity.setMining(true);
-        }
+                                if (!serverWorld.getBlockState(blockPos).isAir()) {
+                                    obstructions.add(blockPos);
+                                    clear = false;
+                                }
+                            }
+                            buildSiteClear.remember(Optional.ofNullable(clear ? Unit.INSTANCE : null));
+                            if (!clear) {
+                                if (obstructions.size() > 0) {
+//                                  alienBuilderBotEntity.setVein(obstructions);
+                                    alienBuilderBotEntity.getBase().addVeinFirst(obstructions);
+//                                  alienBuilderBotEntity.setMining(true);
+                                }
+                                activityTicks.remember(0);
+                            }
+                            return true;
+                        }
+                )
+        );
     }
 }

@@ -40,14 +40,12 @@ public class BuilderCommander implements AlienBaseTask {
                     List<BaseBlocks> thingsToBuild = new ArrayList<>();
                     thingsToBuild.addAll(alienBase.getBaseBlocks());
                     thingsToBuild.addAll(alienBase.getSections());
-                    for (BaseBlocks blocks : thingsToBuild) {
-                        if (!blocks.isBuilt()) {
-                            AlienBuilderBotEntity bot1 = bot.get();
-                            bot1.setToBuild(blocks);
-                            bot1.setBuilding(true);
-                            InvasionFerrocerium.RECIPES.requestCraftRequiredResources(bot1, blocks.getBlocks().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
-                            break;
-                        }
+                    if (!thingsToBuild.stream().allMatch(BaseBlocks::isBuilt)) {
+                        AlienBuilderBotEntity bot1 = bot.get();
+                        BaseBlocks blocks = alienBase.getClosestThingToBuild(bot1.getBlockPos());
+                        bot1.setToBuild(blocks);
+                        bot1.setBuilding(true);
+                        InvasionFerrocerium.RECIPES.requestCraftRequiredResources(bot1, blocks.getBlocks().stream().map(block -> ItemVariant.of(block.getBlockState().getBlock().asItem())).toList());
                     }
                 }
                 else {

@@ -9,14 +9,17 @@ import java.util.stream.Collectors;
 
 public class BaseBlocks {
     protected final World world;
+    protected final BaseSectPos origin;
     protected ArrayList<BaseBlock> blocks;
 
-    public BaseBlocks(World world){
+    public BaseBlocks(World world, BaseSectPos origin){
         this.world = world;
+        this.origin = origin;
     }
 
-    public BaseBlocks(World world, ArrayList<BaseBlock> blocks){
+    public BaseBlocks(World world, BaseSectPos origin, ArrayList<BaseBlock> blocks){
         this.world = world;
+        this.origin = origin;
         this.blocks = blocks;
     }
 
@@ -39,6 +42,6 @@ public class BaseBlocks {
     }
 
     public BaseSectPos getOrigin(){
-        return new BaseSectPos(0,0,0);
+        return this.origin;
     }
 }

@@ -7,6 +7,9 @@ public class BaseSectPos extends Vec3i {
     private static final int SECTION_SIZE = 10;
 
     public BaseSectPos(int x, int y, int z) {super(x,y,z);}
+    public BaseSectPos(BlockPos blockPos) {
+        super(blockPos.getX() / SECTION_SIZE, blockPos.getY() / SECTION_SIZE, blockPos.getZ() / SECTION_SIZE);
+    }
 
     public BlockPos toBlockPos(){
         return new BlockPos(getX() * SECTION_SIZE, getY() * SECTION_SIZE, getZ() * SECTION_SIZE);

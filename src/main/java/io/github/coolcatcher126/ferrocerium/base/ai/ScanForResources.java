@@ -40,7 +40,7 @@ public class ScanForResources implements AlienBaseTask  {
             search_time_count--;
         }
         else{
-            findResourcesToCollect();
+            //findResourcesToCollect();
             search_time_count = SEARCH_TIME;
         }
     }

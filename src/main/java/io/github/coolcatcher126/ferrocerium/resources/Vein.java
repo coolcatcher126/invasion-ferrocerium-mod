@@ -65,6 +65,8 @@ public class Vein {
         int closestSqrDist = Integer.MAX_VALUE;
         long closestPoint = 0;
 
+        //pos = pos.up();
+
         for (Long point : this.points) {
             int distX = pos.getX() - BlockPos.unpackLongX(point);
             int distY = pos.getY() - BlockPos.unpackLongY(point);

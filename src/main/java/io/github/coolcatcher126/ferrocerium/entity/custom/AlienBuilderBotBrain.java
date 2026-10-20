@@ -63,7 +63,7 @@ public class AlienBuilderBotBrain {
         brain.setTaskList(
                 ModActivities.BUILD,
                 ImmutableList.of(
-                        Pair.of(0, new InspectBuildAreaTask()),
+                        Pair.of(0, InspectBuildAreaTask.create()),
                         Pair.of(1, new PlaceBaseBlocksTask()),
                         Pair.of(2, makeGoToBaseSectionTask())
                 ),

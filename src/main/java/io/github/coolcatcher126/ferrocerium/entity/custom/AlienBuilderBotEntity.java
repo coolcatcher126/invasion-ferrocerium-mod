@@ -320,7 +320,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.BUILDING, toBuild);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, building ? 600:null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, Activity.FIGHT, Activity.IDLE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, Activity.FIGHT));
     }
 
     public boolean isBuilding()
@@ -332,7 +332,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD, Activity.FIGHT));
     }
 
     public boolean isExchanging()
@@ -344,7 +344,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.EXCHANGING, exchanging ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, exchanging ? 100 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE, Activity.FIGHT, Activity.IDLE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.EXCHANGE, Activity.FIGHT));
     }
 
     public boolean isGathering()
@@ -356,7 +356,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.MINING, mining ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE, Activity.FIGHT, Activity.IDLE));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE, Activity.FIGHT));
     }
 
     public boolean isMining()

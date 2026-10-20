@@ -136,13 +136,18 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         nbtCompound.put("alien_base_builders", nbtList);
 
         nbtList = new NbtList();
-        NbtList baseBlocksList;
+        NbtCompound baseBlocksCompound;
         for (BaseBlocks blocks : alienBase.baseBlocks) {
-            baseBlocksList = new NbtList();
+            baseBlocksCompound = new NbtCompound();
+            baseBlocksCompound.putInt("base_blocks_x", blocks.getOrigin().getX());
+            baseBlocksCompound.putInt("base_blocks_y", blocks.getOrigin().getY());
+            baseBlocksCompound.putInt("base_blocks_z", blocks.getOrigin().getZ());
+            NbtList baseBlocksList = new NbtList();
             for (BaseBlock block : blocks.getBlocks()){
                 baseBlocksList.add(writeToNbtBaseBlock(block));
             }
-            nbtList.add(baseBlocksList);
+            baseBlocksCompound.put("base_blocks_list", baseBlocksList);
+            nbtList.add(baseBlocksCompound);
         }
         nbtCompound.put("alien_base_base_blocks", nbtList);
 
@@ -230,17 +235,27 @@ public class InvasionLevelComponent implements Component, ServerTickingComponent
         nbtList = nbtCompound.getList("alien_base_base_blocks", NbtElement.COMPOUND_TYPE);
         ArrayList<BaseBlocks> baseBlocksList = new ArrayList<>();
         ArrayList<BaseBlock> baseBlocks;
-        for (NbtElement nbtElement : nbtList) {
+        for (NbtElement baseBlocksCompound : nbtList) {
             baseBlocks = new ArrayList<>();
-            if (nbtElement instanceof NbtList){
-                for (NbtElement nbtElement1 : (NbtList) nbtElement){
+            if (baseBlocksCompound instanceof NbtCompound){
+                for (NbtElement nbtElement1 : (NbtList) ((NbtCompound) baseBlocksCompound).getList("base_blocks_list", NbtElement.COMPOUND_TYPE)){
                     baseBlocks.add(readfromNbtBaseBlock((NbtCompound) nbtElement1));
                 }
+                baseBlocksList.add(
+                        new BaseBlocks(
+                                world,
+                                new BaseSectPos(
+                                        ((NbtCompound) baseBlocksCompound).getInt("base_blocks_x"),
+                                        ((NbtCompound) baseBlocksCompound).getInt("base_blocks_y"),
+                                        ((NbtCompound) baseBlocksCompound).getInt("base_blocks_z")
+                                        ),
+                                baseBlocks
+                        )
+                );
             }
             else{
                 throw new InvalidNbtException("Base block data does not exist");
             }
-            baseBlocksList.add(new BaseBlocks(world, baseBlocks));
         }
         //Get builders
         nbtList = nbtCompound.getList("alien_base_builders", NbtElement.COMPOUND_TYPE);
