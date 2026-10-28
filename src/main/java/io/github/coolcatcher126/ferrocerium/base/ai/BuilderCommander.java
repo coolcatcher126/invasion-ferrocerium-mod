@@ -5,7 +5,6 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 

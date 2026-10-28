@@ -4,7 +4,6 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlock;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.base.BaseSectPos;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import net.minecraft.block.BlockState;
@@ -13,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -280,7 +278,7 @@ public class CreateMineshaft implements AlienBaseTask {
                 //Split the mineshaft staircase into sections of 10 blocks down
                 alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(alienBase.getOrigin())), baseBlocks));
                 baseBlocks = new ArrayList<>();
-                alienBase.addVein(new Vein(mineshaft);
+                alienBase.addVein(new Vein(mineshaft));
                 mineshaft = new LongArrayList();
             }
         }
