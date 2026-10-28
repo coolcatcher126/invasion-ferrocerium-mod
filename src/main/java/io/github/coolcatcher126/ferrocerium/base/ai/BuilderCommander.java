@@ -31,7 +31,7 @@ public class BuilderCommander implements AlienBaseTask {
             ticksToCommand--;
         }
         else {
-            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering() || builder.isMining()));
+            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering()));
             if (bot.isPresent()) {
                 if (build) {
                     for (BaseSection section : alienBase.getSections()) {
@@ -49,12 +49,7 @@ public class BuilderCommander implements AlienBaseTask {
                         AlienBuilderBotEntity x = bot.get();
                         Vein vein = alienBase.removeClosestVein(x.getBlockPos());
                         x.setVein(vein);
-                        if (vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE)) {
-                            x.setMining(true);
-                        }
-                        else if (vein.getCategories().contains(ResourceCategory.WOOD)) {
-                            x.setGathering(true);
-                        }
+                        x.setGathering(true);
                     }
                 }
             }

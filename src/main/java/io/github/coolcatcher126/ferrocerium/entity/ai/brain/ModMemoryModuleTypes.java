@@ -19,7 +19,6 @@ public class ModMemoryModuleTypes {
     public static final MemoryModuleType<GlobalPos> CHEST_LOCATION = register("chest_location");
     public static final MemoryModuleType<List<BaseBlock>> BUILDING = register("building");
     public static final MemoryModuleType<Unit> GATHERING = register("gathering", Unit.CODEC);
-    public static final MemoryModuleType<Unit> MINING = register("mining", Unit.CODEC);
     public static final MemoryModuleType<Unit> EXCHANGING = register("exchanging", Unit.CODEC);
     public static final MemoryModuleType<Unit> BUILD_SITE_CLEAR = register("build_site_clear", Unit.CODEC);
     public static final MemoryModuleType<Integer> ACTIVITY_TICKS = register("activity_ticks", Codec.INT);

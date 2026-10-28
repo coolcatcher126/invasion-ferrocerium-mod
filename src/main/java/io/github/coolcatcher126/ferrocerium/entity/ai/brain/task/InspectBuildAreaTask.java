@@ -57,7 +57,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
 
     protected void run(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
         blocks = alienBuilderBotEntity.getBrain().getOptionalMemory(ModMemoryModuleTypes.BUILDING).get();
-        obstructions = new Vein(true, true);
+        obstructions = new Vein(true);
     }
 
     protected void keepRunning(ServerWorld serverWorld, AlienBuilderBotEntity alienBuilderBotEntity, long l) {
@@ -95,7 +95,7 @@ public class InspectBuildAreaTask extends MultiTickTask<AlienBuilderBotEntity> {
         if (obstructions.size() > 0) {
             entity.setVein(obstructions);
 //            entity.getBase().addVeinFirst(obstructions);
-            entity.setMining(true);
+            entity.setGathering(true);
         }
     }
 }

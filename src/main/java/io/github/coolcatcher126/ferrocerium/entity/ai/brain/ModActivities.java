@@ -7,8 +7,7 @@ import net.minecraft.registry.Registry;
 
 public class ModActivities {
     public static final Activity BUILD = register("build");
-    public static final Activity MINE = register("mine");
-    public static final Activity CHOP_WOOD = register("chop_wood");
+    public static final Activity GATHER = register("gather");
     public static final Activity CRAFT = register("craft");
     public static final Activity EXCHANGE = register("exchange");
 

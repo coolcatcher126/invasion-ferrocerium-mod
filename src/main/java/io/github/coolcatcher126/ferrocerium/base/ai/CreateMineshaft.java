@@ -102,7 +102,7 @@ public class CreateMineshaft implements AlienBaseTask {
 
                 if (i%2 == 0){
                     //Split the mineshaft staircase into sections
-                    alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+                    alienBase.addVein(new Vein(mineshaft));
                     mineshaft = new LongArrayList();
                 }
             }
@@ -170,6 +170,6 @@ public class CreateMineshaft implements AlienBaseTask {
             mineshaft.add(mineFront.add(0, 1, 0).asLong());
             mineFront = mineFront.offset(direction);
         }
-        alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+        alienBase.addVein(new Vein(mineshaft));
     }
 }

@@ -79,7 +79,7 @@ public class AlienBase {
 
     /// Returns the first alien builder bot to not be doing anything.
     public Optional<AlienBuilderBotEntity> getFirstAvailableAlienBuilderBotEntity(){
-        return getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isBuilding() || builder.isGathering() || builder.isMining()));
+        return getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isBuilding() || builder.isGathering()));
     }
 
     /// Returns the first alien builder bot to match the filter.

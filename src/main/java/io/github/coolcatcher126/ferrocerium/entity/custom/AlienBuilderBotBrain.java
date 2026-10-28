@@ -21,8 +21,7 @@ public class AlienBuilderBotBrain {
         addCoreActivities(brain);
         addIdleActivities(brain);
         addBuildActivities(brain);
-        addMineActivities(brain);
-        addChopWoodActivities(brain);
+        addGatherActivities(brain);
         addCraftActivities(brain);
         addExchangeActivities(brain);
         addFightActivities(bot, brain);
@@ -78,38 +77,20 @@ public class AlienBuilderBotBrain {
         );
     }
 
-    private static void addMineActivities(Brain<AlienBuilderBotEntity> brain) {
+    private static void addGatherActivities(Brain<AlienBuilderBotEntity> brain) {
         brain.setTaskList(
-                ModActivities.MINE,
+                ModActivities.GATHER,
                 ImmutableList.of(
                         Pair.of(0, new GatherTask()),
-                        Pair.of(1, makeGoToResourceTask())
-                ),
-                ImmutableSet.of(
-                        Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
-                        Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
-                        Pair.of(ModMemoryModuleTypes.MINING, MemoryModuleState.VALUE_PRESENT)
-                ),
-                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.MINING)
-        );
-    }
-
-    private static void addChopWoodActivities(Brain<AlienBuilderBotEntity> brain) {
-        brain.setTaskList(
-                ModActivities.CHOP_WOOD,
-                ImmutableList.of(
-                        Pair.of(0, new GatherTask()),
-                        Pair.of(1, makeGoToResourceTask()),
-                        Pair.of(2, new PillarTask())
+                        Pair.of(1, makeGoToResourceTask())//,
+                        //Pair.of(2, new PillarTask())
                 ),
                 ImmutableSet.of(
                         Pair.of(ModMemoryModuleTypes.RESOURCE_LOCATION, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.ACTIVITY_TICKS, MemoryModuleState.VALUE_PRESENT),
                         Pair.of(ModMemoryModuleTypes.GATHERING, MemoryModuleState.VALUE_PRESENT)
                 ),
-                ImmutableSet.of(
-                        ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.GATHERING
-                )
+                ImmutableSet.of(ModMemoryModuleTypes.ACTIVITY_TICKS, ModMemoryModuleTypes.GATHERING)
         );
     }
 
@@ -157,7 +138,7 @@ public class AlienBuilderBotBrain {
         Brain<AlienBuilderBotEntity> brain = bot.getBrain();
         Activity activity = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity == null || activity == Activity.FIGHT || activity == Activity.IDLE) {
-            brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.MINE, ModActivities.CHOP_WOOD, Activity.FIGHT, Activity.IDLE));
+            brain.resetPossibleActivities(ImmutableList.of(ModActivities.BUILD, ModActivities.EXCHANGE, ModActivities.GATHER, Activity.FIGHT, Activity.IDLE));
         }
     }
 
