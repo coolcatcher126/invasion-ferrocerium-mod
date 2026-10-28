@@ -44,7 +44,7 @@ public class InspectBuildAreaTask {
                             }
 
                             blocks = context.getValue(building);
-                            obstructions = new Vein(true, true);
+                            obstructions = new Vein(true);
 
 
                             //Scan the required blocks one block at a time.

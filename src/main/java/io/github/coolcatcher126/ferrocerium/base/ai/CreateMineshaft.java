@@ -280,13 +280,13 @@ public class CreateMineshaft implements AlienBaseTask {
                 //Split the mineshaft staircase into sections of 10 blocks down
                 alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(alienBase.getOrigin())), baseBlocks));
                 baseBlocks = new ArrayList<>();
-                alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+                alienBase.addVein(new Vein(mineshaft);
                 mineshaft = new LongArrayList();
             }
         }
         //Split the mineshaft staircase into sections of 10 blocks down
         alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(alienBase.getOrigin())), baseBlocks));
-        alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+        alienBase.addVein(new Vein(mineshaft));
     }
 
     void extendStripMines(int length) {
@@ -318,6 +318,6 @@ public class CreateMineshaft implements AlienBaseTask {
             mineshaft.add(mineFront.add(0, 2, 0).asLong());
             mineFront = mineFront.offset(direction);
         }
-        alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+        alienBase.addVein(new Vein(mineshaft));
     }
 }

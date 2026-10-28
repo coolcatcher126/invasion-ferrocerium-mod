@@ -73,7 +73,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
             ModMemoryModuleTypes.BUILDING,
             ModMemoryModuleTypes.EXCHANGING,
             ModMemoryModuleTypes.GATHERING,
-            ModMemoryModuleTypes.MINING,
             ModMemoryModuleTypes.BUILD_SITE_CLEAR,
             ModMemoryModuleTypes.ACTIVITY_TICKS
     );
@@ -332,7 +331,7 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     {
         this.brain.remember(ModMemoryModuleTypes.GATHERING, gathering ? Unit.INSTANCE : null);
         this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, gathering ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.CHOP_WOOD, Activity.FIGHT));
+        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.GATHER, Activity.FIGHT));
     }
 
     public boolean isExchanging()
@@ -350,18 +349,6 @@ public class AlienBuilderBotEntity extends HostileEntity implements InvasionBotE
     public boolean isGathering()
     {
         return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.GATHERING).isPresent();
-    }
-
-    public void setMining(boolean mining)
-    {
-        this.brain.remember(ModMemoryModuleTypes.MINING, mining ? Unit.INSTANCE : null);
-        this.brain.remember(ModMemoryModuleTypes.ACTIVITY_TICKS, mining ? 600 : null);
-        this.brain.resetPossibleActivities(ImmutableList.of(ModActivities.MINE, Activity.FIGHT));
-    }
-
-    public boolean isMining()
-    {
-        return this.brain.getOptionalRegisteredMemory(ModMemoryModuleTypes.MINING).isPresent();
     }
 
     public void setToBuild(BaseBlocks toBuild){
