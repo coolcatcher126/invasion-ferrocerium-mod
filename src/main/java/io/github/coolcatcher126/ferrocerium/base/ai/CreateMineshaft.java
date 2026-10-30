@@ -12,8 +12,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -318,6 +316,6 @@ public class CreateMineshaft implements AlienBaseTask {
             mineshaft.add(mineFront.add(0, 2, 0).asLong());
             mineFront = mineFront.offset(direction);
         }
-        alienBase.addVein(new Vein(mineshaft, EnumSet.of(ResourceCategory.STONE, ResourceCategory.ORES), true));
+        alienBase.addVein(new Vein(mineshaft));
     }
 }

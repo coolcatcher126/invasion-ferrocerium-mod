@@ -5,7 +5,6 @@ import io.github.coolcatcher126.ferrocerium.base.AlienBase;
 import io.github.coolcatcher126.ferrocerium.base.BaseBlocks;
 import io.github.coolcatcher126.ferrocerium.base.BaseSection;
 import io.github.coolcatcher126.ferrocerium.entity.custom.AlienBuilderBotEntity;
-import io.github.coolcatcher126.ferrocerium.resources.ResourceCategory;
 import io.github.coolcatcher126.ferrocerium.resources.Vein;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 
@@ -34,7 +33,7 @@ public class BuilderCommander implements AlienBaseTask {
             ticksToCommand--;
         }
         else {
-            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering() || builder.isMining()));
+            Optional<AlienBuilderBotEntity> bot = alienBase.getFirstAvailableAlienBuilderBotEntity(builder -> !(builder.isExchanging() || builder.isBuilding() || builder.isGathering()));
             if (bot.isPresent()) {
                 if (build) {
                     List<BaseBlocks> thingsToBuild = new ArrayList<>();
@@ -53,12 +52,7 @@ public class BuilderCommander implements AlienBaseTask {
                         AlienBuilderBotEntity x = bot.get();
                         Vein vein = alienBase.removeClosestVein(x.getBlockPos());
                         x.setVein(vein);
-                        if (vein.getCategories().contains(ResourceCategory.ORES) || vein.getCategories().contains(ResourceCategory.STONE)) {
-                            x.setMining(true);
-                        }
-                        else if (vein.getCategories().contains(ResourceCategory.WOOD)) {
-                            x.setGathering(true);
-                        }
+                        x.setGathering(true);
                     }
                 }
             }
