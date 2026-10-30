@@ -143,7 +143,20 @@ public class AlienBase {
 
     public void addVein(Vein vein){
         if (vein.size() > 0) {
-            resources.add(vein);
+            Optional<Vein> overlappingVein = Optional.empty();
+            for (Vein resource : resources) {
+                if (vein.overlaps(resource)) {
+                    overlappingVein = Optional.of(resource);
+                    break;
+                }
+            }
+
+            if (overlappingVein.isPresent()){
+                overlappingVein.get().append(vein);
+            }
+            else {
+                resources.add(vein);
+            }
         }
     }
 

@@ -43,6 +43,9 @@ public class Vein {
     public boolean contains(BlockPos pos){
         return this.points.contains(pos.asLong());
     }
+    boolean contains(Long pos){
+        return this.points.contains(pos);
+    }
 
     public int size(){ return this.points.size();}
 
@@ -90,6 +93,11 @@ public class Vein {
 
     public void append(Vein other){
         this.points.addAll(other.points);
+        this.points = this.points.longStream().distinct().collect(LongArrayList::new, LongArrayList::add, LongArrayList::addAll);
+    }
+
+    public boolean overlaps(Vein other){
+        return other.getPoints().stream().anyMatch(points::contains);
     }
 
     public boolean isDoNotSave() {
