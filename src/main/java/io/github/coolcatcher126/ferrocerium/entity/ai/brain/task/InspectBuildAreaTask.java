@@ -65,7 +65,7 @@ public class InspectBuildAreaTask {
                             if (!clear) {
                                 if (obstructions.size() > 0) {
 //                                  alienBuilderBotEntity.setVein(obstructions);
-                                    alienBuilderBotEntity.getBase().addVeinFirst(obstructions);
+                                    alienBuilderBotEntity.getBase().addVein(obstructions);
 //                                  alienBuilderBotEntity.setMining(true);
                                 }
                                 activityTicks.remember(0);

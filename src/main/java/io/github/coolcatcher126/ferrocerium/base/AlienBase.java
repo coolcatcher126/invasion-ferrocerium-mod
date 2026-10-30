@@ -147,12 +147,6 @@ public class AlienBase {
         }
     }
 
-    public void addVeinFirst(Vein vein){
-        if (vein.size() > 0) {
-            resources.addFirst(vein);
-        }
-    }
-
     public BaseBlocks getClosestThingToBuild(BlockPos targetPos){
         BaseSectPos targetRelativeBaseSectPos = new BaseSectPos(origin.subtract(targetPos));
         List<BaseBlocks> thingsToBuild = new ArrayList<>();
