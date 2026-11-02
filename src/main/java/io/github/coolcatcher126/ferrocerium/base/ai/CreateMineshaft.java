@@ -54,236 +54,237 @@ public class CreateMineshaft implements AlienBaseTask {
         ArrayList<BaseBlock> baseBlocks = new ArrayList<>();
         BlockState stoneBricksDefaultState = Blocks.STONE_BRICKS.getDefaultState();
         BlockState air = Blocks.AIR.getDefaultState();
-        for (int y = alienBase.getOrigin().getY(), i = 1; y >= -53; y--, i++){
+        BlockPos mineshaftStart = alienBase.getOrigin().down();
+        for (int y = mineshaftStart.getY(), i = 0; y >= -53; y--, i++){
             int step = i%8;
             if (step == 7) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, -1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, -1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, -2), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, -2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, -i, -1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, -i, -1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, -i, -2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, -i, -2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 1-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 1-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 1-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 1-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 1-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 1-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 1-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 1-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 2-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 2-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 2-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 2-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 2-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 2-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 2-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 2-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 3-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 3-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 3-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 3-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 3-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 3-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 3-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 3-i, -2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, -2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, -2).asLong());
             }
 
 
             if (step == 6) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, -1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, -2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, -i, -1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, -i, -2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 1-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 1-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 1-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 1-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 2-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 2-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 2-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 2-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 3-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 3-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 3-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 3-i, -2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(0, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, -2).asLong());
             }
 
 
             if (step == 5) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, -1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, -1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, -2), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, -2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, -i, -1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, -i, -1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, -i, -2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, -i, -2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 1-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 1-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 1-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 1-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 1-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 1-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 1-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 1-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 2-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 2-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 2-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 2-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 2-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 2-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 2-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 2-i, -2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 3-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 3-i, -1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 3-i, -2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 3-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 3-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 3-i, -1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 3-i, -2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 3-i, -2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, -2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, -2).asLong());
             }
 
             if (step == 4) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 0), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 0), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, -i, 0), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, -i, 0), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 1-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 1-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 1-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 1-i, 0), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 2-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 2-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 2-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 2-i, 0), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 3-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 3-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 3-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 3-i, 0), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 0).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, 0).asLong());
             }
 
             if (step == 3) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, -i, 2), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, -i, 2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, -i, 1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, -i, 1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, -i, 2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, -i, 2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 1-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 1-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 1-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 1-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 1-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 1-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 1-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 1-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 2-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 2-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 2-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 2-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 2-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 2-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 2-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 2-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 3-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 3-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(2, 3-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(1, 3-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 3-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 3-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(2, 3-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(1, 3-i, 2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, 2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, 2).asLong());
             }
 
             if (step == 2) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, 1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, -i, 2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, -i, 1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, -i, 2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 1-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 1-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 1-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 1-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 2-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 2-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 2-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 2-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 3-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(0, 3-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 3-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(0, 3-i, 2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(0, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, 2).asLong());
             }
 
             if (step == 1) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 1), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 2), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, -i, 1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, -i, 1), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, -i, 2), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, -i, 2), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 1-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 1-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 1-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 1-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 1-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 1-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 1-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 1-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 2-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 2-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 2-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 2-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 2-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 2-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 2-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 2-i, 2), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 3-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 3-i, 1), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 3-i, 2), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 3-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 3-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 3-i, 1), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 3-i, 2), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 3-i, 2), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, 2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, 2).asLong());
             }
 
             if (step == 0) {
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, -i, 0), stoneBricksDefaultState));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, -i, 0), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, -i, 0), stoneBricksDefaultState));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, -i, 0), stoneBricksDefaultState));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 1-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 1-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 1-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 1-i, 0), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 2-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 2-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 2-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 2-i, 0), air));
 
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-1, 3-i, 0), air));
-                baseBlocks.add(new BaseBlock(alienBase.getOrigin().add(-2, 3-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-1, 3-i, 0), air));
+                baseBlocks.add(new BaseBlock(mineshaftStart.add(-2, 3-i, 0), air));
             }
             else {
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 0).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, 0).asLong());
             }
 
             if (STRIP_MINE_LEVELS.contains(y) || STRIP_MINE_LEVELS.contains(y - 1) || STRIP_MINE_LEVELS.contains(y - 2)) {
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, -3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, -3).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, -3).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, -2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, -2).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, -2).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, -1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, -1).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, -1).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, 0).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, 0).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, 0).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, 1).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, 1).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, 1).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, 2).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, 2).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, 2).asLong());
 
-                mineshaft.add(alienBase.getOrigin().add(-3, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-2, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(-1, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(0, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(1, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(2, -i, 3).asLong());
-                mineshaft.add(alienBase.getOrigin().add(3, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(-3, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(-2, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(-1, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(0, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(1, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(2, -i, 3).asLong());
+                mineshaft.add(mineshaftStart.add(3, -i, 3).asLong());
             }
             if (i % 10 == 0 || i == 1){
                 //Split the mineshaft staircase into sections of 10 blocks down
-                alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(alienBase.getOrigin())), baseBlocks));
+                alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(mineshaftStart)), baseBlocks));
                 baseBlocks = new ArrayList<>();
                 alienBase.addVein(new Vein(mineshaft));
                 mineshaft = new LongArrayList();
             }
         }
         //Split the mineshaft staircase into sections of 10 blocks down
-        alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(alienBase.getOrigin())), baseBlocks));
+        alienBase.addBaseBlocks(new BaseBlocks(alienBase.getWorld(), new BaseSectPos(baseBlocks.getLast().getBlockPos().subtract(mineshaftStart)), baseBlocks));
         alienBase.addVein(new Vein(mineshaft));
     }
 
